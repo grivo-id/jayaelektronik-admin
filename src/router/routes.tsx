@@ -2,13 +2,7 @@ import { lazy } from 'react';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
-const Todolist = lazy(() => import('../pages/Apps/Todolist'));
-const Mailbox = lazy(() => import('../pages/Apps/Mailbox'));
-const Notes = lazy(() => import('../pages/Apps/Notes'));
 const Contacts = lazy(() => import('../pages/Apps/Contacts'));
-const Chat = lazy(() => import('../pages/Apps/Chat'));
-const Scrumboard = lazy(() => import('../pages/Apps/Scrumboard'));
-const Calendar = lazy(() => import('../pages/Apps/Calendar'));
 const List = lazy(() => import('../pages/Apps/Invoice/List'));
 const Preview = lazy(() => import('../pages/Apps/Invoice/Preview'));
 const Add = lazy(() => import('../pages/Apps/Invoice/Add'));
@@ -121,38 +115,15 @@ const routes = [
     },
 
     {
-        path: '/apps/todolist',
-        element: <Todolist />,
-    },
-    {
-        path: '/apps/notes',
-        element: <Notes />,
-    },
-    {
         path: '/apps/contacts',
         element: <Contacts />,
     },
-    {
-        path: '/apps/mailbox',
-        element: <Mailbox />,
-    },
+
     {
         path: '/apps/invoice/list',
         element: <List />,
     },
-    // Apps page
-    {
-        path: '/apps/chat',
-        element: <Chat />,
-    },
-    {
-        path: '/apps/scrumboard',
-        element: <Scrumboard />,
-    },
-    {
-        path: '/apps/calendar',
-        element: <Calendar />,
-    },
+
     // preview page
     {
         path: '/apps/invoice/preview',
