@@ -1,13 +1,9 @@
 import { StateCreator } from 'zustand';
+import { LoginRequest } from '../types/auth';
 
 type AuthState = {
     isLoggedIn: boolean;
 };
-
-export interface LoginRequest {
-    user_email: string;
-    user_password: string;
-}
 
 type AuthActions = {
     login: (credentials: LoginRequest) => Promise<void>;

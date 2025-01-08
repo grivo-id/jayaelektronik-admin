@@ -17,3 +17,8 @@ export interface AuthData {
     user: User;
     token: string;
 }
+
+export interface LoginRequest {
+    user_email: string;
+    user_password: string;
+}
