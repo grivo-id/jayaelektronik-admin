@@ -85,6 +85,7 @@ const QuillEditor = lazy(() => import('../pages/Forms/QuillEditor'));
 const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
+const Blog = lazy(() => import('../pages/Apps/Blog'));
 
 const routes = [
     // dashboard
@@ -110,6 +111,11 @@ const routes = [
     {
         path: '/apps/contacts',
         element: <Contacts />,
+    },
+
+    {
+        path: '/apps/blogs',
+        element: <Blog />,
     },
 
     {

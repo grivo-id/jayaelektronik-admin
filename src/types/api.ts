@@ -1,29 +1,24 @@
 import { User } from './auth';
 
 interface PaginationResponse {
-    page: number;
+    totalData: number;
+    currentPage: number;
     totalPages: number;
-    totalItems: number;
-    limit: number;
-    hasNext: boolean;
-    hasPrevious: boolean;
+    hasNextPage: boolean;
+    hasPrevPage: boolean;
 }
 
 interface ApiResponse<T> {
-    status: string;
+    success: string;
     message: string;
-    data: {
-        results: T[];
-        pagination: PaginationResponse;
-    };
-    errors: string[];
+    data: T;
+    pagination: PaginationResponse;
 }
 
 interface ApiGetOneResponse<T> {
     status: string;
     message: string;
     data: T;
-    errors: string[];
 }
 
 interface LoginResponse {
