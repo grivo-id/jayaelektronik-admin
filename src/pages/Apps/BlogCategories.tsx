@@ -9,7 +9,7 @@ import { useGetAllBlogCategoryQuery, useCreateBlogCategory, useUpdateBlogCategor
 import { CreateBlogCategoryPayload, getCreateBlogCategorySchema } from '../../schema/blogCategoriesShema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { MainHeader, Loader, Pagination } from '../../components';
+import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
@@ -143,55 +143,40 @@ const BlogCategories = () => {
             <>
                 <div className="mt-5 panel p-0 border-0 overflow-hidden">
                     <div className="table-responsive">
-                        <table className="table-striped table-hover">
+                        <table className="table-striped table-hover table-fixed">
                             <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Created Date</th>
-                                    <th className="!text-center">Actions</th>
+                                    <th className="w-3/10">Name</th>
+                                    <th className="w-3/10">Description</th>
+                                    <th className="w-2/10">Created Date</th>
+                                    <th className="w-1/10 text-center">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                {isPending && (
-                                    <tr className="animate-pulse">
-                                        <td className="py-4 px-4">
-                                            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <div className="h-4 bg-gray-200 rounded w-full"></div>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <div className="h-4 bg-gray-200 rounded w-1/3"></div>
-                                        </td>
-                                        <td className="py-4 px-4">
-                                            <div className="flex gap-4 items-center justify-center">
-                                                <div className="bg-gray-200 h-6 rounded w-16"></div>
-                                                <div className="bg-gray-200 h-6 rounded w-16"></div>
-                                            </div>
-                                        </td>
-                                    </tr>
-                                )}
-                                {blogCategoriesData.map((category: BlogCategory) => {
-                                    return (
-                                        <tr key={category.blog_category_id}>
-                                            <td>{category.blog_category_name}</td>
-                                            <td>{category.blog_category_desc}</td>
-                                            <td>{new Date(category.blog_category_created_date).toLocaleDateString()}</td>
-                                            <td>
-                                                <div className="flex gap-4 items-center justify-center">
-                                                    <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(category)} disabled={deleteBlogCategoryPending}>
-                                                        Edit
-                                                    </button>
-                                                    <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(category)} disabled={deleteBlogCategoryPending}>
-                                                        Delete
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                            </tbody>
+                            {isPending ? (
+                                <SkeletonLoadingTable rows={10} columns={4} />
+                            ) : (
+                                <tbody>
+                                    {blogCategoriesData.map((category: BlogCategory) => {
+                                        return (
+                                            <tr key={category.blog_category_id}>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{category.blog_category_name}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{category.blog_category_desc}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{new Date(category.blog_category_created_date).toLocaleDateString()}</td>
+                                                <td>
+                                                    <div className="flex gap-4 items-center justify-center">
+                                                        <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(category)} disabled={deleteBlogCategoryPending}>
+                                                            Edit
+                                                        </button>
+                                                        <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(category)} disabled={deleteBlogCategoryPending}>
+                                                            Delete
+                                                        </button>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            )}
                         </table>
                     </div>
                 </div>
