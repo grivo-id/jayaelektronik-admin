@@ -87,6 +87,7 @@ const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const Blog = lazy(() => import('../pages/Apps/Blog'));
 const BlogCategories = lazy(() => import('../pages/Apps/BlogCategories'));
+const ProductCategories = lazy(() => import('../pages/Apps/ProductCategory'));
 
 const routes = [
     // dashboard
@@ -121,6 +122,10 @@ const routes = [
     {
         path: '/apps/blog-categories',
         element: <BlogCategories />,
+    },
+    {
+        path: '/apps/product-categories',
+        element: <ProductCategories />,
     },
 
     {
