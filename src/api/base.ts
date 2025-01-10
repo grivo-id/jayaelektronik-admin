@@ -34,18 +34,31 @@ axiosInstance.interceptors.request.use((config) => {
 
 axiosInstance.interceptors.response.use(
     (response) => {
-        if (response.data && response.data.message) {
+        const method = response.config?.method?.toUpperCase() ?? '';
+        if (method !== 'GET' && response.data && response.data.message) {
             showMessage(response.data.message, 'success');
         }
         return response;
     },
     (error) => {
-        if (error.response && error.response.data && error.response.data.message) {
-            showMessage(error.response.data.message, 'error');
-        } else if (error.message) {
-            showMessage(error.message, 'error');
-        } else {
-            showMessage('Something went wrong, please try again', 'error');
+        if (error.response) {
+            const { status, data } = error.response;
+            if ((status === 500 && data.message === 'jwt expired') || data.message === 'jwt malformed') {
+                showMessage('Your session has expired. Please login again.', 'error');
+                Cookies.remove('accessToken');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1000);
+                return Promise.reject(error);
+            }
+
+            if (data && data.message) {
+                showMessage(data.message, 'error');
+            } else if (error.message) {
+                showMessage(error.message, 'error');
+            } else {
+                showMessage('Something went wrong, please try again', 'error');
+            }
         }
         return Promise.reject(error);
     }
