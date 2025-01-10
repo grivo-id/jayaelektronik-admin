@@ -86,6 +86,7 @@ const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const Blog = lazy(() => import('../pages/Apps/Blog'));
+const BlogCategories = lazy(() => import('../pages/Apps/BlogCategories'));
 
 const routes = [
     // dashboard
@@ -116,6 +117,10 @@ const routes = [
     {
         path: '/apps/blogs',
         element: <Blog />,
+    },
+    {
+        path: '/apps/blog-categories',
+        element: <BlogCategories />,
     },
 
     {
