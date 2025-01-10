@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from 'react-redux';
 import { IRootState } from '../../store';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { setPageTitle, toggleRTL } from '../../store/themeConfigSlice';
 import Dropdown from '../../components/Dropdown';
 import i18next from 'i18next';
@@ -10,11 +10,12 @@ import IconLockDots from '../../components/Icon/IconLockDots';
 import { useAuthMutation } from '../../services/authService';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { LoginFormData, loginSchema } from '../../schema/loginSchema';
+import { getLoginSchema, LoginFormData } from '../../schema/loginSchema';
 import IconLoaderDynamic from '../../components/Icon/IconLoaderDynamic';
 
 const LoginBoxed = () => {
     const { mutate: login, isPending } = useAuthMutation();
+    const loginSchema = useMemo(() => getLoginSchema(), []);
     const dispatch = useDispatch();
     const {
         register,
@@ -23,7 +24,7 @@ const LoginBoxed = () => {
     } = useForm<LoginFormData>({
         resolver: zodResolver(loginSchema),
         mode: 'onChange',
-        reValidateMode: 'onChange',
+        reValidateMode: 'onBlur',
     });
 
     useEffect(() => {
