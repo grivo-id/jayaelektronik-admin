@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateProductCategoryPayload } from '../schema/productCategorySchema';
 import { ApiCreateProductCategory, ApiDeleteProductCategory, ApiGetAllProductCategory, ApiUpdateProductCategory } from '../api/productCategoryApi';
 
@@ -13,6 +13,7 @@ export const useGetAllProductCategory = (params: Record<string, any>) => {
                 pagination,
             };
         },
+        placeholderData: keepPreviousData,
     });
 };
 
