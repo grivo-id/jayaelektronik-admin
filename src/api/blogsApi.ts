@@ -12,3 +12,9 @@ export const ApiCreateBlog = async (payload: CreateBlogPayload) => {
     const response = await axiosInstance.post<ApiResponse<Blog>>('/blogs', payload);
     return response.data;
 };
+
+export const ApiDeleteBlog = async (id: string) => {
+    const response = await axiosInstance.delete<ApiResponse<Blog>>(`/blogs/${id}`);
+
+    return response.data;
+};

@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiCreateBlog, ApiGetAllBlog } from '../api/blogsApi';
+import { ApiCreateBlog, ApiDeleteBlog, ApiGetAllBlog } from '../api/blogsApi';
 import { CreateBlogPayload } from '../schema/blogsSchema';
 import { QueryParams } from '../types/api';
 
@@ -23,6 +23,17 @@ export const useCreateBlog = () => {
 
     return useMutation({
         mutationFn: (payload: CreateBlogPayload) => ApiCreateBlog(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['blogs'] });
+        },
+    });
+};
+
+export const useDeleteBlog = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => ApiDeleteBlog(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['blogs'] });
         },

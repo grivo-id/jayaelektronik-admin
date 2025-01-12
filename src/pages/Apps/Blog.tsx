@@ -5,14 +5,16 @@ import IconSearch from '../../components/Icon/IconSearch';
 import IconUserPlus from '../../components/Icon/IconUserPlus';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
-import { useGetAllBlogQuery } from '../../services/blogService';
+import { useDeleteBlog, useGetAllBlogQuery } from '../../services/blogService';
 import Pagination from '../../components/Pagination';
 import { useNavigate } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import { QUILL_EDITOR_SANITIZATION_CONFIG } from '../../constants/quill-sanitize';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBlog } from '../../api/blogsApi';
-import { SkeletonLoadingGrid } from '../../components';
+import { Loader, SkeletonLoadingGrid } from '../../components';
+import Swal from 'sweetalert2';
+import type { Blog } from '../../types/blogsType';
 
 const Blog = () => {
     const dispatch = useDispatch();
@@ -31,6 +33,9 @@ const Blog = () => {
     });
 
     const { data: { data: blogData = [], pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllBlogQuery(queryParams);
+    const { mutate: deleteBlog, isPending: deleteBlogPending } = useDeleteBlog();
+
+    const [showLoader, setShowLoader] = useState<boolean>(false);
 
     const handlePageChange = (newPage: number) => {
         setQueryParams({ ...queryParams, page: newPage });
@@ -51,6 +56,32 @@ const Blog = () => {
             });
         }
     }, [queryParams, blogData, isPlaceholderData, queryClient]);
+
+    const deleteBlogAction = (blog: Blog) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            padding: '2em',
+            customClass: {
+                popup: 'sweet-alerts',
+            },
+        }).then((result) => {
+            if (result.value) {
+                setShowLoader(true);
+                deleteBlog(blog.blog_id, {
+                    onSuccess: () => {
+                        setShowLoader(false);
+                    },
+                    onError: () => {
+                        setShowLoader(false);
+                    },
+                });
+            }
+        });
+    };
 
     return (
         <div>
@@ -131,7 +162,7 @@ const Blog = () => {
                                         <button type="button" className="btn btn-outline-primary btn-sm">
                                             <IconPencil className="w-4 h-4" />
                                         </button>
-                                        <button type="button" className="btn btn-outline-danger btn-sm">
+                                        <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => deleteBlogAction(blog)} disabled={deleteBlogPending}>
                                             <IconTrash className="w-4 h-4" />
                                         </button>
                                     </div>
@@ -141,7 +172,10 @@ const Blog = () => {
                     ))
                 )}
             </div>
+
             <Pagination activePage={queryParams.page} itemsCountPerPage={queryParams.limit} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
+
+            {showLoader && <Loader />}
         </div>
     );
 };
