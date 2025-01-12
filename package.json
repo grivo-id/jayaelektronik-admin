@@ -32,6 +32,7 @@
         "@x1mrdonut1x/nouislider-react": "^3.4.3",
         "apexcharts": "^3.54.0",
         "axios": "^1.7.9",
+        "dompurify": "^3.2.3",
         "easymde": "^2.18.0",
         "formik": "^2.2.9",
         "highlight.js": "^11.6.0",
