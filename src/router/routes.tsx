@@ -90,6 +90,7 @@ const BlogCreation = lazy(() => import('../pages/Apps/BlogCreation'));
 const BlogCategories = lazy(() => import('../pages/Apps/BlogCategories'));
 const ProductCategories = lazy(() => import('../pages/Apps/ProductCategory'));
 const Overview = lazy(() => import('../pages/Overview'));
+const BlogKeywords = lazy(() => import('../pages/Apps/BlogKeywords'));
 
 const routes = [
     // dashboard
@@ -129,6 +130,11 @@ const routes = [
         path: '/apps/blog-categories',
         element: <BlogCategories />,
     },
+    {
+        path: '/apps/blog-keywords',
+        element: <BlogKeywords />,
+    },
+
     {
         path: '/apps/product-categories',
         element: <ProductCategories />,
