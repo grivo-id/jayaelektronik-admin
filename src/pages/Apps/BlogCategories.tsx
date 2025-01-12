@@ -10,9 +10,12 @@ import { CreateBlogCategoryPayload, getCreateBlogCategorySchema } from '../../sc
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
+import { useQueryClient } from '@tanstack/react-query';
+import { ApiGetAllBlogCategory } from '../../api/blogCategoryApi';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
+    const queryClient = useQueryClient();
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
@@ -21,7 +24,7 @@ const BlogCategories = () => {
         sort: 'desc',
     });
 
-    const { data: { data: blogCategoriesData, pagination } = { data: [], pagination: {} }, isPending, refetch } = useGetAllBlogCategoryQuery(queryParams);
+    const { data: { data: blogCategoriesData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllBlogCategoryQuery(queryParams);
     const { mutate: createBlogCategory, isPending: createBlogCategoryPending } = useCreateBlogCategory();
     const { mutate: updateBlogCategory, isPending: updateBlogCategoryPending } = useUpdateBlogCategory();
     const { mutate: deleteBlogCategory, isPending: deleteBlogCategoryPending } = useDeleteBlogCategory();
@@ -35,7 +38,7 @@ const BlogCategories = () => {
         setValue,
     } = useForm<CreateBlogCategoryPayload>({
         resolver: zodResolver(createBlogCategorySchema),
-        mode: 'onChange',
+        mode: 'onBlur',
         reValidateMode: 'onBlur',
     });
 
@@ -44,10 +47,6 @@ const BlogCategories = () => {
     useEffect(() => {
         dispatch(setPageTitle('Blog Categories'));
     }, []);
-
-    useEffect(() => {
-        refetch();
-    }, [queryParams, refetch]);
 
     const [addCategoryModal, setAddCategoryModal] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState<BlogCategory | null>(null);
@@ -73,6 +72,7 @@ const BlogCategories = () => {
                 onSuccess: () => {
                     setAddCategoryModal(false);
                     reset();
+                    setQueryParams({ ...queryParams, page: 1 });
                 },
             });
         }
@@ -128,6 +128,22 @@ const BlogCategories = () => {
         setQueryParams({ ...queryParams, search: e.target.value });
     };
 
+    useEffect(() => {
+        const nextPage = (pagination?.currentPage ?? 1) + 1;
+
+        if (!isPlaceholderData && pagination?.hasNextPage) {
+            const nextPageParams = {
+                ...queryParams,
+                page: nextPage,
+            };
+
+            queryClient.prefetchQuery({
+                queryKey: ['blog-categories', nextPageParams],
+                queryFn: () => ApiGetAllBlogCategory(nextPageParams),
+            });
+        }
+    }, [queryParams, blogCategoriesData, isPlaceholderData, queryClient]);
+
     return (
         <div>
             <MainHeader
@@ -152,8 +168,19 @@ const BlogCategories = () => {
                                     <th className="w-1/10 text-center">Actions</th>
                                 </tr>
                             </thead>
-                            {isPending ? (
-                                <SkeletonLoadingTable rows={10} columns={4} />
+                            {isFetching ? (
+                                <SkeletonLoadingTable rows={11} columns={4} />
+                            ) : blogCategoriesData.length === 0 ? (
+                                <tbody>
+                                    <tr>
+                                        <td colSpan={4} className="text-center py-4">
+                                            <div className="flex flex-col items-center justify-center gap-4">
+                                                <p className="text-lg font-semibold text-gray-500">No blog categories</p>
+                                                <p className="text-sm text-gray-400">Please add a new blog category by clicking the "Add New" button above</p>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </tbody>
                             ) : (
                                 <tbody>
                                     {blogCategoriesData.map((category: BlogCategory) => {
@@ -217,7 +244,19 @@ const BlogCategories = () => {
                                         <button type="button" className="btn btn-outline-danger" onClick={closeModal} disabled={isLoading}>
                                             Cancel
                                         </button>
-                                        <button type="submit" className="btn btn-primary ltr:ml-4 rtl:mr-4" disabled={isLoading}>
+                                        <button
+                                            type="submit"
+                                            className="btn btn-primary ltr:ml-4 rtl:mr-4"
+                                            disabled={isLoading}
+                                            aria-label={isLoading ? (selectedCategory ? 'Updating' : 'Adding') : selectedCategory ? 'Update' : 'Add'}
+                                        >
+                                            {isLoading && (
+                                                <i
+                                                    className="animate-spin border-2 border-white border-l-transparent rounded-full w-5 h-5 ltr:mr-4 rtl:ml-4 inline-block align-middle shrink-0"
+                                                    role="status"
+                                                    aria-hidden="true"
+                                                ></i>
+                                            )}
                                             {isLoading ? (selectedCategory ? 'Updating...' : 'Adding...') : selectedCategory ? 'Update' : 'Add'}
                                         </button>
                                     </div>

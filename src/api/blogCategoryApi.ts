@@ -10,19 +10,19 @@ export const ApiGetAllBlogCategory = async (params: Record<string, any>) => {
 };
 
 export const ApiCreateBlogCategory = async (payload: CreateBlogCategoryPayload) => {
-    const response = await axiosInstance.post<ApiResponse<BlogCategory[]>>('/blog-categories', payload);
+    const response = await axiosInstance.post<ApiResponse<BlogCategory>>('/blog-categories', payload);
 
     return response.data;
 };
 
 export const ApiUpdateBlogCategory = async (id: string, payload: CreateBlogCategoryPayload) => {
-    const response = await axiosInstance.patch<ApiResponse<BlogCategory[]>>(`/blog-categories/${id}`, payload);
+    const response = await axiosInstance.patch<ApiResponse<BlogCategory>>(`/blog-categories/${id}`, payload);
 
     return response.data;
 };
 
 export const ApiDeleteBlogCategory = async (id: string) => {
-    const response = await axiosInstance.delete<ApiResponse<BlogCategory[]>>(`/blog-categories/${id}`);
+    const response = await axiosInstance.delete<ApiResponse<BlogCategory>>(`/blog-categories/${id}`);
 
     return response.data;
 };

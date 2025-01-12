@@ -1,4 +1,4 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { ApiCreateBlogCategory, ApiDeleteBlogCategory, ApiGetAllBlogCategory, ApiUpdateBlogCategory } from '../api/blogCategoryApi';
 import { CreateBlogCategoryPayload } from '../schema/blogCategoriesShema';
 
@@ -13,6 +13,7 @@ export const useGetAllBlogCategoryQuery = (params: Record<string, any>) => {
                 pagination,
             };
         },
+        placeholderData: keepPreviousData,
     });
 };
 
