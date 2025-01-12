@@ -86,14 +86,20 @@ const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const Blog = lazy(() => import('../pages/Apps/Blog'));
+const BlogCreation = lazy(() => import('../pages/Apps/BlogCreation'));
 const BlogCategories = lazy(() => import('../pages/Apps/BlogCategories'));
 const ProductCategories = lazy(() => import('../pages/Apps/ProductCategory'));
+const Overview = lazy(() => import('../pages/Overview'));
 
 const routes = [
     // dashboard
     {
         path: '/',
         element: <Index />,
+    },
+    {
+        path: '/overview',
+        element: <Overview />,
     },
     // {
     //     path: '/index',
@@ -477,6 +483,14 @@ const routes = [
         path: '/about',
         element: <About />,
         layout: 'blank',
+    },
+    {
+        path: '/blog',
+        element: <Blog />,
+    },
+    {
+        path: '/blog/create',
+        element: <BlogCreation />,
     },
     {
         path: '*',
