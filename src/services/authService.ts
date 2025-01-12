@@ -14,7 +14,7 @@ export const useAuthMutation = () => {
         onSuccess: async (data) => {
             setIsAuthenticated(true);
             setUser(data.data.user);
-            Cookies.set('accessToken', data.data.token, { expires: 7, path: '/' });
+            Cookies.set('accessToken', data.data.token.value, { expires: 7, path: '/' });
             navigate('/');
         },
     });

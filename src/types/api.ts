@@ -26,7 +26,10 @@ interface LoginResponse {
     message: string;
     data: {
         user: User;
-        token: string;
+        token: {
+            value: string;
+            expiresIn: number;
+        };
     };
     errors: string[];
 }
@@ -37,4 +40,15 @@ interface FetchError {
     status?: number;
 }
 
-export type { ApiResponse, PaginationResponse, FetchError, LoginResponse, ApiGetOneResponse };
+interface UploadResponse {
+    nameFile: string;
+    fileUrl: string;
+}
+
+interface QueryParams {
+    page?: number;
+    limit?: number;
+    sort?: string;
+}
+
+export type { ApiResponse, PaginationResponse, FetchError, LoginResponse, ApiGetOneResponse, UploadResponse, QueryParams };
