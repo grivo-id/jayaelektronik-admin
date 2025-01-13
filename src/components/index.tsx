@@ -5,3 +5,4 @@ export { default as SkeletonLoadingTable } from './SkeletonLoadingTable';
 export { default as MultipleSelect } from './MultipleSelect';
 export { default as SingleSelect } from './SingleSelect';
 export { default as SkeletonLoadingGrid } from './SkeletonLoadingGrid';
+export { default as PermissionWrapper } from './PermissionWrapper';
