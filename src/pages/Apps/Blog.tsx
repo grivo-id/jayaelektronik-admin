@@ -156,7 +156,7 @@ const Blog = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-end gap-2 mt-auto pt-4 border-t border-[#e0e6ed] dark:border-[#1b2e4b]">
-                                        <button type="button" className="btn btn-outline-info btn-sm">
+                                        <button type="button" className="btn btn-outline-info btn-sm" onClick={() => navigate(`/blog/${blog.blog_id}`)}>
                                             Detail
                                         </button>
                                         <button type="button" className="btn btn-outline-primary btn-sm">

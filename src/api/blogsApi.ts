@@ -8,6 +8,11 @@ export const ApiGetAllBlog = async (params: QueryParams) => {
     return response.data;
 };
 
+export const ApiGetBlogById = async (id: string) => {
+    const response = await axiosInstance.get<ApiResponse<Blog>>(`/blogs?blog_id=${id}`);
+    return response.data;
+};
+
 export const ApiCreateBlog = async (payload: CreateBlogPayload) => {
     const response = await axiosInstance.post<ApiResponse<Blog>>('/blogs', payload);
     return response.data;
