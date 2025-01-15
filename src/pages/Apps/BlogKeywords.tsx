@@ -137,7 +137,7 @@ const BlogKeywords = () => {
             };
 
             queryClient.prefetchQuery({
-                queryKey: ['blog-categories', nextPageParams],
+                queryKey: ['blog-keywords', nextPageParams],
                 queryFn: () => ApiGetAllBlogKeyword(nextPageParams),
             });
         }
