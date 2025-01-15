@@ -73,7 +73,6 @@ const BlogCreation = () => {
         setShowImageActions(false);
         setUploadedImageUrl(null);
 
-        // Reset input file
         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
         if (fileInput) {
             fileInput.value = '';
@@ -85,7 +84,7 @@ const BlogCreation = () => {
     const onSubmit = (data: CreateBlogPayload) => {
         console.log(data);
         if (!uploadedImageUrl) {
-            alert('Silakan upload gambar terlebih dahulu!');
+            alert('Please upload an image first');
             return;
         }
 

@@ -92,6 +92,7 @@ const ProductCategories = lazy(() => import('../pages/Apps/ProductCategory'));
 const Overview = lazy(() => import('../pages/Overview'));
 const BlogKeywords = lazy(() => import('../pages/Apps/BlogKeywords'));
 const BlogDetail = lazy(() => import('../pages/Apps/BlogDetail'));
+const Brands = lazy(() => import('../pages/Apps/Brands'));
 
 const routes = [
     // dashboard
@@ -144,6 +145,11 @@ const routes = [
     {
         path: '/apps/invoice/list',
         element: <List />,
+    },
+
+    {
+        path: '/admin/manage-brand',
+        element: <Brands />,
     },
 
     // preview page
