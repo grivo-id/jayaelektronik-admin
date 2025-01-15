@@ -90,7 +90,7 @@ const Blog = () => {
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
                         <div>
-                            <button type="button" className="btn btn-primary" onClick={() => navigate('/blog/create')}>
+                            <button type="button" className="btn btn-primary" onClick={() => navigate('/admin/manage-blog/create')}>
                                 <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
                                 Add New
                             </button>
@@ -156,7 +156,7 @@ const Blog = () => {
                                         </div>
                                     </div>
                                     <div className="flex items-center justify-end gap-2 mt-auto pt-4 border-t border-[#e0e6ed] dark:border-[#1b2e4b]">
-                                        <button type="button" className="btn btn-outline-info btn-sm" onClick={() => navigate(`/blog/${blog.blog_id}`)}>
+                                        <button type="button" className="btn btn-outline-info btn-sm" onClick={() => navigate(`/admin/manage-blog/${blog.blog_id}`)}>
                                             Detail
                                         </button>
                                         <button type="button" className="btn btn-outline-primary btn-sm">

@@ -147,10 +147,78 @@ const routes = [
         element: <List />,
     },
 
+    // ========================================================================================================//
+
+    {
+        path: '/admin/list-order-customer',
+    },
+
+    {
+        path: '/admin/manage-product',
+    },
+
+    {
+        path: '/admin/manage-product-category',
+    },
+
+    {
+        path: '/admin/manage-product-sub-category',
+    },
+
+    {
+        path: '/admin/manage-coupon-discount',
+    },
+
+    {
+        path: '/admin/manage-home-banner',
+    },
+
+    {
+        path: '/admin/manage-deals-of-the-week',
+    },
+
+    {
+        path: '/admin/manage-blog',
+        element: <Blog />,
+    },
+
+    {
+        path: '/admin/manage-blog/create',
+        element: <BlogCreation />,
+    },
+    {
+        path: '/admin/manage-blog/:id',
+        element: <BlogDetail />,
+    },
+
+    {
+        path: '/admin/manage-blog-category',
+        element: <BlogCategories />,
+    },
+
+    {
+        path: '/admin/manage-keywords',
+        element: <BlogKeywords />,
+    },
+
     {
         path: '/admin/manage-brand',
         element: <Brands />,
     },
+
+    {
+        path: '/manager/manage-user',
+    },
+
+    {
+        path: '/manager/manage-admin',
+    },
+
+    {
+        path: '/setting/account-profile',
+    },
+
+    // ========================================================================================================//
 
     // preview page
     {
