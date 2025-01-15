@@ -30,7 +30,7 @@ import { Permission, Role } from '../../constants/permission';
 
 const Sidebar = () => {
     const user = useStore((state) => state.user);
-    const userRole = user!.role_name as Role;
+    const userRole = user?.role_name as Role;
     const [currentMenu, setCurrentMenu] = useState<string>('');
     // const [errorSubMenu, setErrorSubMenu] = useState(false);
     const themeConfig = useSelector((state: IRootState) => state.themeConfig);
