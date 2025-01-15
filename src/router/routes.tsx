@@ -2,14 +2,7 @@ import { lazy } from 'react';
 const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
-const Crypto = lazy(() => import('../pages/Crypto'));
-const Todolist = lazy(() => import('../pages/Apps/Todolist'));
-const Mailbox = lazy(() => import('../pages/Apps/Mailbox'));
-const Notes = lazy(() => import('../pages/Apps/Notes'));
 const Contacts = lazy(() => import('../pages/Apps/Contacts'));
-const Chat = lazy(() => import('../pages/Apps/Chat'));
-const Scrumboard = lazy(() => import('../pages/Apps/Scrumboard'));
-const Calendar = lazy(() => import('../pages/Apps/Calendar'));
 const List = lazy(() => import('../pages/Apps/Invoice/List'));
 const Preview = lazy(() => import('../pages/Apps/Invoice/Preview'));
 const Add = lazy(() => import('../pages/Apps/Invoice/Add'));
@@ -74,13 +67,6 @@ const ERROR500 = lazy(() => import('../pages/Pages/Error500'));
 const ERROR503 = lazy(() => import('../pages/Pages/Error503'));
 const Maintenence = lazy(() => import('../pages/Pages/Maintenence'));
 const LoginBoxed = lazy(() => import('../pages/Authentication/LoginBoxed'));
-const RegisterBoxed = lazy(() => import('../pages/Authentication/RegisterBoxed'));
-const UnlockBoxed = lazy(() => import('../pages/Authentication/UnlockBox'));
-const RecoverIdBoxed = lazy(() => import('../pages/Authentication/RecoverIdBox'));
-const LoginCover = lazy(() => import('../pages/Authentication/LoginCover'));
-const RegisterCover = lazy(() => import('../pages/Authentication/RegisterCover'));
-const RecoverIdCover = lazy(() => import('../pages/Authentication/RecoverIdCover'));
-const UnlockCover = lazy(() => import('../pages/Authentication/UnlockCover'));
 const About = lazy(() => import('../pages/About'));
 const Error = lazy(() => import('../components/Error'));
 const Charts = lazy(() => import('../pages/Charts'));
@@ -99,12 +85,24 @@ const QuillEditor = lazy(() => import('../pages/Forms/QuillEditor'));
 const MarkDownEditor = lazy(() => import('../pages/Forms/MarkDownEditor'));
 const DateRangePicker = lazy(() => import('../pages/Forms/DateRangePicker'));
 const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
+const Blog = lazy(() => import('../pages/Apps/Blog'));
+const BlogCreation = lazy(() => import('../pages/Apps/BlogCreation'));
+const BlogCategories = lazy(() => import('../pages/Apps/BlogCategories'));
+const ProductCategories = lazy(() => import('../pages/Apps/ProductCategory'));
+const Overview = lazy(() => import('../pages/Overview'));
+const BlogKeywords = lazy(() => import('../pages/Apps/BlogKeywords'));
+const BlogDetail = lazy(() => import('../pages/Apps/BlogDetail'));
+const Brands = lazy(() => import('../pages/Apps/Brands'));
 
 const routes = [
     // dashboard
     {
         path: '/',
         element: <Index />,
+    },
+    {
+        path: '/overview',
+        element: <Overview />,
     },
     // {
     //     path: '/index',
@@ -120,44 +118,108 @@ const routes = [
         path: '/finance',
         element: <Finance />,
     },
-    // crypto page
-    {
-        path: '/crypto',
-        element: <Crypto />,
-    },
-    {
-        path: '/apps/todolist',
-        element: <Todolist />,
-    },
-    {
-        path: '/apps/notes',
-        element: <Notes />,
-    },
+
     {
         path: '/apps/contacts',
         element: <Contacts />,
     },
+
     {
-        path: '/apps/mailbox',
-        element: <Mailbox />,
+        path: '/apps/blogs',
+        element: <Blog />,
     },
+    {
+        path: '/apps/blog-categories',
+        element: <BlogCategories />,
+    },
+    {
+        path: '/apps/blog-keywords',
+        element: <BlogKeywords />,
+    },
+
+    {
+        path: '/apps/product-categories',
+        element: <ProductCategories />,
+    },
+
     {
         path: '/apps/invoice/list',
         element: <List />,
     },
-    // Apps page
+
+    // ========================================================================================================//
+
     {
-        path: '/apps/chat',
-        element: <Chat />,
+        path: '/admin/list-order-customer',
+    },
+
+    {
+        path: '/admin/manage-product',
+    },
+
+    {
+        path: '/admin/manage-product-category',
+    },
+
+    {
+        path: '/admin/manage-product-sub-category',
+    },
+
+    {
+        path: '/admin/manage-coupon-discount',
+    },
+
+    {
+        path: '/admin/manage-home-banner',
+    },
+
+    {
+        path: '/admin/manage-deals-of-the-week',
+    },
+
+    {
+        path: '/admin/manage-blog',
+        element: <Blog />,
+    },
+
+    {
+        path: '/admin/manage-blog/create',
+        element: <BlogCreation />,
     },
     {
-        path: '/apps/scrumboard',
-        element: <Scrumboard />,
+        path: '/admin/manage-blog/:id',
+        element: <BlogDetail />,
     },
+
     {
-        path: '/apps/calendar',
-        element: <Calendar />,
+        path: '/admin/manage-blog-category',
+        element: <BlogCategories />,
     },
+
+    {
+        path: '/admin/manage-keywords',
+        element: <BlogKeywords />,
+    },
+
+    {
+        path: '/admin/manage-brand',
+        element: <Brands />,
+    },
+
+    {
+        path: '/manager/manage-user',
+    },
+
+    {
+        path: '/manager/manage-admin',
+    },
+
+    {
+        path: '/setting/account-profile',
+    },
+
+    // ========================================================================================================//
+
     // preview page
     {
         path: '/apps/invoice/preview',
@@ -432,45 +494,11 @@ const routes = [
     },
     //Authentication
     {
-        path: '/auth/boxed-signin',
+        path: '/login',
         element: <LoginBoxed />,
         layout: 'blank',
     },
-    {
-        path: '/auth/boxed-signup',
-        element: <RegisterBoxed />,
-        layout: 'blank',
-    },
-    {
-        path: '/auth/boxed-lockscreen',
-        element: <UnlockBoxed />,
-        layout: 'blank',
-    },
-    {
-        path: '/auth/boxed-password-reset',
-        element: <RecoverIdBoxed />,
-        layout: 'blank',
-    },
-    {
-        path: '/auth/cover-login',
-        element: <LoginCover />,
-        layout: 'blank',
-    },
-    {
-        path: '/auth/cover-register',
-        element: <RegisterCover />,
-        layout: 'blank',
-    },
-    {
-        path: '/auth/cover-lockscreen',
-        element: <UnlockCover />,
-        layout: 'blank',
-    },
-    {
-        path: '/auth/cover-password-reset',
-        element: <RecoverIdCover />,
-        layout: 'blank',
-    },
+
     //forms page
     {
         path: '/forms/basic',
@@ -536,6 +564,18 @@ const routes = [
         path: '/about',
         element: <About />,
         layout: 'blank',
+    },
+    {
+        path: '/blog',
+        element: <Blog />,
+    },
+    {
+        path: '/blog/create',
+        element: <BlogCreation />,
+    },
+    {
+        path: '/blog/:id',
+        element: <BlogDetail />,
     },
     {
         path: '*',

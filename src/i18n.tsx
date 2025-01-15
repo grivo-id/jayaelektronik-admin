@@ -17,6 +17,6 @@ i18n
     .init({
         fallbackLng: themeConfig.locale || 'en',
         debug: false,
-        load: 'languageOnly'
+        load: 'languageOnly',
     });
 export default i18n;
