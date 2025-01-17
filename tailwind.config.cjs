@@ -17,49 +17,49 @@ module.exports = {
         extend: {
             colors: {
                 primary: {
-                    DEFAULT: '#4361ee',
-                    light: '#eaf1ff',
-                    'dark-light': 'rgba(67,97,238,.15)',
+                    DEFAULT: '#2AA827',
+                    light: '#e6f7e9',
+                    'dark-light': 'rgba(42,168,39,.15)',
                 },
                 secondary: {
-                    DEFAULT: '#805dca',
-                    light: '#ebe4f7',
-                    'dark-light': 'rgb(128 93 202 / 15%)',
+                    DEFAULT: '#28a745',
+                    light: '#dff6e9',
+                    'dark-light': 'rgba(40,167,69,.15)',
                 },
                 success: {
                     DEFAULT: '#00ab55',
-                    light: '#ddf5f0',
+                    light: '#e3fcef',
                     'dark-light': 'rgba(0,171,85,.15)',
                 },
                 danger: {
-                    DEFAULT: '#e7515a',
-                    light: '#fff5f5',
-                    'dark-light': 'rgba(231,81,90,.15)',
+                    DEFAULT: '#d9534f',
+                    light: '#fdecea',
+                    'dark-light': 'rgba(217,83,79,.15)',
                 },
                 warning: {
                     DEFAULT: '#e2a03f',
-                    light: '#fff9ed',
+                    light: '#fff3de',
                     'dark-light': 'rgba(226,160,63,.15)',
                 },
                 info: {
                     DEFAULT: '#2196f3',
-                    light: '#e7f7ff',
+                    light: '#e8f4ff',
                     'dark-light': 'rgba(33,150,243,.15)',
                 },
                 dark: {
                     DEFAULT: '#3b3f5c',
-                    light: '#eaeaec',
+                    light: '#f2f2f4',
                     'dark-light': 'rgba(59,63,92,.15)',
                 },
                 black: {
                     DEFAULT: '#0e1726',
-                    light: '#e3e4eb',
+                    light: '#d6d8dc',
                     'dark-light': 'rgba(14,23,38,.15)',
                 },
                 white: {
                     DEFAULT: '#ffffff',
-                    light: '#e0e6ed',
-                    dark: '#888ea8',
+                    light: '#f9f9fa',
+                    dark: '#ced4da',
                 },
             },
             fontFamily: {
