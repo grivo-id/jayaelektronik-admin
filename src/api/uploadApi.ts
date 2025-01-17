@@ -13,6 +13,15 @@ export const ApiUploadImageBlog = async (file: File) => {
     return response.data;
 };
 
+export const ApiDeleteImage = async (fileName: string) => {
+    const response = await axiosInstance.delete<ApiResponse<UploadResponse>>(`/upload-image/blog`, {
+        data: {
+            fileName,
+        },
+    });
+    return response.data;
+};
+
 export const ApiUploadImageBrand = async (file: File) => {
     const formData = new FormData();
     formData.append('file', file);

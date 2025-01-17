@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiCreateBlog, ApiDeleteBlog, ApiGetAllBlog, ApiGetBlogById } from '../api/blogsApi';
+import { ApiCreateBlog, ApiDeleteBlog, ApiGetAllBlog, ApiGetBlogById, ApiUpdateBlog } from '../api/blogsApi';
 import { CreateBlogPayload } from '../schema/blogsSchema';
 import { QueryParams } from '../types/api';
 
@@ -20,7 +20,7 @@ export const useGetAllBlogQuery = (params: QueryParams) => {
 
 export const useGetBlogByIdQuery = (id: string) => {
     return useQuery({
-        queryKey: ['blog', id],
+        queryKey: ['blogs', id],
         queryFn: () => ApiGetBlogById(id),
         placeholderData: keepPreviousData,
     });
@@ -31,6 +31,17 @@ export const useCreateBlog = () => {
 
     return useMutation({
         mutationFn: (payload: CreateBlogPayload) => ApiCreateBlog(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['blogs'] });
+        },
+    });
+};
+
+export const useUpdateBlog = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, payload }: { id: string; payload: CreateBlogPayload }) => ApiUpdateBlog(id, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['blogs'] });
         },

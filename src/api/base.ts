@@ -35,7 +35,8 @@ axiosInstance.interceptors.request.use((config) => {
 axiosInstance.interceptors.response.use(
     (response) => {
         const method = response.config?.method?.toUpperCase() ?? '';
-        if (method !== 'GET' && response.data && response.data.message) {
+        const url = response.config?.url ?? '';
+        if (method !== 'GET' && !(method === 'DELETE' && url.includes('/upload-image/blog')) && response.data && response.data.message) {
             showMessage(response.data.message, 'success');
         }
         return response;

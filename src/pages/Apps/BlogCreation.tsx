@@ -136,7 +136,7 @@ const BlogCreation = () => {
                     name="blogKeywordNames"
                     control={control}
                     options={keywords.map((keyword) => ({
-                        value: keyword.blog_keyword_id,
+                        value: keyword.blog_keyword_name,
                         label: keyword.blog_keyword_name,
                     }))}
                     label="Keywords"
