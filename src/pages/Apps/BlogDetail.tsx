@@ -12,8 +12,8 @@ import IconX from '../../components/Icon/IconX';
 import IconCheck from '../../components/Icon/IconChecks';
 import { useGetAllBlogKeyword } from '../../services/blogKeywordsService';
 import { MultipleSelect, SingleSelect } from '../../components';
-import { ApiUploadImageBlog } from '../../api/uploadApi';
-import { useGetBlogByIdQuery } from '../../services/blogService';
+import { ApiDeleteImage, ApiUploadImageBlog } from '../../api/uploadApi';
+import { useGetBlogByIdQuery, useUpdateBlog } from '../../services/blogService';
 
 const BlogDetail = () => {
     const dispatch = useDispatch();
@@ -37,6 +37,7 @@ const BlogDetail = () => {
     const { data: { data: categories } = { data: [], pagination: {} }, isFetching: isFetchingCategories } = useGetAllBlogCategoryQuery({});
     const { data: { data: keywords } = { data: [], pagination: {} }, isFetching: isFetchingKeywords } = useGetAllBlogKeyword({});
     const { data: blogData, isFetching: isFetchingBlog } = useGetBlogByIdQuery(id as string);
+    const { mutate: updateBlog, isPending } = useUpdateBlog();
 
     const isLoading = isFetchingCategories || isFetchingKeywords || isFetchingBlog;
 
@@ -46,6 +47,8 @@ const BlogDetail = () => {
     const [showImageActions, setShowImageActions] = useState(false);
     const [uploadedImageUrl, setUploadedImageUrl] = useState<string | null>(null);
     const [isUploading, setIsUploading] = useState(false);
+    const [isImageChanged, setIsImageChanged] = useState(false);
+    const [imageName, setImageName] = useState('');
 
     useEffect(() => {
         if (blogData?.data && !isLoading) {
@@ -54,11 +57,13 @@ const BlogDetail = () => {
             setValue('blog_category_id', blog.blog_category_id);
             setValue(
                 'blogKeywordNames',
-                blog.blog_keywords.map((kw) => kw.blog_keyword_id)
+                blog.blog_keywords.map((kw) => kw.blog_keyword_name)
             );
+            setValue('blog_desc', blog.blog_desc);
             setEditorContent(blog.blog_desc);
             setUploadedImageUrl(blog.blog_banner_image);
             setImagePreview(blog.blog_banner_image);
+            setImageName(blog.blog_banner_image.split('/').pop() as string);
         }
     }, [blogData, setValue, isLoading]);
 
@@ -83,6 +88,7 @@ const BlogDetail = () => {
             console.error('Error uploading image:', error);
         } finally {
             setIsUploading(false);
+            setIsImageChanged(true);
         }
     };
 
@@ -99,16 +105,28 @@ const BlogDetail = () => {
     };
 
     const onSubmit = (data: CreateBlogPayload) => {
-        console.log(data);
         if (!uploadedImageUrl) {
             alert('Silakan upload gambar terlebih dahulu!');
             return;
         }
 
         const payload = { ...data, blog_desc: editorContent, blog_banner_image: uploadedImageUrl };
-        console.log(payload);
 
-        alert('Update functionality will be added later');
+        if (isImageChanged) {
+            ApiDeleteImage(imageName);
+        }
+
+        updateBlog(
+            {
+                id: id as string,
+                payload,
+            },
+            {
+                onSuccess: () => {
+                    navigate('/admin/manage-blog');
+                },
+            }
+        );
     };
 
     if (isLoading) {
@@ -174,7 +192,7 @@ const BlogDetail = () => {
                     name="blogKeywordNames"
                     control={control}
                     options={keywords.map((keyword) => ({
-                        value: keyword.blog_keyword_id,
+                        value: keyword.blog_keyword_name,
                         label: keyword.blog_keyword_name,
                     }))}
                     label="Keywords"
@@ -233,8 +251,15 @@ const BlogDetail = () => {
                     />
                     {errors.blog_desc && <span className="text-danger">{errors.blog_desc.message}</span>}
                 </div>
-                <button type="submit" className="btn btn-primary !mt-16">
-                    Update Blog
+                <button type="submit" disabled={isPending} className="btn btn-primary !mt-16">
+                    {isPending && (
+                        <i
+                            className="animate-spin border-2 border-white border-l-transparent rounded-full w-5 h-5 ltr:mr-4 rtl:ml-4 inline-block align-middle shrink-0"
+                            role="status"
+                            aria-hidden="true"
+                        ></i>
+                    )}
+                    {isPending ? 'Saving...' : 'Save'}
                 </button>
             </form>
         </div>
