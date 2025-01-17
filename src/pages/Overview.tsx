@@ -59,12 +59,12 @@ const Overview = () => {
                         <div className="text-gray-500 dark:text-gray-400">Artikel blog</div>
                     </div>
 
-                    <div className="panel h-full bg-gradient-to-br from-info-light/50 via-info/20 to-transparent hover:from-info-light hover:via-info/30 hover:to-transparent duration-300 cursor-pointer ">
+                    <div className="panel h-full bg-gradient-to-br from-info-light/50 via-success/20 to-transparent hover:from-info-light hover:via-success/30 hover:to-transparent duration-300 cursor-pointer ">
                         <div className="flex justify-between dark:text-white-light mb-5">
                             <h5 className="font-semibold text-lg group-hover:text-info duration-300">Pengunjung</h5>
-                            <span className="badge bg-info/20 text-info group-hover:bg-info group-hover:text-white duration-300">Hari Ini</span>
+                            <span className="badge bg-success/20 text-success group-hover:bg-success group-hover:text-white duration-300">Hari Ini</span>
                         </div>
-                        <div className="text-3xl font-bold text-info mb-1 group-hover:scale-110 duration-300">100+</div>
+                        <div className="text-3xl font-bold text-success mb-1 group-hover:scale-110 duration-300">100+</div>
                         <div className="text-gray-500 dark:text-gray-400">Pengunjung aktif</div>
                     </div>
                 </div>
