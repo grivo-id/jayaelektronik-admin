@@ -14,6 +14,7 @@ import { useGetAllBlogKeyword } from '../../services/blogKeywordsService';
 import { MultipleSelect, SingleSelect } from '../../components';
 import { ApiDeleteImage, ApiUploadImageBlog } from '../../api/uploadApi';
 import { useGetBlogByIdQuery, useUpdateBlog } from '../../services/blogService';
+import IconArrowBackward from '../../components/Icon/IconArrowBackward';
 
 const BlogDetail = () => {
     const dispatch = useDispatch();
@@ -163,8 +164,19 @@ const BlogDetail = () => {
     return (
         <div>
             <div className="flex items-center justify-between mb-5">
-                <h5 className="font-semibold text-lg dark:text-white-light">Detail Blog</h5>
+                <div className="flex items-center gap-4">
+                    <button className="btn btn-primary p-2 rounded-full" onClick={() => navigate(-1)}>
+                        <IconArrowBackward className="h-5 w-5" />
+                        <span className="sr-only">Back</span>
+                    </button>
+                    <div>
+                        <h1 className="text-2xl font-bold">Edit Blog</h1>
+                        <p className="text-sm text-gray-600">Edit and update your existing blog post</p>
+                    </div>
+                </div>
             </div>
+
+            <div className="h-px w-full bg-[#e0e6ed] dark:bg-[#1b2e4b] mb-5"></div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
