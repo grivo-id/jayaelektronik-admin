@@ -253,13 +253,13 @@ const BlogCategories = () => {
                                             Description
                                             <span className="text-danger text-base">*</span>
                                         </label>
-                                        <input
+                                        <textarea
                                             id="blog_category_desc"
-                                            type="text"
                                             placeholder="Enter Category Description"
-                                            className={`form-input ${errors.blog_category_desc ? 'error' : ''}`}
+                                            className={`form-textarea ${errors.blog_category_desc ? 'error' : ''}`}
                                             {...register('blog_category_desc')}
-                                        />
+                                            rows={3}
+                                        ></textarea>
                                         {errors.blog_category_desc && <span className="text-danger text-sm mt-1">{errors.blog_category_desc.message}</span>}
                                     </div>
                                     <div className="flex justify-end items-center mt-8">
