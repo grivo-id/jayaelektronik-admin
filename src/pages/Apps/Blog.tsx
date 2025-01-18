@@ -85,8 +85,11 @@ const Blog = () => {
 
     return (
         <div>
-            <div className="flex items-center justify-between flex-wrap gap-4">
-                <h2 className="text-xl">Blog</h2>
+            <div className="flex items-center justify-between flex-wrap gap-4 mb-5">
+                <div>
+                    <h1 className="text-2xl font-bold">Blog</h1>
+                    <p className="text-sm text-gray-600">Manage your blog posts</p>
+                </div>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
                         <div>
@@ -104,6 +107,8 @@ const Blog = () => {
                     </div>
                 </div>
             </div>
+
+            <div className="h-px w-full bg-[#e0e6ed] dark:bg-[#1b2e4b] mb-5"></div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {isFetching ? (
