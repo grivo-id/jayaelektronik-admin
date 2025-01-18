@@ -44,7 +44,7 @@ axiosInstance.interceptors.response.use(
     (error) => {
         if (error.response) {
             const { status, data } = error.response;
-            if ((status === 500 && data.message === 'jwt expired') || data.message === 'jwt malformed') {
+            if (status === 401) {
                 showMessage('Your session has expired. Please login again.', 'error');
                 Cookies.remove('accessToken');
                 setTimeout(() => {
