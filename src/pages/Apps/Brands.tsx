@@ -337,12 +337,18 @@ const BlogCategories = () => {
                             <div className="p-5">
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <div className="mb-5">
-                                        <label htmlFor="brand_name">Name</label>
-                                        <input id="brand_name" type="text" placeholder="Enter Brand Name" className="form-input" {...register('brand_name')} />
+                                        <label htmlFor="brand_name" className="flex items-center">
+                                            Name
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <input id="brand_name" type="text" placeholder="Enter Brand Name" className={`form-input ${errors.brand_name ? 'error' : ''}`} {...register('brand_name')} />
                                         {errors.brand_name && <label className="text-danger">{errors.brand_name.message}</label>}
                                     </div>
                                     <div className="mb-5">
-                                        <label htmlFor="brand_image">Brand Image</label>
+                                        <label htmlFor="brand_image" className="flex items-center">
+                                            Brand Image
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
                                         <div className="flex flex-col gap-2">
                                             <input
                                                 type="file"
