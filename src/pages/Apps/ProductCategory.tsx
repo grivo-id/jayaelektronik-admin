@@ -148,6 +148,7 @@ const ProductCategories = () => {
         <div>
             <MainHeader
                 title="Product Categories"
+                subtitle="Manage product categories"
                 addText="Add Category"
                 onAdd={() => {
                     reset();
