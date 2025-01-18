@@ -121,7 +121,7 @@ const Blog = () => {
                                     <img
                                         src={blog.blog_banner_image}
                                         alt={blog.blog_title}
-                                        className="w-full h-full object-cover rounded-t-md"
+                                        className="w-full h-full object-contain rounded-t-md"
                                         onError={(e) => {
                                             const target = e.target as HTMLImageElement;
                                             target.src = '/assets/images/placeholder-blog.png';

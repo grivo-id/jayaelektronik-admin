@@ -271,14 +271,16 @@ const BlogCategories = () => {
                                             <tr key={brand.brand_id}>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{brand.brand_name}</td>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                                                    <img
-                                                        src={brand.brand_image}
-                                                        alt={brand.brand_name}
-                                                        className="w-16 h-16 object-cover"
-                                                        onError={(e) => {
-                                                            e.currentTarget.src = '/assets/images/placeholder-blog.png';
-                                                        }}
-                                                    />
+                                                    <div className="w-20 h-20 overflow-hidden rounded-md">
+                                                        <img
+                                                            src={brand.brand_image}
+                                                            alt={brand.brand_name}
+                                                            className="w-full h-full object-contain"
+                                                            onError={(e) => {
+                                                                e.currentTarget.src = '/assets/images/placeholder-blog.png';
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </td>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">
                                                     <label className="w-12 h-6 relative">
