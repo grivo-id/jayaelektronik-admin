@@ -90,6 +90,14 @@ const Sidebar = () => {
                     </div>
                     <PerfectScrollbar className="h-[calc(100vh-80px)] relative">
                         <ul className="relative font-semibold space-y-0.5 p-4 py-0">
+                            <PermissionWrapper role={userRole} requiredPermissions={[Permission.DASHBOARD]}>
+                                <NavLink to="/" className="group">
+                                    <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                        <span className="text-black dark:text-[#506690] group-hover:text-primary dark:group-hover:text-white transition-colors duration-300">{t('dashboard')}</span>
+                                    </h2>
+                                </NavLink>
+                            </PermissionWrapper>
+
                             <PermissionWrapper role={userRole} requiredPermissions={[Permission.ADMIN_PERMISSION]}>
                                 <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1">
                                     <IconMinus className="w-4 h-5 flex-none hidden" />
