@@ -13,6 +13,8 @@ import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../comp
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBlogKeyword } from '../../api/blogKeywordsApi';
 import formatDate from '../../utils/formatDate';
+import IconPencil from '../../components/Icon/IconPencil';
+import IconTrash from '../../components/Icon/IconTrash';
 
 const BlogKeywords = () => {
     const dispatch = useDispatch();
@@ -190,10 +192,10 @@ const BlogKeywords = () => {
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(keyword)} disabled={deleteBlogKeywordPending}>
-                                                            Edit
+                                                            <IconPencil className="w-4 h-4" />
                                                         </button>
                                                         <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(keyword)} disabled={deleteBlogKeywordPending}>
-                                                            Delete
+                                                            <IconTrash className="w-4 h-4" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -224,13 +226,22 @@ const BlogKeywords = () => {
                                 <IconX />
                             </button>
                             <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                                {selectedCategory ? 'Edit Category' : 'Add Category'}
+                                {selectedCategory ? 'Edit Keyword' : 'Add Keyword'}
                             </div>
                             <div className="p-5">
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <div className="mb-5">
-                                        <label htmlFor="blog_category_name">Name</label>
-                                        <input id="blog_category_name" type="text" placeholder="Enter Category Name" className="form-input" {...register('blog_keyword_name')} />
+                                        <label htmlFor="blog_keyword_name" className="flex items-center">
+                                            Name
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <input
+                                            id="blog_keyword_name"
+                                            type="text"
+                                            placeholder="Enter Keyword Name"
+                                            className={`form-input ${errors.blog_keyword_name ? 'error' : ''}`}
+                                            {...register('blog_keyword_name')}
+                                        />
                                         {errors.blog_keyword_name && <span className="text-danger">{errors.blog_keyword_name.message}</span>}
                                     </div>
                                     <div className="flex justify-end items-center mt-8">
