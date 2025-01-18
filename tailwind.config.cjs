@@ -18,47 +18,47 @@ module.exports = {
             colors: {
                 primary: {
                     DEFAULT: '#2AA827',
-                    light: '#e6f7e9',
+                    light: '#eaf1ff',
                     'dark-light': 'rgba(42,168,39,.15)',
                 },
                 secondary: {
                     DEFAULT: '#28a745',
-                    light: '#dff6e9',
+                    light: '#ebe4f7',
                     'dark-light': 'rgba(40,167,69,.15)',
                 },
                 success: {
                     DEFAULT: '#00ab55',
-                    light: '#e3fcef',
+                    light: '#ddf5f0',
                     'dark-light': 'rgba(0,171,85,.15)',
                 },
                 danger: {
                     DEFAULT: '#d9534f',
-                    light: '#fdecea',
+                    light: '#fff5f5',
                     'dark-light': 'rgba(217,83,79,.15)',
                 },
                 warning: {
                     DEFAULT: '#e2a03f',
-                    light: '#fff3de',
+                    light: '#fff9ed',
                     'dark-light': 'rgba(226,160,63,.15)',
                 },
                 info: {
                     DEFAULT: '#2196f3',
-                    light: '#e8f4ff',
+                    light: '#e7f7ff',
                     'dark-light': 'rgba(33,150,243,.15)',
                 },
                 dark: {
                     DEFAULT: '#3b3f5c',
-                    light: '#f2f2f4',
+                    light: '#eaeaec',
                     'dark-light': 'rgba(59,63,92,.15)',
                 },
                 black: {
                     DEFAULT: '#0e1726',
-                    light: '#d6d8dc',
+                    light: '#e3e4eb',
                     'dark-light': 'rgba(14,23,38,.15)',
                 },
                 white: {
                     DEFAULT: '#ffffff',
-                    light: '#f9f9fa',
+                    light: '#e0e6ed',
                     dark: '#ced4da',
                 },
             },
