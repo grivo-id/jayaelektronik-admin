@@ -19,7 +19,10 @@ interface SingleSelectProps {
 const SingleSelect = ({ name, control, options, label, placeholder, error, isFetching }: SingleSelectProps) => {
     return (
         <div>
-            <label htmlFor={name}>{label}</label>
+            <label htmlFor={name} className="flex items-center">
+                {label}
+                <span className="text-danger text-base">*</span>
+            </label>
             <Controller
                 name={name}
                 control={control}

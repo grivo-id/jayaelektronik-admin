@@ -128,7 +128,10 @@ const BlogCreation = () => {
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
-                    <label htmlFor="blog_title">Blog Title</label>
+                    <label htmlFor="blog_title" className="flex items-center">
+                        Blog Title
+                        <span className="text-danger">*</span>
+                    </label>
                     <input id="blog_title" type="text" className="form-input" placeholder="Enter Blog Title" {...register('blog_title')} />
                     {errors.blog_title && <span className="text-danger">{errors.blog_title.message}</span>}
                 </div>
@@ -162,7 +165,10 @@ const BlogCreation = () => {
                 />
 
                 <div>
-                    <label htmlFor="blog_banner_image">Blog Banner Image</label>
+                    <label htmlFor="blog_banner_image" className="flex items-center">
+                        Blog Banner Image
+                        <span className="text-danger">*</span>
+                    </label>
                     <input
                         type="file"
                         id="blog_banner_image"
@@ -200,7 +206,10 @@ const BlogCreation = () => {
                 </div>
 
                 <div>
-                    <label>Blog Description</label>
+                    <label className="flex items-center">
+                        Blog Description
+                        <span className="text-danger">*</span>
+                    </label>
                     <ReactQuill
                         theme="snow"
                         value={editorContent}
