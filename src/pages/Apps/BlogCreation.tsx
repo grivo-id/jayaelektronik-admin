@@ -14,10 +14,15 @@ import IconCheck from '../../components/Icon/IconChecks';
 import { useGetAllBlogKeyword } from '../../services/blogKeywordsService';
 import { MultipleSelect, SingleSelect } from '../../components';
 import { ApiUploadImageBlog } from '../../api/uploadApi';
+import IconArrowBackward from '../../components/Icon/IconArrowBackward';
 
 const BlogCreation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const params = {
+        page: 1,
+        limit: 1000,
+    };
 
     useEffect(() => {
         dispatch(setPageTitle('Create Blog'));
@@ -33,8 +38,8 @@ const BlogCreation = () => {
         resolver: zodResolver(createBlogSchema),
     });
 
-    const { data: { data: categories } = { data: [], pagination: {} }, isFetching: isFetchingCategories } = useGetAllBlogCategoryQuery({});
-    const { data: { data: keywords } = { data: [], pagination: {} }, isFetching: isFetchingKeywords } = useGetAllBlogKeyword({});
+    const { data: { data: categories } = { data: [], pagination: {} }, isFetching: isFetchingCategories } = useGetAllBlogCategoryQuery(params);
+    const { data: { data: keywords } = { data: [], pagination: {} }, isFetching: isFetchingKeywords } = useGetAllBlogKeyword(params);
     const [editorContent, setEditorContent] = useState('');
     const { mutate: createBlog, isPending } = useCreateBlog();
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
@@ -107,8 +112,19 @@ const BlogCreation = () => {
     return (
         <div>
             <div className="flex items-center justify-between mb-5">
-                <h5 className="font-semibold text-lg dark:text-white-light">Create New Blog</h5>
+                <div className="flex items-center gap-4">
+                    <button className="btn btn-primary p-2 rounded-full" onClick={() => navigate(-1)}>
+                        <IconArrowBackward className="h-5 w-5" />
+                        <span className="sr-only">Back</span>
+                    </button>
+                    <div>
+                        <h1 className="text-2xl font-bold">Create Blog</h1>
+                        <p className="text-sm text-gray-600">Create a new blog post</p>
+                    </div>
+                </div>
             </div>
+
+            <div className="h-px w-full bg-[#e0e6ed] dark:bg-[#1b2e4b] mb-5"></div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>

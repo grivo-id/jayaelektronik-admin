@@ -20,6 +20,10 @@ const BlogDetail = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
+    const params = {
+        page: 1,
+        limit: 1000,
+    };
 
     useEffect(() => {
         dispatch(setPageTitle('Detail Blog'));
@@ -35,8 +39,8 @@ const BlogDetail = () => {
         resolver: zodResolver(createBlogSchema),
     });
 
-    const { data: { data: categories } = { data: [], pagination: {} }, isFetching: isFetchingCategories } = useGetAllBlogCategoryQuery({});
-    const { data: { data: keywords } = { data: [], pagination: {} }, isFetching: isFetchingKeywords } = useGetAllBlogKeyword({});
+    const { data: { data: categories } = { data: [], pagination: {} }, isFetching: isFetchingCategories } = useGetAllBlogCategoryQuery(params);
+    const { data: { data: keywords } = { data: [], pagination: {} }, isFetching: isFetchingKeywords } = useGetAllBlogKeyword(params);
     const { data: blogData, isFetching: isFetchingBlog } = useGetBlogByIdQuery(id as string);
     const { mutate: updateBlog, isPending } = useUpdateBlog();
 
@@ -113,10 +117,6 @@ const BlogDetail = () => {
 
         const payload = { ...data, blog_desc: editorContent, blog_banner_image: uploadedImageUrl };
 
-        if (isImageChanged) {
-            ApiDeleteImage(imageName);
-        }
-
         updateBlog(
             {
                 id: id as string,
@@ -124,6 +124,9 @@ const BlogDetail = () => {
             },
             {
                 onSuccess: () => {
+                    if (isImageChanged) {
+                        ApiDeleteImage(imageName);
+                    }
                     navigate('/admin/manage-blog');
                 },
             }
