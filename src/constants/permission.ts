@@ -5,6 +5,7 @@ export enum Role {
 }
 
 export enum Permission {
+    DASHBOARD = 'dashboard',
     ADMIN_PERMISSION = 'admin',
     LIST_ORDER_CUSTOMER = 'list_order_customer',
     PRODUCT = 'product',
@@ -33,6 +34,7 @@ export const RolePermissions: Record<Role, Permission[]> = {
     [Role.MANAGER]: Object.values(Permission),
     [Role.DEVELOPER]: Object.values(Permission),
     [Role.ADMIN]: [
+        Permission.DASHBOARD,
         Permission.ADMIN_PERMISSION,
         Permission.LIST_ORDER_CUSTOMER,
         Permission.PRODUCT,

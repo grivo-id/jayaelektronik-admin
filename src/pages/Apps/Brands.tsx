@@ -14,6 +14,9 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBrand } from '../../api/brandsApi';
 import { ApiUploadImageBrand } from '../../api/uploadApi';
 import IconCheck from '../../components/Icon/IconChecks';
+import formatDate from '../../utils/formatDate';
+import IconPencil from '../../components/Icon/IconPencil';
+import IconTrash from '../../components/Icon/IconTrash';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
@@ -228,6 +231,7 @@ const BlogCategories = () => {
         <div>
             <MainHeader
                 title="Brands"
+                subtitle="Manage and view all registered product brands"
                 addText="Add New"
                 onAdd={() => {
                     reset();
@@ -269,14 +273,16 @@ const BlogCategories = () => {
                                             <tr key={brand.brand_id}>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{brand.brand_name}</td>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">
-                                                    <img
-                                                        src={brand.brand_image}
-                                                        alt={brand.brand_name}
-                                                        className="w-16 h-16 object-cover"
-                                                        onError={(e) => {
-                                                            e.currentTarget.src = '/assets/images/placeholder-blog.png';
-                                                        }}
-                                                    />
+                                                    <div className="w-20 h-20 overflow-hidden rounded-md">
+                                                        <img
+                                                            src={brand.brand_image}
+                                                            alt={brand.brand_name}
+                                                            className="w-full h-full object-contain"
+                                                            onError={(e) => {
+                                                                e.currentTarget.src = '/assets/images/placeholder-blog.png';
+                                                            }}
+                                                        />
+                                                    </div>
                                                 </td>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">
                                                     <label className="w-12 h-6 relative">
@@ -294,14 +300,14 @@ const BlogCategories = () => {
                                                         ></label>
                                                     </label>
                                                 </td>
-                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{new Date(brand.brand_created_date).toLocaleDateString()}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(brand.brand_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editBrandAction(brand)} disabled={updateBrandPending}>
-                                                            Edit
+                                                            <IconPencil className="w-4 h-4" />
                                                         </button>
                                                         <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteBrandAction(brand)} disabled={deleteBrandPending}>
-                                                            Delete
+                                                            <IconTrash className="w-4 h-4" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -335,12 +341,18 @@ const BlogCategories = () => {
                             <div className="p-5">
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <div className="mb-5">
-                                        <label htmlFor="brand_name">Name</label>
-                                        <input id="brand_name" type="text" placeholder="Enter Brand Name" className="form-input" {...register('brand_name')} />
+                                        <label htmlFor="brand_name" className="flex items-center">
+                                            Name
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <input id="brand_name" type="text" placeholder="Enter Brand Name" className={`form-input ${errors.brand_name ? 'error' : ''}`} {...register('brand_name')} />
                                         {errors.brand_name && <label className="text-danger">{errors.brand_name.message}</label>}
                                     </div>
                                     <div className="mb-5">
-                                        <label htmlFor="brand_image">Brand Image</label>
+                                        <label htmlFor="brand_image" className="flex items-center">
+                                            Brand Image
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
                                         <div className="flex flex-col gap-2">
                                             <input
                                                 type="file"

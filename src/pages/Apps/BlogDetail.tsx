@@ -14,11 +14,16 @@ import { useGetAllBlogKeyword } from '../../services/blogKeywordsService';
 import { MultipleSelect, SingleSelect } from '../../components';
 import { ApiDeleteImage, ApiUploadImageBlog } from '../../api/uploadApi';
 import { useGetBlogByIdQuery, useUpdateBlog } from '../../services/blogService';
+import IconArrowBackward from '../../components/Icon/IconArrowBackward';
 
 const BlogDetail = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const { id } = useParams();
+    const params = {
+        page: 1,
+        limit: 1000,
+    };
 
     useEffect(() => {
         dispatch(setPageTitle('Detail Blog'));
@@ -34,8 +39,8 @@ const BlogDetail = () => {
         resolver: zodResolver(createBlogSchema),
     });
 
-    const { data: { data: categories } = { data: [], pagination: {} }, isFetching: isFetchingCategories } = useGetAllBlogCategoryQuery({});
-    const { data: { data: keywords } = { data: [], pagination: {} }, isFetching: isFetchingKeywords } = useGetAllBlogKeyword({});
+    const { data: { data: categories } = { data: [], pagination: {} }, isFetching: isFetchingCategories } = useGetAllBlogCategoryQuery(params);
+    const { data: { data: keywords } = { data: [], pagination: {} }, isFetching: isFetchingKeywords } = useGetAllBlogKeyword(params);
     const { data: blogData, isFetching: isFetchingBlog } = useGetBlogByIdQuery(id as string);
     const { mutate: updateBlog, isPending } = useUpdateBlog();
 
@@ -112,10 +117,6 @@ const BlogDetail = () => {
 
         const payload = { ...data, blog_desc: editorContent, blog_banner_image: uploadedImageUrl };
 
-        if (isImageChanged) {
-            ApiDeleteImage(imageName);
-        }
-
         updateBlog(
             {
                 id: id as string,
@@ -123,6 +124,9 @@ const BlogDetail = () => {
             },
             {
                 onSuccess: () => {
+                    if (isImageChanged) {
+                        ApiDeleteImage(imageName);
+                    }
                     navigate('/admin/manage-blog');
                 },
             }
@@ -163,12 +167,26 @@ const BlogDetail = () => {
     return (
         <div>
             <div className="flex items-center justify-between mb-5">
-                <h5 className="font-semibold text-lg dark:text-white-light">Detail Blog</h5>
+                <div className="flex items-center gap-4">
+                    <button className="btn btn-primary p-2 rounded-full" onClick={() => navigate(-1)}>
+                        <IconArrowBackward className="h-5 w-5" />
+                        <span className="sr-only">Back</span>
+                    </button>
+                    <div>
+                        <h1 className="text-2xl font-bold">Edit Blog</h1>
+                        <p className="text-sm text-gray-600">Edit and update your existing blog post</p>
+                    </div>
+                </div>
             </div>
+
+            <div className="h-px w-full bg-[#e0e6ed] dark:bg-[#1b2e4b] mb-5"></div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
                 <div>
-                    <label htmlFor="blog_title">Blog Title</label>
+                    <label htmlFor="blog_title" className="flex items-center">
+                        Blog Title
+                        <span className="text-danger">*</span>
+                    </label>
                     <input id="blog_title" type="text" className="form-input" placeholder="Enter Blog Title" {...register('blog_title')} />
                     {errors.blog_title && <span className="text-danger">{errors.blog_title.message}</span>}
                 </div>
@@ -202,7 +220,10 @@ const BlogDetail = () => {
                 />
 
                 <div>
-                    <label htmlFor="blog_banner_image">Blog Banner Image</label>
+                    <label htmlFor="blog_banner_image" className="flex items-center">
+                        Blog Banner Image
+                        <span className="text-danger">*</span>
+                    </label>
                     <input
                         type="file"
                         id="blog_banner_image"
@@ -239,7 +260,9 @@ const BlogDetail = () => {
                 </div>
 
                 <div>
-                    <label>Blog Description</label>
+                    <label className="flex items-center">
+                        Blog Description <span className="text-danger">*</span>
+                    </label>
                     <ReactQuill
                         theme="snow"
                         value={editorContent}

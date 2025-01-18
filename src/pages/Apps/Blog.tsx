@@ -85,8 +85,11 @@ const Blog = () => {
 
     return (
         <div>
-            <div className="flex items-center justify-between flex-wrap gap-4">
-                <h2 className="text-xl">Blog</h2>
+            <div className="flex items-center justify-between flex-wrap gap-4 mb-5">
+                <div>
+                    <h1 className="text-2xl font-bold">Blog</h1>
+                    <p className="text-sm text-gray-600">Manage and view all registered blogs</p>
+                </div>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
                         <div>
@@ -105,6 +108,8 @@ const Blog = () => {
                 </div>
             </div>
 
+            <div className="h-px w-full bg-[#e0e6ed] dark:bg-[#1b2e4b] mb-5"></div>
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {isFetching ? (
                     <SkeletonLoadingGrid />
@@ -116,7 +121,7 @@ const Blog = () => {
                                     <img
                                         src={blog.blog_banner_image}
                                         alt={blog.blog_title}
-                                        className="w-full h-full object-cover rounded-t-md"
+                                        className="w-full h-full object-contain rounded-t-md"
                                         onError={(e) => {
                                             const target = e.target as HTMLImageElement;
                                             target.src = '/assets/images/placeholder-blog.png';
@@ -160,10 +165,10 @@ const Blog = () => {
                                             Detail
                                         </button> */}
                                         <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => navigate(`/admin/manage-blog/${blog.blog_id}`)}>
-                                            <IconPencil className="w-4 h-4" />
+                                            <IconPencil className="w-4 h-4 mr-2" /> Edit
                                         </button>
                                         <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => deleteBlogAction(blog)} disabled={deleteBlogPending}>
-                                            <IconTrash className="w-4 h-4" />
+                                            <IconTrash className="w-4 h-4 mr-2" /> Delete
                                         </button>
                                     </div>
                                 </div>

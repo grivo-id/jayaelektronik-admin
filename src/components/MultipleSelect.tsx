@@ -1,5 +1,5 @@
 import { Controller } from 'react-hook-form';
-import Select from 'react-select';
+import CreatableSelect from 'react-select/creatable';
 
 interface Option {
     value: string;
@@ -19,16 +19,27 @@ interface MultipleSelectProps {
 const MultipleSelect = ({ name, control, options, label, placeholder, error, isFetching }: MultipleSelectProps) => {
     return (
         <div>
-            <label htmlFor={name}>{label}</label>
+            <label htmlFor={name} className="flex items-center">
+                {label}
+                <span className="text-danger text-base">*</span>
+            </label>
             <Controller
                 name={name}
                 control={control}
                 render={({ field: { onChange, value } }) => (
-                    <Select
+                    <CreatableSelect
                         isMulti
                         options={options}
-                        value={options.filter((option) => value?.includes(option.value))}
-                        onChange={(selectedOptions) => onChange(selectedOptions?.map((option) => option.value))}
+                        value={value?.map((val: string) => ({ value: val, label: val }))}
+                        onChange={(selectedOptions) => {
+                            const values = selectedOptions?.map((option) => option.value) || [];
+                            onChange(values);
+                        }}
+                        onCreateOption={(inputValue) => {
+                            onChange([...(value || []), inputValue]);
+                        }}
+                        formatCreateLabel={(inputValue) => `Create "${inputValue}"`}
+                        noOptionsMessage={({ inputValue }) => `"${inputValue}" not found`}
                         placeholder={placeholder}
                         className="react-select"
                         classNamePrefix="select"

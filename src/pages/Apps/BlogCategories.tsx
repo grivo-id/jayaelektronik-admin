@@ -12,6 +12,9 @@ import { useForm } from 'react-hook-form';
 import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBlogCategory } from '../../api/blogCategoryApi';
+import formatDate from '../../utils/formatDate';
+import IconPencil from '../../components/Icon/IconPencil';
+import IconTrash from '../../components/Icon/IconTrash';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
@@ -148,7 +151,8 @@ const BlogCategories = () => {
         <div>
             <MainHeader
                 title="Blog Categories"
-                addText="Add Category"
+                subtitle="Manage and view all registered blog categories"
+                addText="Add New"
                 onAdd={() => {
                     reset();
                     setAddCategoryModal(true);
@@ -188,14 +192,14 @@ const BlogCategories = () => {
                                             <tr key={category.blog_category_id}>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{category.blog_category_name}</td>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{category.blog_category_desc}</td>
-                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{new Date(category.blog_category_created_date).toLocaleDateString()}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(category.blog_category_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(category)} disabled={deleteBlogCategoryPending}>
-                                                            Edit
+                                                            <IconPencil className="w-4 h-4" />
                                                         </button>
                                                         <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(category)} disabled={deleteBlogCategoryPending}>
-                                                            Delete
+                                                            <IconTrash className="w-4 h-4" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -231,14 +235,32 @@ const BlogCategories = () => {
                             <div className="p-5">
                                 <form onSubmit={handleSubmit(onSubmit)}>
                                     <div className="mb-5">
-                                        <label htmlFor="blog_category_name">Name</label>
-                                        <input id="blog_category_name" type="text" placeholder="Enter Category Name" className="form-input" {...register('blog_category_name')} />
-                                        {errors.blog_category_name && <span className="text-danger">{errors.blog_category_name.message}</span>}
+                                        <label htmlFor="blog_category_name" className="flex items-center">
+                                            Name
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <input
+                                            id="blog_category_name"
+                                            type="text"
+                                            placeholder="Enter Category Name"
+                                            className={`form-input ${errors.blog_category_name ? 'error' : ''}`}
+                                            {...register('blog_category_name')}
+                                        />
+                                        {errors.blog_category_name && <span className="text-danger text-sm mt-1">{errors.blog_category_name.message}</span>}
                                     </div>
                                     <div className="mb-5">
-                                        <label htmlFor="blog_category_desc">Description</label>
-                                        <input id="blog_category_desc" type="text" placeholder="Enter Category Description" className="form-input" {...register('blog_category_desc')} />
-                                        {errors.blog_category_desc && <span className="text-danger">{errors.blog_category_desc.message}</span>}
+                                        <label htmlFor="blog_category_desc" className="flex items-center">
+                                            Description
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <textarea
+                                            id="blog_category_desc"
+                                            placeholder="Enter Category Description"
+                                            className={`form-textarea ${errors.blog_category_desc ? 'error' : ''}`}
+                                            {...register('blog_category_desc')}
+                                            rows={3}
+                                        ></textarea>
+                                        {errors.blog_category_desc && <span className="text-danger text-sm mt-1">{errors.blog_category_desc.message}</span>}
                                     </div>
                                     <div className="flex justify-end items-center mt-8">
                                         <button type="button" className="btn btn-outline-danger" onClick={closeModal} disabled={isLoading}>
