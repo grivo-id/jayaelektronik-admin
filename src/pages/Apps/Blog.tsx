@@ -165,10 +165,10 @@ const Blog = () => {
                                             Detail
                                         </button> */}
                                         <button type="button" className="btn btn-outline-primary btn-sm" onClick={() => navigate(`/admin/manage-blog/${blog.blog_id}`)}>
-                                            <IconPencil className="w-4 h-4" />
+                                            <IconPencil className="w-4 h-4 mr-2" /> Edit
                                         </button>
                                         <button type="button" className="btn btn-outline-danger btn-sm" onClick={() => deleteBlogAction(blog)} disabled={deleteBlogPending}>
-                                            <IconTrash className="w-4 h-4" />
+                                            <IconTrash className="w-4 h-4 mr-2" /> Delete
                                         </button>
                                     </div>
                                 </div>
