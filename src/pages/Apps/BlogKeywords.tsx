@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBlogKeyword } from '../../api/blogKeywordsApi';
+import formatDate from '../../utils/formatDate';
 
 const BlogKeywords = () => {
     const dispatch = useDispatch();
@@ -185,7 +186,7 @@ const BlogKeywords = () => {
                                         return (
                                             <tr key={keyword.blog_keyword_id}>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{keyword.blog_keyword_name}</td>
-                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{new Date(keyword.blog_keyword_created_date).toLocaleDateString()}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(keyword.blog_keyword_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(keyword)} disabled={deleteBlogKeywordPending}>

@@ -12,6 +12,7 @@ import { useForm } from 'react-hook-form';
 import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBlogCategory } from '../../api/blogCategoryApi';
+import formatDate from '../../utils/formatDate';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
@@ -188,7 +189,7 @@ const BlogCategories = () => {
                                             <tr key={category.blog_category_id}>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{category.blog_category_name}</td>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{category.blog_category_desc}</td>
-                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{new Date(category.blog_category_created_date).toLocaleDateString()}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(category.blog_category_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(category)} disabled={deleteBlogCategoryPending}>

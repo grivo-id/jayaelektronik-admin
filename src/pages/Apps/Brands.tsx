@@ -14,6 +14,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBrand } from '../../api/brandsApi';
 import { ApiUploadImageBrand } from '../../api/uploadApi';
 import IconCheck from '../../components/Icon/IconChecks';
+import formatDate from '../../utils/formatDate';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
@@ -294,7 +295,7 @@ const BlogCategories = () => {
                                                         ></label>
                                                     </label>
                                                 </td>
-                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{new Date(brand.brand_created_date).toLocaleDateString()}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(brand.brand_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editBrandAction(brand)} disabled={updateBrandPending}>
