@@ -229,6 +229,7 @@ const BlogCategories = () => {
         <div>
             <MainHeader
                 title="Brands"
+                subtitle="Manage and view all registered product brands"
                 addText="Add New"
                 onAdd={() => {
                     reset();

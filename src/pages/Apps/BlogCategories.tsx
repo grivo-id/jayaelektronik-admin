@@ -151,6 +151,7 @@ const BlogCategories = () => {
         <div>
             <MainHeader
                 title="Blog Categories"
+                subtitle="Manage and view all registered blog categories"
                 addText="Add New"
                 onAdd={() => {
                     reset();

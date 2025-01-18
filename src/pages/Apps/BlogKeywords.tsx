@@ -150,6 +150,7 @@ const BlogKeywords = () => {
         <div>
             <MainHeader
                 title="Blog Keywords"
+                subtitle="Manage and view all registered blog keywords"
                 addText="Add New"
                 onAdd={() => {
                     reset();

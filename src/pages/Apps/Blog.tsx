@@ -88,7 +88,7 @@ const Blog = () => {
             <div className="flex items-center justify-between flex-wrap gap-4 mb-5">
                 <div>
                     <h1 className="text-2xl font-bold">Blog</h1>
-                    <p className="text-sm text-gray-600">Manage your blog posts</p>
+                    <p className="text-sm text-gray-600">Manage and view all registered blogs</p>
                 </div>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">
