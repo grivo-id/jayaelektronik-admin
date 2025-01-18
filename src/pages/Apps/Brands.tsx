@@ -15,6 +15,8 @@ import { ApiGetAllBrand } from '../../api/brandsApi';
 import { ApiUploadImageBrand } from '../../api/uploadApi';
 import IconCheck from '../../components/Icon/IconChecks';
 import formatDate from '../../utils/formatDate';
+import IconPencil from '../../components/Icon/IconPencil';
+import IconTrash from '../../components/Icon/IconTrash';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
@@ -302,10 +304,10 @@ const BlogCategories = () => {
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editBrandAction(brand)} disabled={updateBrandPending}>
-                                                            Edit
+                                                            <IconPencil className="w-4 h-4" />
                                                         </button>
                                                         <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteBrandAction(brand)} disabled={deleteBrandPending}>
-                                                            Delete
+                                                            <IconTrash className="w-4 h-4" />
                                                         </button>
                                                     </div>
                                                 </td>
