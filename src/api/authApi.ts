@@ -3,6 +3,6 @@ import { LoginRequest } from '../types/auth';
 import { axiosInstance } from './base';
 
 export const ApiLogin = async (payload: LoginRequest) => {
-    const response = await axiosInstance.post<LoginResponse>('/auth/login', payload);
+    const response = await axiosInstance.post<LoginResponse>('/auth/login/admin', payload);
     return response.data;
 };
