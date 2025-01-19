@@ -14,6 +14,13 @@ import IconMenuContacts from '../Icon/Menu/IconMenuContacts';
 import { useStore } from '../../store/store';
 import { PermissionWrapper } from '../../components';
 import { Permission, Role } from '../../constants/permission';
+import IconMenuInvoice from '../Icon/Menu/IconMenuInvoice';
+import IconMenuApps from '../Icon/Menu/IconMenuApps';
+import IconMenuWidgets from '../Icon/Menu/IconMenuWidgets';
+import IconMenuForms from '../Icon/Menu/IconMenuForms';
+import IconMenuDocumentation from '../Icon/Menu/IconMenuDocumentation';
+import IconMenuUsers from '../Icon/Menu/IconMenuUsers';
+import IconMenuAuthentication from '../Icon/Menu/IconMenuAuthentication';
 // import IconMenuComponents from '../Icon/Menu/IconMenuComponents';
 // import IconMenuElements from '../Icon/Menu/IconMenuElements';
 // import IconMenuCharts from '../Icon/Menu/IconMenuCharts';
@@ -91,14 +98,13 @@ const Sidebar = () => {
                     <PerfectScrollbar className="h-[calc(100vh-80px)] relative">
                         <ul className="relative font-semibold space-y-0.5 p-4 py-0">
                             <PermissionWrapper role={userRole} requiredPermissions={[Permission.DASHBOARD]}>
-
                                 <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
                                     <span className="text-black dark:text-[#506690] group-hover:text-primary dark:group-hover:text-white transition-colors duration-300">{t('dashboard')}</span>
                                 </h2>
                                 <li className="nav-item">
                                     <NavLink to="/" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuContacts className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuDashboard className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('dashboard')}</span>
                                         </div>
                                     </NavLink>
@@ -114,7 +120,7 @@ const Sidebar = () => {
                                 <li className="nav-item">
                                     <NavLink to="/admin/list-order-customer" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuContacts className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuInvoice className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('list_order_customer')}</span>
                                         </div>
                                     </NavLink>
@@ -123,7 +129,7 @@ const Sidebar = () => {
                                 <li className="menu nav-item">
                                     <button type="button" className={`${currentMenu === 'product' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('product')}>
                                         <div className="flex items-center">
-                                            <IconMenuDashboard className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuApps className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('product')}</span>
                                         </div>
 
@@ -152,7 +158,7 @@ const Sidebar = () => {
                                 <li className="menu nav-item">
                                     <button type="button" className={`${currentMenu === 'banner_product' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('banner_product')}>
                                         <div className="flex items-center">
-                                            <IconMenuDashboard className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuWidgets className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('banner_product')}</span>
                                         </div>
 
@@ -175,7 +181,7 @@ const Sidebar = () => {
                                 <li className="menu nav-item">
                                     <button type="button" className={`${currentMenu === 'blog' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('blog')}>
                                         <div className="flex items-center">
-                                            <IconMenuDashboard className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuForms className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('blog')}</span>
                                         </div>
 
@@ -201,7 +207,7 @@ const Sidebar = () => {
                                 <li className="nav-item">
                                     <NavLink to="/admin/manage-brand" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuContacts className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuDocumentation className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('manage_brand')}</span>
                                         </div>
                                     </NavLink>
@@ -216,7 +222,7 @@ const Sidebar = () => {
                                 <li className="nav-item">
                                     <NavLink to="/manager/manage-user" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuContacts className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuUsers className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('manage_user')}</span>
                                         </div>
                                     </NavLink>
@@ -224,7 +230,7 @@ const Sidebar = () => {
                                 <li className="nav-item">
                                     <NavLink to="/manager/manage-admin" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuContacts className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuUsers className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('manage_admin')}</span>
                                         </div>
                                     </NavLink>
@@ -239,7 +245,7 @@ const Sidebar = () => {
                                 <li className="nav-item">
                                     <NavLink to="/setting/account-profile" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuContacts className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuAuthentication className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('account_profile')}</span>
                                         </div>
                                     </NavLink>
@@ -812,8 +818,8 @@ const Sidebar = () => {
                         </ul>
                     </PerfectScrollbar>
                 </div>
-            </nav >
-        </div >
+            </nav>
+        </div>
     );
 };
 
