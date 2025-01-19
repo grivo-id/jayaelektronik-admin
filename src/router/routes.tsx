@@ -66,7 +66,7 @@ const ERROR404 = lazy(() => import('../pages/Pages/Error404'));
 const ERROR500 = lazy(() => import('../pages/Pages/Error500'));
 const ERROR503 = lazy(() => import('../pages/Pages/Error503'));
 const Maintenence = lazy(() => import('../pages/Pages/Maintenence'));
-const LoginBoxed = lazy(() => import('../pages/Authentication/LoginBoxed'));
+const LoginBoxed = lazy(() => import('../pages/Authentication/LoginCover'));
 const About = lazy(() => import('../pages/About'));
 const Error = lazy(() => import('../components/Error'));
 const Charts = lazy(() => import('../pages/Charts'));

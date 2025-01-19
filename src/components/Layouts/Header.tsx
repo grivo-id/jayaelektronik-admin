@@ -9,7 +9,6 @@ import IconSun from '../Icon/IconSun';
 import IconMoon from '../Icon/IconMoon';
 import IconLaptop from '../Icon/IconLaptop';
 import IconUser from '../Icon/IconUser';
-
 import IconLogout from '../Icon/IconLogout';
 import { useLogout } from '../../services/authService';
 import { useStore } from '../../store/store';
@@ -52,7 +51,7 @@ const Header = () => {
                 <div className="relative bg-white flex w-full items-center px-5 py-2.5 dark:bg-black">
                     <div className="horizontal-logo flex lg:hidden justify-between items-center ltr:mr-2 rtl:ml-2">
                         <Link to="/" className="main-logo flex items-center shrink-0">
-                            <img className="w-[60px] ltr:-ml-1 rtl:-mr-1 inline" src="/assets/images/logo.jpeg" alt="logo" />
+                            <img className="w-[60px] ltr:-ml-1 rtl:-mr-1 inline" src="/assets/images/logo-nobg.png" alt="logo" />
                             <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5  font-semibold  align-middle hidden md:inline dark:text-white-light transition-all duration-300"></span>
                         </Link>
                         <button
@@ -71,10 +70,9 @@ const Header = () => {
                         <div>
                             {themeConfig.theme === 'light' ? (
                                 <button
-                                    className={`${
-                                        themeConfig.theme === 'light' &&
+                                    className={`${themeConfig.theme === 'light' &&
                                         'flex items-center p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60'
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         dispatch(toggleTheme('dark'));
                                     }}
@@ -86,10 +84,9 @@ const Header = () => {
                             )}
                             {themeConfig.theme === 'dark' && (
                                 <button
-                                    className={`${
-                                        themeConfig.theme === 'dark' &&
+                                    className={`${themeConfig.theme === 'dark' &&
                                         'flex items-center p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60'
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         dispatch(toggleTheme('system'));
                                     }}
@@ -99,10 +96,9 @@ const Header = () => {
                             )}
                             {themeConfig.theme === 'system' && (
                                 <button
-                                    className={`${
-                                        themeConfig.theme === 'system' &&
+                                    className={`${themeConfig.theme === 'system' &&
                                         'flex items-center p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60'
-                                    }`}
+                                        }`}
                                     onClick={() => {
                                         dispatch(toggleTheme('light'));
                                     }}
@@ -110,6 +106,7 @@ const Header = () => {
                                     <IconLaptop />
                                 </button>
                             )}
+
                         </div>
 
                         <div className="dropdown shrink-1 flex">
@@ -117,7 +114,20 @@ const Header = () => {
                                 offset={[0, 8]}
                                 placement={`${isRtl ? 'bottom-start' : 'bottom-end'}`}
                                 btnClassName="relative group block"
-                                button={<IconUser className="w-9 h-9 p-1 bg-white-light/40 dark:bg-dark/40 rounded-full hover:bg-white-light/90 dark:hover:bg-dark/60" />}
+                                button={
+                                    <>
+                                        <div className="flex items-center">
+                                            <div className="border-l border-gray-300 dark:border-gray-600 h-6 ml-2 mr-3" />
+                                            <IconUser className="w-9 h-9 p-1 bg-white-light/40 dark:bg-dark/40 rounded-full hover:bg-white-light/90 dark:hover:bg-dark/60" />
+                                            <div className="ml-2">
+                                                <h4 className="text-base font-bold">{user?.user_fname}</h4>
+                                                <span className="text-xs bg-success-light rounded text-success px-1 mt-1 inline-block">
+                                                    {user?.role_name}
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </>
+                                }
                             >
                                 <ul className="text-dark dark:text-white-dark !py-0 w-[230px] font-semibold dark:text-white-light/90">
                                     <li>
@@ -125,8 +135,8 @@ const Header = () => {
                                             <IconUser className="rounded-md w-10 h-10 p-2 bg-gray-100 dark:bg-gray-700" />
                                             <div className="ltr:pl-4 rtl:pr-4 truncate">
                                                 <h4 className="text-base">
-                                                    {user?.user_fname}
-                                                    <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">Pro</span>
+                                                    {user?.user_fname + ' ' + user?.user_lname}
+                                                    {/* <span className="text-xs bg-success-light rounded text-success px-1 ltr:ml-2 rtl:ml-2">{user?.role_name}</span> */}
                                                 </h4>
                                                 <button type="button" className="text-black/60 hover:text-primary dark:text-dark-light/60 dark:hover:text-white">
                                                     {user?.user_email}

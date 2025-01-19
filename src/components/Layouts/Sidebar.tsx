@@ -76,7 +76,7 @@ const Sidebar = () => {
                 <div className="bg-white dark:bg-black h-full">
                     <div className="flex justify-between items-center px-4 py-3">
                         <NavLink to="/" className="main-logo flex items-center shrink-0">
-                            <img className="w-[180px] ml-[5px] flex-none" src="/assets/images/logo.jpeg" alt="logo" />
+                            <img className="w-[180px] ml-[5px] flex-none" src="/assets/images/logo-nobg.png" alt="logo" />
                             <span className="text-2xl ltr:ml-1.5 rtl:mr-1.5 font-semibold align-middle lg:inline dark:text-white-light"></span>
                         </NavLink>
 
@@ -91,11 +91,18 @@ const Sidebar = () => {
                     <PerfectScrollbar className="h-[calc(100vh-80px)] relative">
                         <ul className="relative font-semibold space-y-0.5 p-4 py-0">
                             <PermissionWrapper role={userRole} requiredPermissions={[Permission.DASHBOARD]}>
-                                <NavLink to="/" className="group">
-                                    <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
-                                        <span className="text-black dark:text-[#506690] group-hover:text-primary dark:group-hover:text-white transition-colors duration-300">{t('dashboard')}</span>
-                                    </h2>
-                                </NavLink>
+
+                                <h2 className="py-3 px-7 flex items-center uppercase font-extrabold bg-white-light/30 dark:bg-dark dark:bg-opacity-[0.08] -mx-4 mb-1 transition-colors duration-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                                    <span className="text-black dark:text-[#506690] group-hover:text-primary dark:group-hover:text-white transition-colors duration-300">{t('dashboard')}</span>
+                                </h2>
+                                <li className="nav-item">
+                                    <NavLink to="/" className="group">
+                                        <div className="flex items-center">
+                                            <IconMenuContacts className="group-hover:!text-primary shrink-0" />
+                                            <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('dashboard')}</span>
+                                        </div>
+                                    </NavLink>
+                                </li>
                             </PermissionWrapper>
 
                             <PermissionWrapper role={userRole} requiredPermissions={[Permission.ADMIN_PERMISSION]}>
@@ -805,8 +812,8 @@ const Sidebar = () => {
                         </ul>
                     </PerfectScrollbar>
                 </div>
-            </nav>
-        </div>
+            </nav >
+        </div >
     );
 };
 
