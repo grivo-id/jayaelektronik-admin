@@ -43,8 +43,8 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         if (error.response) {
-            const { status, data } = error.response;
-            if (status === 401 && !error.config.url.includes('/auth/login')) {
+            const { data, message } = error.response;
+            if (message === 'session_expired') {
                 showMessage('Your session has expired. Please login again.', 'error');
                 Cookies.remove('accessToken');
                 setTimeout(() => {
