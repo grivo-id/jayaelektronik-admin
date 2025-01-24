@@ -54,7 +54,7 @@ const Checkbox = lazy(() => import('../pages/DataTables/Checkbox'));
 const RangeSearch = lazy(() => import('../pages/DataTables/RangeSearch'));
 const Export = lazy(() => import('../pages/DataTables/Export'));
 const ColumnChooser = lazy(() => import('../pages/DataTables/ColumnChooser'));
-const Profile = lazy(() => import('../pages/Users/Profile'));
+const Profile = lazy(() => import('../pages/Apps/Profile'));
 const AccountSetting = lazy(() => import('../pages/Users/AccountSetting'));
 const KnowledgeBase = lazy(() => import('../pages/Pages/KnowledgeBase'));
 const ContactUsBoxed = lazy(() => import('../pages/Pages/ContactUsBoxed'));
@@ -213,6 +213,7 @@ const routes = [
 
     {
         path: '/setting/account-profile',
+        element: <Profile />,
     },
 
     // ========================================================================================================//

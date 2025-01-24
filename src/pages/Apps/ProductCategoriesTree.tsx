@@ -88,7 +88,7 @@ const ProductCategoriesTree = () => {
         sort: 'desc',
     };
 
-    const { data: { data: productCategoriesData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllProductCategory(queryParams);
+    const { data: { data: productCategoriesData } = { data: [], pagination: {} }, isFetching } = useGetAllProductCategory(queryParams);
     const { mutate: createProductCategory, isPending: createProductCategoryPending } = useCreateProductCategory();
     const { mutate: updateProductCategory, isPending: updateProductCategoryPending } = useUpdateProductCategory();
     const { mutate: deleteProductCategory, isPending: deleteProductCategoryPending } = useDeleteProductCategory();
@@ -272,6 +272,10 @@ const ProductCategoriesTree = () => {
         resetSubCategory();
         setSelectedCategory(null);
     };
+
+    if (isFetching) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <div>
