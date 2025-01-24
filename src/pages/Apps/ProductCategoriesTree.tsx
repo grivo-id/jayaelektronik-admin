@@ -395,7 +395,6 @@ const ProductCategoriesTree = () => {
             {showLoader && <Loader />}
 
             <div className="panel mt-6">
-                <div className="mb-5 text-xl font-bold">Categories</div>
                 {productCategoriesData.map((category: ProductCategory) => (
                     <CategoryItem
                         key={category.id}
