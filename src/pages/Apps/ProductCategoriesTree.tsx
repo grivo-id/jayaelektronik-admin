@@ -311,10 +311,19 @@ const ProductCategoriesTree = () => {
                                     </div>
                                 ) : formType === 'category' ? (
                                     <form onSubmit={handleSubmitCategory(onSubmitCategory)} className="space-y-5">
-                                        <div>
-                                            <label htmlFor="name">Category Name</label>
-                                            <input id="name" type="text" className="form-input" placeholder="Enter Category Name" {...registerCategory('product_category_name')} />
-                                            {errorsCategory.product_category_name && <span className="text-danger">{errorsCategory.product_category_name.message}</span>}
+                                        <div className="mb-5">
+                                            <label htmlFor="name" className="flex items-center">
+                                                Category Name
+                                                <span className="text-danger text-base">*</span>
+                                            </label>
+                                            <input
+                                                id="name"
+                                                type="text"
+                                                className={`form-input ${errorsCategory.product_category_name ? 'error' : ''}`}
+                                                placeholder="Enter Category Name"
+                                                {...registerCategory('product_category_name')}
+                                            />
+                                            {errorsCategory.product_category_name && <span className="text-danger text-sm mt-1">{errorsCategory.product_category_name.message}</span>}
                                         </div>
                                         <div>
                                             <label htmlFor="desc">Description</label>
@@ -344,9 +353,16 @@ const ProductCategoriesTree = () => {
                                     </form>
                                 ) : (
                                     <form onSubmit={handleSubmitSubCategory(onSubmitSubCategory)} className="space-y-5">
-                                        <div>
-                                            <label htmlFor="category">Category</label>
-                                            <select id="category" className="form-select" {...registerSubCategory('product_category_id')}>
+                                        <div className="mb-5">
+                                            <label htmlFor="product_category_id" className="flex items-center">
+                                                Category
+                                                <span className="text-danger text-base">*</span>
+                                            </label>
+                                            <select
+                                                id="product_category_id"
+                                                className={`form-select ${errorsSubCategory.product_category_id ? 'error' : ''}`}
+                                                {...registerSubCategory('product_category_id')}
+                                            >
                                                 <option value="">Choose a Category</option>
                                                 {productCategoriesData?.map((category) => (
                                                     <option key={category.id} value={category.id}>
@@ -354,18 +370,21 @@ const ProductCategoriesTree = () => {
                                                     </option>
                                                 ))}
                                             </select>
-                                            {errorsSubCategory.product_category_id && <span className="text-danger">{errorsSubCategory.product_category_id.message}</span>}
+                                            {errorsSubCategory.product_category_id && <span className="text-danger text-sm mt-1">{errorsSubCategory.product_category_id.message}</span>}
                                         </div>
-                                        <div>
-                                            <label htmlFor="subcategory_name">Sub Category Name</label>
+                                        <div className="mb-5">
+                                            <label htmlFor="subcategory_name" className="flex items-center">
+                                                Sub Category Name
+                                                <span className="text-danger text-base">*</span>
+                                            </label>
                                             <input
                                                 id="subcategory_name"
                                                 type="text"
-                                                className="form-input"
+                                                className={`form-input ${errorsSubCategory.product_subcategory_name ? 'error' : ''}`}
                                                 placeholder="Enter Sub Category Name"
                                                 {...registerSubCategory('product_subcategory_name')}
                                             />
-                                            {errorsSubCategory.product_subcategory_name && <span className="text-danger">{errorsSubCategory.product_subcategory_name.message}</span>}
+                                            {errorsSubCategory.product_subcategory_name && <span className="text-danger text-sm mt-1">{errorsSubCategory.product_subcategory_name.message}</span>}
                                         </div>
 
                                         <div className="flex justify-end items-center mt-8">
