@@ -70,9 +70,10 @@ const Header = () => {
                         <div>
                             {themeConfig.theme === 'light' ? (
                                 <button
-                                    className={`${themeConfig.theme === 'light' &&
+                                    className={`${
+                                        themeConfig.theme === 'light' &&
                                         'flex items-center p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60'
-                                        }`}
+                                    }`}
                                     onClick={() => {
                                         dispatch(toggleTheme('dark'));
                                     }}
@@ -84,9 +85,10 @@ const Header = () => {
                             )}
                             {themeConfig.theme === 'dark' && (
                                 <button
-                                    className={`${themeConfig.theme === 'dark' &&
+                                    className={`${
+                                        themeConfig.theme === 'dark' &&
                                         'flex items-center p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60'
-                                        }`}
+                                    }`}
                                     onClick={() => {
                                         dispatch(toggleTheme('system'));
                                     }}
@@ -96,9 +98,10 @@ const Header = () => {
                             )}
                             {themeConfig.theme === 'system' && (
                                 <button
-                                    className={`${themeConfig.theme === 'system' &&
+                                    className={`${
+                                        themeConfig.theme === 'system' &&
                                         'flex items-center p-2 rounded-full bg-white-light/40 dark:bg-dark/40 hover:text-primary hover:bg-white-light/90 dark:hover:bg-dark/60'
-                                        }`}
+                                    }`}
                                     onClick={() => {
                                         dispatch(toggleTheme('light'));
                                     }}
@@ -106,7 +109,6 @@ const Header = () => {
                                     <IconLaptop />
                                 </button>
                             )}
-
                         </div>
 
                         <div className="dropdown shrink-1 flex">
@@ -121,9 +123,7 @@ const Header = () => {
                                             <IconUser className="w-9 h-9 p-1 bg-white-light/40 dark:bg-dark/40 rounded-full hover:bg-white-light/90 dark:hover:bg-dark/60" />
                                             <div className="ml-2">
                                                 <h4 className="text-base font-bold">{user?.user_fname}</h4>
-                                                <span className="text-xs bg-success-light rounded text-success px-1 mt-1 inline-block">
-                                                    {user?.role_name}
-                                                </span>
+                                                <span className="text-xs bg-success-light rounded text-success px-1 mt-1 inline-block">{user?.role_name}</span>
                                             </div>
                                         </div>
                                     </>
@@ -145,7 +145,7 @@ const Header = () => {
                                         </div>
                                     </li>
                                     <li>
-                                        <Link to="/users/profile" className="dark:hover:text-white">
+                                        <Link to="/setting/account-profile" className="dark:hover:text-white">
                                             <IconUser className="w-4.5 h-4.5 ltr:mr-2 rtl:ml-2 shrink-0" />
                                             Profile
                                         </Link>
