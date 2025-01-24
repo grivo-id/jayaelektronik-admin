@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useGetUserProfile, useUpdateUserProfile } from '../../services/profileService';
+import { useGetUserProfile, useResetPasswordManager, useUpdateUserProfile } from '../../services/profileService';
 import Avatar from '../../components/Icon/IconAvatar';
 import IconEnvelope from '../../components/Icon/IconEnvelope';
 import IconPhone from '../../components/Icon/IconPhone';
@@ -16,6 +16,9 @@ import { useForm } from 'react-hook-form';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import IconX from '../../components/Icon/IconX';
 import { useStore } from '../../store/store';
+import Swal from 'sweetalert2';
+import { Loader } from '../../components';
+import IconLockDots from '../../components/Icon/IconLockDots';
 
 const Profile = () => {
     const dispatch = useDispatch();
@@ -25,7 +28,7 @@ const Profile = () => {
     const [modal, setModal] = useState(false);
     const setUser = useStore((state) => state.setUser);
     const setIsAuthenticated = useStore((state) => state.setIsAuthenticated);
-
+    const { mutate: mutateResetPassword, isPending: isResetPasswordPending } = useResetPasswordManager();
     const {
         register,
         handleSubmit,
@@ -84,6 +87,37 @@ const Profile = () => {
         setModal(true);
     };
 
+    const handleResetPassword = () => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Reset Password',
+            text: 'Are you sure you want to reset the password?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Reset',
+            cancelButtonText: 'Cancel',
+            padding: '2em',
+            customClass: {
+                popup: 'sweet-alerts',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                mutateResetPassword(profileData?.data.user_id || '', {
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Password Successfully Reset',
+                            text: 'New password: Admin.Jaya@2025',
+                            padding: '2em',
+                            customClass: {
+                                popup: 'sweet-alerts',
+                            },
+                        });
+                    },
+                });
+            }
+        });
+    };
+
     if (isFetching) {
         return (
             <div className="flex items-center justify-center min-h-[400px]">
@@ -137,10 +171,16 @@ const Profile = () => {
                     <div className="panel col-span-12 lg:col-span-8">
                         <div className="flex justify-between items-center mb-6">
                             <h4 className="text-lg font-semibold">Personal Information</h4>
-                            <button type="button" className="btn btn-primary" onClick={openModal}>
-                                <IconPencil className="w-4 h-4 mr-2" />
-                                Edit Profile
-                            </button>
+                            <div className="flex gap-2">
+                                <button type="button" className="btn btn-warning" onClick={handleResetPassword} disabled={isPending}>
+                                    <IconLockDots className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                                    Reset Password
+                                </button>
+                                <button type="button" className="btn btn-primary" onClick={openModal}>
+                                    <IconPencil className="w-4 h-4 mr-2" />
+                                    Edit Profile
+                                </button>
+                            </div>
                         </div>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div>
@@ -254,6 +294,7 @@ const Profile = () => {
                     </div>
                 </div>
             </Dialog>
+            {isResetPasswordPending && <Loader />}
         </div>
     );
 };

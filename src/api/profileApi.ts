@@ -12,3 +12,8 @@ export const ApiUpdateUserProfile = async (id: string, payload: UpdateUserProfil
     const response = await axiosInstance.patch<ApiResponse<UserProfile>>(`/users/${id}`, payload);
     return response.data;
 };
+
+export const ApiResetPasswordManager = async (id: string) => {
+    const response = await axiosInstance.patch<ApiResponse<UserProfile>>(`/users/reset-password/${id}`);
+    return response.data;
+};
