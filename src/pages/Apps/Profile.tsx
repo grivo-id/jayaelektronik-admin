@@ -27,6 +27,7 @@ const Profile = () => {
     const updateUserSchema = useMemo(() => getUpdateUserProfileSchema(), []);
     const [modal, setModal] = useState(false);
     const setUser = useStore((state) => state.setUser);
+    const userGlobal = useStore((state) => state.user);
     const setIsAuthenticated = useStore((state) => state.setIsAuthenticated);
     const { mutate: mutateResetPassword, isPending: isResetPasswordPending } = useResetPasswordManager();
     const {
@@ -172,10 +173,14 @@ const Profile = () => {
                         <div className="flex justify-between items-center mb-6">
                             <h4 className="text-lg font-semibold">Personal Information</h4>
                             <div className="flex gap-2">
-                                <button type="button" className="btn btn-warning" onClick={handleResetPassword} disabled={isPending}>
-                                    <IconLockDots className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
-                                    Reset Password
-                                </button>
+                                {userGlobal?.role_name === 'Manager' ||
+                                    (userGlobal?.role_name === 'Developer' && (
+                                        <button type="button" className="btn btn-warning" onClick={handleResetPassword} disabled={isPending}>
+                                            <IconLockDots className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                                            Reset Password
+                                        </button>
+                                    ))}
+
                                 <button type="button" className="btn btn-primary" onClick={openModal}>
                                     <IconPencil className="w-4 h-4 mr-2" />
                                     Edit Profile
