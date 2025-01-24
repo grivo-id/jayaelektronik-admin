@@ -272,9 +272,12 @@ const ProductCategoriesTree = () => {
         resetSubCategory();
         setSelectedCategory(null);
     };
-
     if (isFetching) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <div className="animate-spin border-2 border-primary border-l-transparent rounded-full w-12 h-12"></div>
+            </div>
+        );
     }
 
     return (
@@ -305,7 +308,7 @@ const ProductCategoriesTree = () => {
                                         <button type="button" className="btn btn-primary w-full" onClick={() => setFormType('category')}>
                                             Add Category
                                         </button>
-                                        <button type="button" className="btn btn-info w-full" onClick={() => setFormType('subcategory')}>
+                                        <button type="button" className="btn btn-secondary w-full" onClick={() => setFormType('subcategory')}>
                                             Add Subcategory
                                         </button>
                                     </div>
