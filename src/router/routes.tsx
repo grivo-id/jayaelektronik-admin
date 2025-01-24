@@ -94,6 +94,7 @@ const BlogKeywords = lazy(() => import('../pages/Apps/BlogKeywords'));
 const BlogDetail = lazy(() => import('../pages/Apps/BlogDetail'));
 const Brands = lazy(() => import('../pages/Apps/Brands'));
 const ProductCategoriesTree = lazy(() => import('../pages/Apps/ProductCategoriesTree'));
+const User = lazy(() => import('../pages/Apps/User'));
 
 const routes = [
     // dashboard
@@ -205,6 +206,7 @@ const routes = [
 
     {
         path: '/manager/manage-user',
+        element: <User />,
     },
 
     {
