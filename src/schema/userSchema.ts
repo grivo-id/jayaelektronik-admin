@@ -24,5 +24,22 @@ export const getUpdateUserSchema = () =>
         user_is_verified: z.boolean(),
     });
 
+export const getUpdateUserProfileSchema = () =>
+    z
+        .object({
+            user_fname: z.string().optional(),
+            user_lname: z.string().optional(),
+            user_email: z.string().email().optional(),
+            user_phone: z.string().optional(),
+            user_address: z.string().optional(),
+            user_password: z.string().optional(),
+            user_confirm_password: z.string().optional(),
+        })
+        .refine((data) => data.user_password === data.user_confirm_password, {
+            message: 'Passwords do not match',
+            path: ['user_confirm_password'],
+        });
+
 export type CreateUserPayload = z.infer<ReturnType<typeof getCreateUserSchema>>;
 export type UpdateUserPayload = z.infer<ReturnType<typeof getUpdateUserSchema>>;
+export type UpdateUserProfilePayload = z.infer<ReturnType<typeof getUpdateUserProfileSchema>>;

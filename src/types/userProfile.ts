@@ -2,6 +2,7 @@ export interface UserProfile {
     user_id: string;
     user_email: string;
     role_code: string;
+    role_id: number;
     role_name: string;
     user_fname: string;
     user_lname: string;
