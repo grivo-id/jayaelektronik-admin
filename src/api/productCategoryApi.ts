@@ -4,7 +4,7 @@ import { ProductCategory } from '../types/productCategories';
 import { axiosInstance } from './base';
 
 export const ApiGetAllProductCategory = async (params: Record<string, any>) => {
-    const response = await axiosInstance.get<ApiResponse<ProductCategory[]>>('/product-categories', { params });
+    const response = await axiosInstance.get<ApiResponse<ProductCategory[]>>('/product-categories/sub-categories', { params });
 
     return response.data;
 };

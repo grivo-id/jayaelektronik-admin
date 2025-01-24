@@ -88,11 +88,12 @@ const Clipboard = lazy(() => import('../pages/Forms/Clipboard'));
 const Blog = lazy(() => import('../pages/Apps/Blog'));
 const BlogCreation = lazy(() => import('../pages/Apps/BlogCreation'));
 const BlogCategories = lazy(() => import('../pages/Apps/BlogCategories'));
-const ProductCategories = lazy(() => import('../pages/Apps/ProductCategory'));
+// const ProductCategories = lazy(() => import('../pages/Apps/ProductCategory'));
 const Overview = lazy(() => import('../pages/Overview'));
 const BlogKeywords = lazy(() => import('../pages/Apps/BlogKeywords'));
 const BlogDetail = lazy(() => import('../pages/Apps/BlogDetail'));
 const Brands = lazy(() => import('../pages/Apps/Brands'));
+const ProductCategoriesTree = lazy(() => import('../pages/Apps/ProductCategoriesTree'));
 
 const routes = [
     // dashboard
@@ -138,11 +139,6 @@ const routes = [
     },
 
     {
-        path: '/apps/product-categories',
-        element: <ProductCategories />,
-    },
-
-    {
         path: '/apps/invoice/list',
         element: <List />,
     },
@@ -159,6 +155,7 @@ const routes = [
 
     {
         path: '/admin/manage-product-category',
+        element: <ProductCategoriesTree />,
     },
 
     {
