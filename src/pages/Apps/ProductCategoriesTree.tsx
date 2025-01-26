@@ -1,10 +1,7 @@
-'use client';
-
 import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { MainHeader } from '../../components';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
 import IconChevronDown from '../../components/Icon/IconChevronDown';
@@ -26,6 +23,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
 import { Loader } from '../../components';
+import MainProductCatHeader from '../../components/MainProductCatHeader';
 
 interface CategoryItemProps {
     category: ProductCategory | ProductSubCategory;
@@ -282,11 +280,65 @@ const ProductCategoriesTree = () => {
 
     return (
         <div>
-            <MainHeader
+            <MainProductCatHeader
                 title="Manage Product Categories"
                 subtitle="Organize and oversee product and sub-categories to organize your product"
-                addText="Add New"
-                onAdd={() => setAddCategoryModal(true)}
+                addComponent={
+                    <div className="dropdown">
+                        <button
+                            type="button"
+                            className="btn btn-primary dropdown-toggle gap-2"
+                            onClick={() => {
+                                const elem = document.querySelector('.dropdown-menu');
+                                elem?.classList.toggle('hidden');
+                            }}
+                        >
+                            <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M12 4V20M20 12H4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                            Add New
+                            <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 9L12 15L18 9" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                            </svg>
+                        </button>
+                        <ul className="dropdown-menu hidden absolute z-50 min-w-[160px] bg-white dark:bg-[#1b2e4b] shadow-[0_3px_10px_rgb(0,0,0,0.2)] p-0 border border-[#e0e6ed] dark:border-[#191e3a] rounded-lg mt-1">
+                            <li>
+                                <button
+                                    type="button"
+                                    className="w-full flex items-center px-4 py-2.5 hover:bg-primary/10 hover:text-primary text-sm first:rounded-t-lg"
+                                    onClick={() => {
+                                        setFormType('category');
+                                        setAddCategoryModal(true);
+                                        document.querySelector('.dropdown-menu')?.classList.add('hidden');
+                                    }}
+                                >
+                                    <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                                    </svg>
+                                    Category
+                                </button>
+                            </li>
+                            <li>
+                                <button
+                                    type="button"
+                                    className="w-full flex items-center px-4 py-2.5 hover:bg-primary/10 hover:text-primary text-sm last:rounded-b-lg border-t border-[#e0e6ed] dark:border-[#191e3a]"
+                                    onClick={() => {
+                                        setFormType('subcategory');
+                                        setAddCategoryModal(true);
+                                        document.querySelector('.dropdown-menu')?.classList.add('hidden');
+                                    }}
+                                >
+                                    <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                        <path d="M12 8V16M8 12H16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                                        <rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" strokeWidth="2" />
+                                    </svg>
+                                    Subcategory
+                                </button>
+                            </li>
+                        </ul>
+                    </div>
+                }
                 onSearchChange={() => {}}
                 search={''}
             />
@@ -300,19 +352,12 @@ const ProductCategoriesTree = () => {
                                 <IconX />
                             </button>
                             <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                                {formType === null ? 'Choose Type' : formType === 'category' ? 'Add Category' : 'Add Subcategory'}
+                                {formType === 'category' 
+                                    ? `${selectedCategory ? 'Edit' : 'Add'} Category` 
+                                    : `${selectedCategory ? 'Edit' : 'Add'} Subcategory`}
                             </div>
                             <div className="p-5">
-                                {formType === null && !selectedCategory ? (
-                                    <div className="flex flex-col gap-4">
-                                        <button type="button" className="btn btn-primary w-full" onClick={() => setFormType('category')}>
-                                            Add Category
-                                        </button>
-                                        <button type="button" className="btn btn-secondary w-full" onClick={() => setFormType('subcategory')}>
-                                            Add Subcategory
-                                        </button>
-                                    </div>
-                                ) : formType === 'category' ? (
+                                {formType === 'category' ? (
                                     <form onSubmit={handleSubmitCategory(onSubmitCategory)} className="space-y-5">
                                         <div className="mb-5">
                                             <label htmlFor="name" className="flex items-center">
@@ -388,6 +433,18 @@ const ProductCategoriesTree = () => {
                                                 {...registerSubCategory('product_subcategory_name')}
                                             />
                                             {errorsSubCategory.product_subcategory_name && <span className="text-danger text-sm mt-1">{errorsSubCategory.product_subcategory_name.message}</span>}
+                                        </div>
+
+                                        <div className="mb-5">
+                                            <label htmlFor="subcategory_desc">Sub Category Description</label>
+                                            <textarea
+                                                id="subcategory_desc"
+                                                rows={4}
+                                                className="form-textarea"
+                                                placeholder="Enter Sub Category Description (Optional)"
+                                                {...registerSubCategory('product_subcategory_desc')}
+                                            />
+                                            {errorsSubCategory.product_subcategory_desc && <span className="text-danger text-sm mt-1">{errorsSubCategory.product_subcategory_desc.message}</span>}
                                         </div>
 
                                         <div className="flex justify-end items-center mt-8">
