@@ -296,17 +296,33 @@ const User = () => {
                                     </div>
 
                                     <div className="mb-5">
-                                        <label htmlFor="user_is_active" className="flex items-center">
+                                        <label htmlFor="user_is_active" className="flex items-center mb-2">
                                             Is Active
                                         </label>
-                                        <input id="user_is_active" type="checkbox" className="form-checkbox" {...updateRegister('user_is_active')} />
+                                        <label className="w-12 h-6 relative">
+                                            <input
+                                                type="checkbox"
+                                                id="user_is_active"
+                                                className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                                                {...updateRegister('user_is_active')}
+                                            />
+                                            <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                                        </label>
                                     </div>
 
                                     <div className="mb-5">
-                                        <label htmlFor="user_is_verified" className="flex items-center">
+                                        <label htmlFor="user_is_verified" className="flex items-center mb-2">
                                             Is Verified
                                         </label>
-                                        <input id="user_is_verified" type="checkbox" className="form-checkbox" {...updateRegister('user_is_verified')} />
+                                        <label className="w-12 h-6 relative">
+                                            <input
+                                                type="checkbox"
+                                                id="user_is_verified"
+                                                className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                                                {...updateRegister('user_is_verified')}
+                                            />
+                                            <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></span>
+                                        </label>
                                     </div>
 
                                     <div className="flex justify-end items-center mt-8">
