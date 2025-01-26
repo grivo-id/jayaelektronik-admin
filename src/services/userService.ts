@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiCreateUser, ApiGetAllUser, ApiUpdateUser } from '../api/userApi';
-import { CreateUserPayload, UpdateUserPayload } from '../schema/userSchema';
+import { ApiChangePassword, ApiCreateUser, ApiGetAllUser, ApiUpdateUser } from '../api/userApi';
+import { ChangePasswordPayload, CreateUserPayload, UpdateUserPayload } from '../schema/userSchema';
 
 export const useGetAllUserQuery = (params: Record<string, any>) => {
     return useQuery({
@@ -36,5 +36,11 @@ export const useUpdateUser = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['users'] });
         },
+    });
+};
+
+export const useChangePassword = () => {
+    return useMutation({
+        mutationFn: (payload: ChangePasswordPayload) => ApiChangePassword(payload),
     });
 };

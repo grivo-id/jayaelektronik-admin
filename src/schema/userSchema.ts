@@ -28,21 +28,27 @@ export const getUpdateUserSchema = () =>
     });
 
 export const getUpdateUserProfileSchema = () =>
+    z.object({
+        user_fname: z.string().optional(),
+        user_lname: z.string().optional(),
+        user_email: z.string().email().optional(),
+        user_phone: z.string().optional(),
+        user_address: z.string().optional(),
+    });
+
+export const getChangePasswordSchema = () =>
     z
         .object({
-            user_fname: z.string().optional(),
-            user_lname: z.string().optional(),
-            user_email: z.string().email().optional(),
-            user_phone: z.string().optional(),
-            user_address: z.string().optional(),
-            user_password: z.string().optional(),
-            user_confirm_password: z.string().optional(),
+            old_password: z.string().min(1, 'Old password is required'),
+            new_password: z.string().min(6, 'New password must be at least 6 characters long and contain 1 uppercase letter'),
+            confirm_new_password: z.string().min(1, 'Password confirmation is required'),
         })
-        .refine((data) => data.user_password === data.user_confirm_password, {
+        .refine((data) => data.new_password === data.confirm_new_password, {
             message: 'Passwords do not match',
-            path: ['user_confirm_password'],
+            path: ['confirm_new_password'],
         });
 
 export type CreateUserPayload = z.infer<ReturnType<typeof getCreateUserSchema>>;
 export type UpdateUserPayload = z.infer<ReturnType<typeof getUpdateUserSchema>>;
 export type UpdateUserProfilePayload = z.infer<ReturnType<typeof getUpdateUserProfileSchema>>;
+export type ChangePasswordPayload = z.infer<ReturnType<typeof getChangePasswordSchema>>;

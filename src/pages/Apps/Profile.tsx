@@ -3,44 +3,55 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useGetUserProfile, useResetPasswordManager, useUpdateUserProfile } from '../../services/profileService';
+import { useGetUserProfile, useUpdateUserProfile } from '../../services/profileService';
+import { useChangePassword } from '../../services/userService';
 import Avatar from '../../components/Icon/IconAvatar';
 import IconEnvelope from '../../components/Icon/IconEnvelope';
 import IconPhone from '../../components/Icon/IconPhone';
 import IconMapPin from '../../components/Icon/IconMapPin';
 import IconCalendar from '../../components/Icon/IconCalendar';
 import IconPencil from '../../components/Icon/IconPencil';
-import { getUpdateUserProfileSchema, UpdateUserProfilePayload } from '../../schema/userSchema';
+import IconLockDots from '../../components/Icon/IconLockDots';
+import { getUpdateUserProfileSchema, getChangePasswordSchema, UpdateUserProfilePayload } from '../../schema/userSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import IconX from '../../components/Icon/IconX';
 import { useStore } from '../../store/store';
-import Swal from 'sweetalert2';
-import { Loader } from '../../components';
-import IconLockDots from '../../components/Icon/IconLockDots';
 
 const Profile = () => {
     const dispatch = useDispatch();
     const { data: profileData, isFetching } = useGetUserProfile();
-    const { mutate: updateProfile, isPending } = useUpdateUserProfile();
     const updateUserSchema = useMemo(() => getUpdateUserProfileSchema(), []);
+    const changePasswordSchema = useMemo(() => getChangePasswordSchema(), []);
     const [modal, setModal] = useState(false);
+    const [changePasswordModal, setChangePasswordModal] = useState(false);
     const setUser = useStore((state) => state.setUser);
-    const userGlobal = useStore((state) => state.user);
     const setIsAuthenticated = useStore((state) => state.setIsAuthenticated);
-    const { mutate: mutateResetPassword, isPending: isResetPasswordPending } = useResetPasswordManager();
+
     const {
         register,
         handleSubmit,
+        setValue,
         formState: { errors },
         reset,
-        setValue,
     } = useForm<UpdateUserProfilePayload>({
         resolver: zodResolver(updateUserSchema),
         mode: 'onBlur',
         reValidateMode: 'onBlur',
     });
+
+    const {
+        register: registerChangePassword,
+        handleSubmit: handleSubmitChangePassword,
+        formState: { errors: errorsChangePassword },
+        reset: resetChangePassword,
+    } = useForm({
+        resolver: zodResolver(changePasswordSchema),
+    });
+
+    const { mutate: updateProfile, isPending } = useUpdateUserProfile();
+    const { mutate: mutateChangePassword, isPending: isChangePasswordPending } = useChangePassword();
 
     useEffect(() => {
         dispatch(setPageTitle('Profile'));
@@ -77,46 +88,22 @@ const Profile = () => {
         );
     };
 
+    const onChangePassword = (data: any) => {
+        mutateChangePassword(data, {
+            onSuccess: () => {
+                setChangePasswordModal(false);
+                resetChangePassword();
+            },
+        });
+    };
+
     const openModal = () => {
         setValue('user_fname', profileData?.data.user_fname || '');
         setValue('user_lname', profileData?.data.user_lname || '');
         setValue('user_email', profileData?.data.user_email || '');
         setValue('user_phone', profileData?.data.user_phone || '');
         setValue('user_address', profileData?.data.user_address || '');
-        setValue('user_password', '');
-        setValue('user_confirm_password', '');
         setModal(true);
-    };
-
-    const handleResetPassword = () => {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Reset Password',
-            text: 'Are you sure you want to reset the password?',
-            showCancelButton: true,
-            confirmButtonText: 'Yes, Reset',
-            cancelButtonText: 'Cancel',
-            padding: '2em',
-            customClass: {
-                popup: 'sweet-alerts',
-            },
-        }).then((result) => {
-            if (result.isConfirmed) {
-                mutateResetPassword(profileData?.data.user_id || '', {
-                    onSuccess: () => {
-                        Swal.fire({
-                            icon: 'success',
-                            title: 'Password Successfully Reset',
-                            text: 'New password: Admin.Jaya@2025',
-                            padding: '2em',
-                            customClass: {
-                                popup: 'sweet-alerts',
-                            },
-                        });
-                    },
-                });
-            }
-        });
     };
 
     if (isFetching) {
@@ -145,7 +132,7 @@ const Profile = () => {
                                 <Avatar size={120} className="border-4 border-gray-100 dark:border-gray-800 shadow-lg" />
                                 <span className={`absolute bottom-0 right-0 w-4 h-4 rounded-full border-2 border-white ${profileData?.data?.user_is_active ? 'bg-success' : 'bg-danger'}`}></span>
                             </div>
-                            <h2 className="text-xl font-bold mb-1">{concatName()}</h2>
+                            <h2 className="text-xl font-bold mb-1 text-center sm:text-left">{concatName()}</h2>
                             <span className="badge badge-outline-primary mb-4">{profileData?.data?.role_name}</span>
 
                             <div className="w-full space-y-4">
@@ -170,18 +157,14 @@ const Profile = () => {
                     </div>
 
                     <div className="panel col-span-12 lg:col-span-8">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
                             <h4 className="text-lg font-semibold">Personal Information</h4>
-                            <div className="flex gap-2">
-                                {userGlobal?.role_name === 'Manager' ||
-                                    (userGlobal?.role_name === 'Developer' && (
-                                        <button type="button" className="btn btn-warning" onClick={handleResetPassword} disabled={isPending}>
-                                            <IconLockDots className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
-                                            Reset Password
-                                        </button>
-                                    ))}
-
-                                <button type="button" className="btn btn-primary" onClick={openModal}>
+                            <div className="flex flex-wrap gap-2">
+                                <button type="button" className="btn btn-warning w-full sm:w-auto" onClick={() => setChangePasswordModal(true)}>
+                                    <IconLockDots className="w-4 h-4 ltr:mr-2 rtl:ml-2" />
+                                    Change Password
+                                </button>
+                                <button type="button" className="btn btn-primary w-full sm:w-auto" onClick={openModal}>
                                     <IconPencil className="w-4 h-4 mr-2" />
                                     Edit Profile
                                 </button>
@@ -275,16 +258,6 @@ const Profile = () => {
                                         <textarea id="user_address" className="form-textarea" {...register('user_address')} />
                                         {errors.user_address?.message && <span className="text-danger text-xs">{errors.user_address?.message}</span>}
                                     </div>
-                                    <div>
-                                        <label htmlFor="user_password">Password</label>
-                                        <input id="user_password" type="password" className="form-input" {...register('user_password')} />
-                                        {errors.user_password?.message && <span className="text-danger text-xs">{errors.user_password?.message}</span>}
-                                    </div>
-                                    <div>
-                                        <label htmlFor="user_confirm_password">Confirm Password</label>
-                                        <input id="user_confirm_password" type="password" className="form-input" {...register('user_confirm_password')} />
-                                        {errors.user_confirm_password?.message && <span className="text-danger text-xs">{errors.user_confirm_password?.message}</span>}
-                                    </div>
                                     <div className="flex justify-end items-center mt-8">
                                         <button type="button" className="btn btn-outline-danger" onClick={() => setModal(false)} disabled={isPending}>
                                             Cancel
@@ -299,7 +272,54 @@ const Profile = () => {
                     </div>
                 </div>
             </Dialog>
-            {isResetPasswordPending && <Loader />}
+
+            <Dialog as="div" open={changePasswordModal} onClose={() => setChangePasswordModal(false)} className="relative z-50">
+                <div className="fixed inset-0 bg-[black]/60" />
+                <div className="fixed inset-0 overflow-y-auto">
+                    <div className="flex min-h-full items-center justify-center px-4 py-8">
+                        <DialogPanel className="panel border-0 p-0 rounded-lg overflow-hidden w-full max-w-lg text-black dark:text-white-dark">
+                            <button
+                                type="button"
+                                onClick={() => setChangePasswordModal(false)}
+                                className="absolute top-4 ltr:right-4 rtl:left-4 text-gray-400 hover:text-gray-800 dark:hover:text-gray-600 outline-none"
+                            >
+                                <IconX />
+                            </button>
+                            <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">Change Password</div>
+                            <div className="p-5">
+                                <form onSubmit={handleSubmitChangePassword(onChangePassword)} className="space-y-5">
+                                    <div>
+                                        <label htmlFor="old_password">Current Password</label>
+                                        <input id="old_password" type="password" className="form-input" {...registerChangePassword('old_password')} />
+                                        {errorsChangePassword.old_password?.message && <span className="text-danger text-xs">{String(errorsChangePassword.old_password.message)}</span>}
+                                    </div>
+                                    <div>
+                                        <label htmlFor="new_password">New Password</label>
+                                        <input id="new_password" type="password" className="form-input" {...registerChangePassword('new_password')} />
+                                        {errorsChangePassword.new_password?.message && <span className="text-danger text-xs">{String(errorsChangePassword.new_password.message)}</span>}
+                                    </div>
+                                    <div>
+                                        <label htmlFor="confirm_new_password">Confirm New Password</label>
+                                        <input id="confirm_new_password" type="password" className="form-input" {...registerChangePassword('confirm_new_password')} />
+                                        {errorsChangePassword.confirm_new_password?.message && <span className="text-danger text-xs">{String(errorsChangePassword.confirm_new_password.message)}</span>}
+                                    </div>
+                                    <div className="flex justify-end items-center mt-8">
+                                        <button type="button" className="btn btn-outline-danger" onClick={() => setChangePasswordModal(false)} disabled={isChangePasswordPending}>
+                                            Cancel
+                                        </button>
+                                        <button type="submit" className="btn btn-primary ltr:ml-4 rtl:mr-4" disabled={isChangePasswordPending}>
+                                            {isChangePasswordPending && (
+                                                <span className="animate-spin border-2 border-white border-l-transparent rounded-full w-5 h-5 ltr:mr-4 rtl:ml-4 inline-block align-middle"></span>
+                                            )}
+                                            Change Password
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </DialogPanel>
+                    </div>
+                </div>
+            </Dialog>
         </div>
     );
 };
