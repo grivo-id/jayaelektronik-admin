@@ -6,13 +6,19 @@ import { Pagination, SkeletonLoadingTable, MainUserHeader } from '../../componen
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllUser } from '../../api/userApi';
 import { useGetAllUserQuery, useUpdateUser, useCreateUser } from '../../services/userService';
+import { useResetPasswordManager } from '../../services/profileService';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconX from '../../components/Icon/IconX';
+import IconLockDots from '../../components/Icon/IconLockDots';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { CreateUserPayload, UpdateUserPayload, getCreateUserSchema, getUpdateUserSchema } from '../../schema/userSchema';
 import { getRoleIdByName, roleOptions } from '../../constants/role';
 import { UserProfile } from '../../types/userProfile';
+import Swal from 'sweetalert2';
+import Loader from '../../components/Loader';
+import IconEye from '../../components/Icon/IconEye';
+import IconEyeOff from '../../components/Icon/IconEyeOff';
 
 const User = () => {
     const dispatch = useDispatch();
@@ -30,6 +36,7 @@ const User = () => {
     const { data: { data: userData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllUserQuery(queryParams);
     const { mutate: updateUser, isPending: updateUserPending } = useUpdateUser();
     const { mutate: createUser, isPending: createUserPending } = useCreateUser();
+    const { mutate: mutateResetPassword, isPending: isResetPasswordPending } = useResetPasswordManager();
 
     const updateUserSchema = useMemo(() => getUpdateUserSchema(), []);
     const createUserSchema = useMemo(() => getCreateUserSchema(), []);
@@ -60,6 +67,9 @@ const User = () => {
     const [editModal, setEditModal] = useState<boolean>(false);
     const [createModal, setCreateModal] = useState<boolean>(false);
     const [selectedUser, setSelectedUser] = useState<any>(null);
+
+    const [showPassword, setShowPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
     useEffect(() => {
         dispatch(setPageTitle('User Management'));
@@ -155,6 +165,37 @@ const User = () => {
         setQueryParams({ ...queryParams, role_code: e.target.value });
     };
 
+    const handleResetPassword = (userId: string) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Reset Password',
+            text: 'Are you sure you want to reset the password?',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, Reset',
+            cancelButtonText: 'Cancel',
+            padding: '2em',
+            customClass: {
+                popup: 'sweet-alerts',
+            },
+        }).then((result) => {
+            if (result.isConfirmed) {
+                mutateResetPassword(userId, {
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Password Successfully Reset',
+                            text: 'New password: Admin.Jaya@2025',
+                            padding: '2em',
+                            customClass: {
+                                popup: 'sweet-alerts',
+                            },
+                        });
+                    },
+                });
+            }
+        });
+    };
+
     return (
         <div>
             <MainUserHeader
@@ -221,6 +262,9 @@ const User = () => {
                                                     <div className="flex gap-4 items-center justify-center">
                                                         <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(user)}>
                                                             <IconPencil className="w-4 h-4" />
+                                                        </button>
+                                                        <button type="button" className="btn btn-sm btn-outline-warning" onClick={() => handleResetPassword(user.user_id)}>
+                                                            <IconLockDots className="w-4 h-4" />
                                                         </button>
                                                     </div>
                                                 </td>
@@ -422,14 +466,39 @@ const User = () => {
                                             Password
                                             <span className="text-danger text-base">*</span>
                                         </label>
-                                        <input
-                                            id="user_password"
-                                            type="password"
-                                            placeholder="Enter Password"
-                                            className={`form-input ${createErrors.user_password ? 'error' : ''}`}
-                                            {...createRegister('user_password')}
-                                        />
+                                        <div className="relative">
+                                            <input
+                                                id="user_password"
+                                                type={showPassword ? 'text' : 'password'}
+                                                placeholder="Enter Password"
+                                                className={`form-input ${createErrors.user_password ? 'error' : ''}`}
+                                                {...createRegister('user_password')}
+                                            />
+                                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => setShowPassword(!showPassword)}>
+                                                {showPassword ? <IconEyeOff /> : <IconEye />}
+                                            </button>
+                                        </div>
                                         {createErrors.user_password && <span className="text-danger text-sm mt-1">{createErrors.user_password.message}</span>}
+                                    </div>
+
+                                    <div>
+                                        <label htmlFor="user_confirm_password" className="flex items-center">
+                                            Confirm Password
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <div className="relative">
+                                            <input
+                                                id="user_confirm_password"
+                                                type={showConfirmPassword ? 'text' : 'password'}
+                                                placeholder="Confirm Password"
+                                                className={`form-input ${createErrors.user_confirm_password ? 'error' : ''}`}
+                                                {...createRegister('user_confirm_password')}
+                                            />
+                                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => setShowConfirmPassword(!showConfirmPassword)}>
+                                                {showConfirmPassword ? <IconEyeOff /> : <IconEye />}
+                                            </button>
+                                        </div>
+                                        {createErrors.user_confirm_password && <span className="text-danger text-sm mt-1">{createErrors.user_confirm_password.message}</span>}
                                     </div>
 
                                     <div>
@@ -477,6 +546,8 @@ const User = () => {
                     </div>
                 </div>
             </Dialog>
+
+            {isResetPasswordPending && <Loader />}
         </div>
     );
 };
