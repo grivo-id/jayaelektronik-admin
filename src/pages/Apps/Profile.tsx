@@ -12,6 +12,8 @@ import IconMapPin from '../../components/Icon/IconMapPin';
 import IconCalendar from '../../components/Icon/IconCalendar';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconLockDots from '../../components/Icon/IconLockDots';
+import IconEye from '../../components/Icon/IconEye';
+import IconEyeOff from '../../components/Icon/IconEyeOff';
 import { getUpdateUserProfileSchema, getChangePasswordSchema, UpdateUserProfilePayload } from '../../schema/userSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -105,6 +107,10 @@ const Profile = () => {
         setValue('user_address', profileData?.data.user_address || '');
         setModal(true);
     };
+
+    const [showOldPassword, setShowOldPassword] = useState(false);
+    const [showNewPassword, setShowNewPassword] = useState(false);
+    const [showConfirmNewPassword, setShowConfirmNewPassword] = useState(false);
 
     if (isFetching) {
         return (
@@ -290,17 +296,37 @@ const Profile = () => {
                                 <form onSubmit={handleSubmitChangePassword(onChangePassword)} className="space-y-5">
                                     <div>
                                         <label htmlFor="old_password">Current Password</label>
-                                        <input id="old_password" type="password" className="form-input" {...registerChangePassword('old_password')} />
+                                        <div className="relative">
+                                            <input id="old_password" type={showOldPassword ? 'text' : 'password'} className="form-input" {...registerChangePassword('old_password')} />
+                                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => setShowOldPassword(!showOldPassword)}>
+                                                {showOldPassword ? <IconEyeOff /> : <IconEye />}
+                                            </button>
+                                        </div>
                                         {errorsChangePassword.old_password?.message && <span className="text-danger text-xs">{String(errorsChangePassword.old_password.message)}</span>}
                                     </div>
                                     <div>
                                         <label htmlFor="new_password">New Password</label>
-                                        <input id="new_password" type="password" className="form-input" {...registerChangePassword('new_password')} />
+                                        <div className="relative">
+                                            <input id="new_password" type={showNewPassword ? 'text' : 'password'} className="form-input" {...registerChangePassword('new_password')} />
+                                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => setShowNewPassword(!showNewPassword)}>
+                                                {showNewPassword ? <IconEyeOff /> : <IconEye />}
+                                            </button>
+                                        </div>
                                         {errorsChangePassword.new_password?.message && <span className="text-danger text-xs">{String(errorsChangePassword.new_password.message)}</span>}
                                     </div>
                                     <div>
                                         <label htmlFor="confirm_new_password">Confirm New Password</label>
-                                        <input id="confirm_new_password" type="password" className="form-input" {...registerChangePassword('confirm_new_password')} />
+                                        <div className="relative">
+                                            <input
+                                                id="confirm_new_password"
+                                                type={showConfirmNewPassword ? 'text' : 'password'}
+                                                className="form-input"
+                                                {...registerChangePassword('confirm_new_password')}
+                                            />
+                                            <button type="button" className="absolute right-2 top-1/2 -translate-y-1/2" onClick={() => setShowConfirmNewPassword(!showConfirmNewPassword)}>
+                                                {showConfirmNewPassword ? <IconEyeOff /> : <IconEye />}
+                                            </button>
+                                        </div>
                                         {errorsChangePassword.confirm_new_password?.message && <span className="text-danger text-xs">{String(errorsChangePassword.confirm_new_password.message)}</span>}
                                     </div>
                                     <div className="flex justify-end items-center mt-8">
