@@ -1,12 +1,20 @@
-const Tooltip = ({ children, text, position = 'bottom' }) => {
-    const positionClasses = {
+import React, { ReactNode } from 'react';
+
+interface TooltipProps {
+    children: ReactNode;
+    text: string;
+    position?: 'top' | 'bottom' | 'left' | 'right';
+}
+
+const Tooltip: React.FC<TooltipProps> = ({ children, text, position = 'bottom' }) => {
+    const positionClasses: Record<string, string> = {
         top: 'bottom-full mb-2',
         bottom: 'top-full mt-2',
         left: 'right-full mr-2',
         right: 'left-full ml-2',
     };
 
-    const arrowClasses = {
+    const arrowClasses: Record<string, string> = {
         top: 'bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 rotate-45',
         bottom: 'top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 rotate-45',
         left: 'top-1/2 right-0 transform -translate-y-1/2 translate-x-1/2 rotate-45',
