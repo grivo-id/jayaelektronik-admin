@@ -1,6 +1,9 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { CreateProductCategoryPayload } from '../schema/productCategorySchema';
 import { ApiCreateProductCategory, ApiDeleteProductCategory, ApiGetAllProductCategory, ApiUpdateProductCategory } from '../api/productCategoryApi';
+import { CreateProductSubCategoryPayload } from '../schema/productSubCategorySchema';
+import { ApiCreateProductSubCategory, ApiDeleteProductSubCategory, ApiUpdateProductSubCategory } from '../api/productSubCategoryApi';
+import { ProductCategory } from '../types/productCategories';
 
 export const useGetAllProductCategory = (params: Record<string, any>) => {
     return useQuery({
@@ -8,8 +11,16 @@ export const useGetAllProductCategory = (params: Record<string, any>) => {
         queryFn: () => ApiGetAllProductCategory(params),
         select: (response) => {
             const { data, pagination } = response;
+            const processedData = data.map((category: ProductCategory) => ({
+                ...category,
+                children: category.children?.map((child) => ({
+                    ...child,
+                    parent_id: category.id,
+                })),
+            }));
+
             return {
-                data,
+                data: processedData,
                 pagination,
             };
         },
@@ -44,6 +55,39 @@ export const useDeleteProductCategory = () => {
 
     return useMutation({
         mutationFn: (id: string) => ApiDeleteProductCategory(id),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['product-categories'] });
+        },
+    });
+};
+
+export const useCreateProductSubCategory = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (payload: CreateProductSubCategoryPayload) => ApiCreateProductSubCategory(payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['product-categories'] });
+        },
+    });
+};
+
+export const useUpdateProductSubCategory = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: ({ id, payload }: { id: string; payload: CreateProductSubCategoryPayload }) => ApiUpdateProductSubCategory(id, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['product-categories'] });
+        },
+    });
+};
+
+export const useDeleteProductSubCategory = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (id: string) => ApiDeleteProductSubCategory(id),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['product-categories'] });
         },

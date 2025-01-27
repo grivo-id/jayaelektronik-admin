@@ -6,3 +6,4 @@ export { default as MultipleSelect } from './MultipleSelect';
 export { default as SingleSelect } from './SingleSelect';
 export { default as SkeletonLoadingGrid } from './SkeletonLoadingGrid';
 export { default as PermissionWrapper } from './PermissionWrapper';
+export { default as MainUserHeader } from './MainUserHeader';
