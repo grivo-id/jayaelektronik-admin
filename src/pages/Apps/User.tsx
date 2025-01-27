@@ -19,18 +19,20 @@ import Swal from 'sweetalert2';
 import Loader from '../../components/Loader';
 import IconEye from '../../components/Icon/IconEye';
 import IconEyeOff from '../../components/Icon/IconEyeOff';
+import { useSearchParams } from 'react-router-dom';
 
 const User = () => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
-    const [roleCode, setRoleCode] = useState('lvl_perms_member');
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [roleCode, setRoleCode] = useState(searchParams.get('role_code') || 'lvl_perms_member');
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
-        page: 1,
-        search: '',
+        page: Number(searchParams.get('page')) || 1,
+        search: searchParams.get('search') || '',
         sort: 'desc',
-        role_code: roleCode,
+        role_code: searchParams.get('role_code') || roleCode,
     });
 
     const { data: { data: userData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllUserQuery(queryParams);
@@ -76,12 +78,38 @@ const User = () => {
     }, []);
 
     const handlePageChange = (newPage: number) => {
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            page: newPage.toString(),
+        });
         setQueryParams({ ...queryParams, page: newPage });
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-        setQueryParams({ ...queryParams, search: e.target.value });
+        const searchValue = e.target.value;
+        setSearch(searchValue);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            search: searchValue,
+        });
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setQueryParams({ ...queryParams, search, page: 1 });
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
+
+    const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const roleValue = e.target.value;
+        setRoleCode(roleValue);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            role_code: roleValue,
+        });
+        setQueryParams({ ...queryParams, role_code: roleValue });
     };
 
     const onSubmitUpdate = (data: UpdateUserPayload) => {
@@ -158,11 +186,6 @@ const User = () => {
 
     const concatName = (user: UserProfile) => {
         return `${user.user_fname} ${user.user_lname}`;
-    };
-
-    const handleRoleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setRoleCode(e.target.value);
-        setQueryParams({ ...queryParams, role_code: e.target.value });
     };
 
     const handleResetPassword = (userId: string) => {
@@ -280,7 +303,13 @@ const User = () => {
                         </table>
                     </div>
                 </div>
-                <Pagination activePage={queryParams.page} itemsCountPerPage={queryParams.limit} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
+                <Pagination
+                    activePage={Number(searchParams.get('page')) || 1}
+                    itemsCountPerPage={queryParams.limit}
+                    totalItemsCount={pagination?.totalData || 0}
+                    pageRangeDisplayed={5}
+                    onChange={handlePageChange}
+                />
             </>
 
             <Dialog as="div" open={editModal} onClose={closeModal} className="relative z-50">

@@ -17,15 +17,18 @@ import IconCheck from '../../components/Icon/IconChecks';
 import formatDate from '../../utils/formatDate';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
+import { useSearchParams } from 'react-router-dom';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [search, setSearch] = useState(searchParams.get('search') || '');
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
-        page: 1,
-        search: '',
+        page: Number(searchParams.get('page')) || 1,
+        search: searchParams.get('search') || '',
         sort: 'desc',
     });
 
@@ -56,8 +59,6 @@ const BlogCategories = () => {
 
     const [addBrandModal, setAddBrandModal] = useState<boolean>(false);
     const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
-    const [search, setSearch] = useState<string>('');
-
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [showImageActions, setShowImageActions] = useState(false);
@@ -203,13 +204,29 @@ const BlogCategories = () => {
     const isLoading = createBrandPending || updateBrandPending || deleteBrandPending;
 
     const handlePageChange = (newPage: number) => {
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            page: newPage.toString(),
+        });
         setQueryParams({ ...queryParams, page: newPage });
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-        setQueryParams({ ...queryParams, search: e.target.value });
+        const searchValue = e.target.value;
+        setSearch(searchValue);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            search: searchValue,
+        });
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setQueryParams({ ...queryParams, search, page: 1 });
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     useEffect(() => {
         const nextPage = (pagination?.currentPage ?? 1) + 1;
@@ -323,7 +340,13 @@ const BlogCategories = () => {
                         </table>
                     </div>
                 </div>
-                <Pagination activePage={queryParams.page} itemsCountPerPage={queryParams.limit} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
+                <Pagination
+                    activePage={Number(searchParams.get('page')) || 1}
+                    itemsCountPerPage={queryParams.limit}
+                    totalItemsCount={pagination?.totalData || 0}
+                    pageRangeDisplayed={5}
+                    onChange={handlePageChange}
+                />
             </>
 
             {showLoader && <Loader />}

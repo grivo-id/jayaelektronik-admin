@@ -15,15 +15,18 @@ import { ApiGetAllBlogKeyword } from '../../api/blogKeywordsApi';
 import formatDate from '../../utils/formatDate';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
+import { useSearchParams } from 'react-router-dom';
 
 const BlogKeywords = () => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [search, setSearch] = useState(searchParams.get('search') || '');
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
-        page: 1,
-        search: '',
+        page: Number(searchParams.get('page')) || 1,
+        search: searchParams.get('search') || '',
         sort: 'desc',
     });
 
@@ -53,7 +56,6 @@ const BlogKeywords = () => {
 
     const [addCategoryModal, setAddCategoryModal] = useState<boolean>(false);
     const [selectedCategory, setSelectedCategory] = useState<BlogKeyword | null>(null);
-    const [search, setSearch] = useState<string>('');
 
     const onSubmit = (data: CreateBlogKeywordPayload) => {
         if (selectedCategory) {
@@ -122,13 +124,29 @@ const BlogKeywords = () => {
     const isLoading = createBlogKeywordPending || updateBlogKeywordPending || deleteBlogKeywordPending;
 
     const handlePageChange = (newPage: number) => {
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            page: newPage.toString(),
+        });
         setQueryParams({ ...queryParams, page: newPage });
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-        setQueryParams({ ...queryParams, search: e.target.value });
+        const searchValue = e.target.value;
+        setSearch(searchValue);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            search: searchValue,
+        });
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setQueryParams({ ...queryParams, search, page: 1 });
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     useEffect(() => {
         const nextPage = (pagination?.currentPage ?? 1) + 1;
@@ -212,7 +230,13 @@ const BlogKeywords = () => {
                         </table>
                     </div>
                 </div>
-                <Pagination activePage={queryParams.page} itemsCountPerPage={queryParams.limit} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
+                <Pagination 
+                    activePage={Number(searchParams.get('page')) || 1} 
+                    itemsCountPerPage={queryParams.limit} 
+                    totalItemsCount={pagination?.totalData || 0} 
+                    pageRangeDisplayed={5} 
+                    onChange={handlePageChange} 
+                />
             </>
 
             {showLoader && <Loader />}
