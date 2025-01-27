@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { Pagination, SkeletonLoadingTable, MainUserHeader } from '../../components';
+import { Pagination, SkeletonLoadingTable, MainUserHeader, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllUser } from '../../api/userApi';
 import { useGetAllUserQuery, useUpdateUser, useCreateUser } from '../../services/userService';
@@ -260,12 +260,16 @@ const User = () => {
                                                 </td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
-                                                        <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(user)}>
-                                                            <IconPencil className="w-4 h-4" />
-                                                        </button>
-                                                        <button type="button" className="btn btn-sm btn-outline-warning" onClick={() => handleResetPassword(user.user_id)}>
-                                                            <IconLockDots className="w-4 h-4" />
-                                                        </button>
+                                                        <Tooltip text="Edit User" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editUser(user)}>
+                                                                <IconPencil className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Reset Password" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-warning" onClick={() => handleResetPassword(user.user_id)}>
+                                                                <IconLockDots className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>

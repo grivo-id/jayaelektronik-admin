@@ -9,7 +9,7 @@ import { useGetAllBrandQuery, useCreateBrand, useUpdateBrand, useDeleteBrand, us
 import { CreateBrandPayload, getCreateBrandSchema } from '../../schema/brandsSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
+import { MainHeader, Loader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBrand } from '../../api/brandsApi';
 import { ApiUploadImageBrand } from '../../api/uploadApi';
@@ -303,12 +303,16 @@ const BlogCategories = () => {
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(brand.brand_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
-                                                        <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editBrandAction(brand)} disabled={updateBrandPending}>
-                                                            <IconPencil className="w-4 h-4" />
-                                                        </button>
-                                                        <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteBrandAction(brand)} disabled={deleteBrandPending}>
-                                                            <IconTrash className="w-4 h-4" />
-                                                        </button>
+                                                        <Tooltip text="Edit Brand" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editBrandAction(brand)} disabled={updateBrandPending}>
+                                                                <IconPencil className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Delete Brand" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteBrandAction(brand)} disabled={deleteBrandPending}>
+                                                                <IconTrash className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>

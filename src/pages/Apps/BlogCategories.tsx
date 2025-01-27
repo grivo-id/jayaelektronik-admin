@@ -9,7 +9,7 @@ import { useGetAllBlogCategoryQuery, useCreateBlogCategory, useUpdateBlogCategor
 import { CreateBlogCategoryPayload, getCreateBlogCategorySchema } from '../../schema/blogCategoriesShema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
+import { MainHeader, Loader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBlogCategory } from '../../api/blogCategoryApi';
 import formatDate from '../../utils/formatDate';
@@ -195,12 +195,26 @@ const BlogCategories = () => {
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(category.blog_category_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
-                                                        <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(category)} disabled={deleteBlogCategoryPending}>
-                                                            <IconPencil className="w-4 h-4" />
-                                                        </button>
-                                                        <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(category)} disabled={deleteBlogCategoryPending}>
-                                                            <IconTrash className="w-4 h-4" />
-                                                        </button>
+                                                        <Tooltip text="Edit Category" position="top">
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-sm btn-outline-primary"
+                                                                onClick={() => editCategory(category)}
+                                                                disabled={deleteBlogCategoryPending}
+                                                            >
+                                                                <IconPencil className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Delete Category" position="top">
+                                                            <button
+                                                                type="button"
+                                                                className="btn btn-sm btn-outline-danger"
+                                                                onClick={() => deleteCategory(category)}
+                                                                disabled={deleteBlogCategoryPending}
+                                                            >
+                                                                <IconTrash className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>

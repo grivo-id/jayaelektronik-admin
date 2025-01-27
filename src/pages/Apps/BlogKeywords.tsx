@@ -9,7 +9,7 @@ import { useGetAllBlogKeyword, useCreateBlogKeyword, useUpdateBlogKeyword, useDe
 import { CreateBlogKeywordPayload, getCreateBlogKeywordSchema } from '../../schema/blogKeywordsSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
+import { MainHeader, Loader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBlogKeyword } from '../../api/blogKeywordsApi';
 import formatDate from '../../utils/formatDate';
@@ -192,12 +192,16 @@ const BlogKeywords = () => {
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(keyword.blog_keyword_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
-                                                        <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(keyword)} disabled={deleteBlogKeywordPending}>
-                                                            <IconPencil className="w-4 h-4" />
-                                                        </button>
-                                                        <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(keyword)} disabled={deleteBlogKeywordPending}>
-                                                            <IconTrash className="w-4 h-4" />
-                                                        </button>
+                                                        <Tooltip text="Edit Keyword" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editCategory(keyword)} disabled={deleteBlogKeywordPending}>
+                                                                <IconPencil className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Delete Keyword" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteCategory(keyword)} disabled={deleteBlogKeywordPending}>
+                                                                <IconTrash className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>
