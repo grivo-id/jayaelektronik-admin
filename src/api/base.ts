@@ -36,7 +36,13 @@ axiosInstance.interceptors.response.use(
     (response) => {
         const method = response.config?.method?.toUpperCase() ?? '';
         const url = response.config?.url ?? '';
-        if (method !== 'GET' && !(method === 'DELETE' && url.includes('/upload-image/blog')) && response.data && response.data.message) {
+        const isNotGetMethod = method !== 'GET';
+        const imageUploadEndpoint = url.includes('/upload-image');
+        const hasResponseMessage = response.data && response.data.message;
+
+        console.log(url);
+
+        if (isNotGetMethod && !imageUploadEndpoint && hasResponseMessage) {
             showMessage(response.data.message, 'success');
         }
         return response;
