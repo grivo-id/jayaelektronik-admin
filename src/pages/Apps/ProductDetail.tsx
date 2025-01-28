@@ -12,6 +12,10 @@ import { MultipleSelect } from '../../components';
 import { NumericFormat as NumberFormat } from 'react-number-format';
 import { getUpdateProductSchema, UpdateProductPayload } from '../../schema/productSchema';
 import { ApiUploadImageProduct } from '../../api/uploadApi';
+import IconChecks from '../../components/Icon/IconChecks';
+import IconX from '../../components/Icon/IconX';
+import IconArrowBackward from '../../components/Icon/IconArrowBackward';
+import { SkeletonProductDetail } from '../../components';
 
 const ProductDetail = () => {
     const dispatch = useDispatch();
@@ -64,11 +68,11 @@ const ProductDetail = () => {
     });
     const [selectedCategory, setSelectedCategory] = useState<string>('');
 
-    const { data: product, isLoading } = useGetProductByIdQuery(id as string);
+    const { data: product, isFetching } = useGetProductByIdQuery(id as string);
     const { data: categories } = useGetAllProductCategory({});
     const { data: brands } = useGetAllBrandQuery({ page: 1, limit: 1000 });
     const { data: tags } = useGetAllProductTag({ page: 1, limit: 1000 });
-    const updateProduct = useUpdateProductMutation();
+    const { mutate: updateProduct, isPending: isUpdatePending } = useUpdateProductMutation();
 
     const UpdateProductSchema = useMemo(() => getUpdateProductSchema(), []);
 
@@ -85,19 +89,12 @@ const ProductDetail = () => {
 
     const productPrice = watch('product_price');
     const isDiscount = watch('product_promo_is_discount');
+    const isBestDeal = watch('product_promo_is_best_deal');
     const discountPercentage = watch('product_promo_discount_percentage');
 
     useEffect(() => {
         dispatch(setPageTitle('Edit Product'));
     }, []);
-
-    useEffect(() => {
-        if (!isDiscount) {
-            setValue('product_promo_discount_percentage', 0);
-            setValue('product_promo_final_price', productPrice || 0);
-            setValue('product_promo_expired_date', null);
-        }
-    }, [isDiscount]);
 
     useEffect(() => {
         if (isDiscount && productPrice && discountPercentage) {
@@ -108,7 +105,6 @@ const ProductDetail = () => {
 
     useEffect(() => {
         if (product) {
-            // Set form values
             setValue('product_name', product.product_name);
             setValue('product_code', product.product_code);
             setValue('product_price', product.product_price);
@@ -123,24 +119,20 @@ const ProductDetail = () => {
             setValue('product_subcategory_id', product.product_subcategory_id);
             setValue('product_tag_names', product.product_tags?.map((tag) => tag.product_tag_name) || []);
 
-            // Set promo values
             if (product.product_promo) {
                 setValue('product_promo_is_best_deal', product.product_promo.product_promo_is_best_deal);
                 setValue('product_promo_is_discount', product.product_promo.product_promo_is_discount);
-                setValue('product_promo_discount_percentage', product.product_promo.product_promo_discount_percentage);
                 setValue('product_promo_final_price', product.product_promo.product_promo_final_price);
+                setValue('product_promo_discount_percentage', product.product_promo.product_promo_discount_percentage);
                 setValue('product_promo_expired_date', product.product_promo.product_promo_expired_date || null);
             }
 
-            // Set image values
             setValue('product_image1', product.product_image1);
             setValue('product_image2', product.product_image2);
             setValue('product_image3', product.product_image3);
 
-            // Set selected category for filtering subcategories
             setSelectedCategory(product.product_category_id);
 
-            // Set image previews
             setImagePreview({
                 image1: product.product_image1,
                 image2: product.product_image2,
@@ -194,31 +186,32 @@ const ProductDetail = () => {
     const onSubmit = async (data: UpdateProductPayload) => {
         if (!id) return;
 
-        try {
-            await updateProduct.mutateAsync({
-                id,
-                payload: {
-                    ...data,
-                    product_promo_expired_date: data.product_promo_expired_date || null,
-                },
-            });
-            navigate('/admin/manage-product');
-        } catch (error) {
-            console.error('Failed to update product:', error);
-        }
+        updateProduct({
+            id,
+            payload: {
+                ...data,
+                product_promo_expired_date: data.product_promo_expired_date || null,
+            },
+        });
     };
 
-    if (isLoading) {
-        return <div>Loading...</div>;
+    if (isFetching) {
+        return <SkeletonProductDetail />;
     }
 
     return (
         <div className="pt-5">
             <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl">Edit Product</h2>
-                <button type="button" className="btn btn-outline-primary" onClick={() => navigate(-1)}>
-                    Back
-                </button>
+                <div className="flex items-center gap-4">
+                    <button className="btn btn-primary p-2 rounded-full" onClick={() => navigate(-1)}>
+                        <IconArrowBackward className="h-5 w-5" />
+                        <span className="sr-only">Back</span>
+                    </button>
+                    <div>
+                        <h1 className="text-2xl font-bold">Product Detail</h1>
+                        <p className="text-sm text-gray-600">Details for product #{product?.product_id}</p>
+                    </div>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -240,29 +233,29 @@ const ProductDetail = () => {
                         </div>
                         <div>
                             <label htmlFor="product_price">Price</label>
-                            <Controller
-                                name="product_price"
-                                control={control}
-                                render={({ field }) => (
-                                    <div className="flex">
-                                        <div className="bg-[#eee] flex justify-center items-center rounded-l-md  px-3 font-semibold border border-r-0  border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                            Rp
-                                        </div>
+                            <div className="flex">
+                                <div className="bg-[#eee] flex justify-center items-center rounded-l-md px-3 font-semibold border border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
+                                    Rp
+                                </div>
+                                <Controller
+                                    name="product_price"
+                                    control={control}
+                                    render={({ field: { onChange, value } }) => (
                                         <NumberFormat
-                                            {...field}
                                             thousandSeparator="."
                                             decimalSeparator=","
                                             id="product_price"
                                             className="form-input rounded-l-none"
-                                            placeholder="Masukkan harga"
+                                            placeholder="Enter price"
+                                            value={value}
                                             onValueChange={(values) => {
                                                 const numericValue = values.value.replace(/\./g, '').replace(',', '.');
-                                                field.onChange(Number(numericValue));
+                                                onChange(Number(numericValue));
                                             }}
                                         />
-                                    </div>
-                                )}
-                            />
+                                    )}
+                                />
+                            </div>
                             {errors.product_price && <span className="text-danger">{errors.product_price.message}</span>}
                         </div>
                         <div>
@@ -276,14 +269,32 @@ const ProductDetail = () => {
                         <div className="flex flex-col gap-4">
                             <div>
                                 <label htmlFor="product_is_available">Available</label>
-                                <select id="product_is_available" className="form-select" {...register('product_is_available')}>
-                                    <option value="true">Yes</option>
+                                <select
+                                    id="product_is_available"
+                                    {...register('product_is_available', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
                                     <option value="false">No</option>
+                                    <option value="true">Yes</option>
                                 </select>
                             </div>
                             <div>
                                 <label htmlFor="product_is_show">Show in Store</label>
-                                <select id="product_is_show" className="form-select" {...register('product_is_show')}>
+                                <select
+                                    id="product_is_show"
+                                    {...register('product_is_show', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
                                 </select>
@@ -292,14 +303,32 @@ const ProductDetail = () => {
                         <div className="flex flex-col gap-4">
                             <div>
                                 <label htmlFor="product_is_bestseller">Bestseller</label>
-                                <select id="product_is_bestseller" className="form-select" {...register('product_is_bestseller')}>
+                                <select
+                                    id="product_is_bestseller"
+                                    {...register('product_is_bestseller', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
                                 </select>
                             </div>
                             <div>
                                 <label htmlFor="product_is_new_arrival">New Arrival</label>
-                                <select id="product_is_new_arrival" className="form-select" {...register('product_is_new_arrival')}>
+                                <select
+                                    id="product_is_new_arrival"
+                                    {...register('product_is_new_arrival', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
                                     <option value="true">Yes</option>
                                     <option value="false">No</option>
                                 </select>
@@ -318,27 +347,44 @@ const ProductDetail = () => {
                             <div key={num} className="flex flex-col gap-4">
                                 <div className="w-full aspect-square relative border rounded-lg overflow-hidden">
                                     <img
-                                        src={imagePreview[`image${num}` as keyof typeof imagePreview] || '/assets/images/placeholder.jpg'}
+                                        src={imagePreview[`image${num}` as keyof typeof imagePreview] || '/assets/images/file-preview.svg'}
                                         alt={`Product Image ${num}`}
                                         className="w-full h-full object-cover"
                                     />
+                                    {showImageActions[`image${num}` as keyof typeof showImageActions] && (
+                                        <div className="absolute top-2 right-2 flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleImageConfirm(`image${num}` as keyof typeof showImageActions)}
+                                                disabled={isUploading[`image${num}` as keyof typeof isUploading]}
+                                                className="btn btn-success p-2 !rounded-full"
+                                            >
+                                                <IconChecks className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleImageCancel(`image${num}` as keyof typeof showImageActions)}
+                                                disabled={isUploading[`image${num}` as keyof typeof isUploading]}
+                                                className="btn btn-danger p-2 !rounded-full"
+                                            >
+                                                <IconX className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    )}
+                                    {isUploading[`image${num}` as keyof typeof isUploading] && (
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        </div>
+                                    )}
                                 </div>
                                 <input
                                     type="file"
                                     accept="image/*"
+                                    name={`product_image${num}`}
                                     onChange={(e) => handleImageChange(e, `image${num}` as keyof typeof selectedImages)}
-                                    className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold hover:file:bg-primary/90"
+                                    className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold hover:file:bg-primary/90 disabled:bg-[#eee] disabled:cursor-not-allowed"
+                                    disabled={uploadedImages[`image${num}` as keyof typeof uploadedImages]}
                                 />
-                                {showImageActions[`image${num}` as keyof typeof showImageActions] && (
-                                    <div className="flex gap-2">
-                                        <button type="button" className="btn btn-sm btn-primary" onClick={() => handleImageConfirm(`image${num}` as keyof typeof selectedImages)}>
-                                            Confirm
-                                        </button>
-                                        <button type="button" className="btn btn-sm btn-danger" onClick={() => handleImageCancel(`image${num}` as keyof typeof selectedImages)}>
-                                            Cancel
-                                        </button>
-                                    </div>
-                                )}
                             </div>
                         ))}
                     </div>
@@ -354,7 +400,10 @@ const ProductDetail = () => {
                                     <select
                                         id="product_promo_is_discount"
                                         {...register('product_promo_is_discount', {
-                                            setValueAs: (value) => value === 'true',
+                                            setValueAs: (value) => {
+                                                if (typeof value === 'boolean') return value;
+                                                return value === 'true';
+                                            },
                                         })}
                                         className="form-select"
                                     >
@@ -367,7 +416,10 @@ const ProductDetail = () => {
                                     <select
                                         id="product_promo_is_best_deal"
                                         {...register('product_promo_is_best_deal', {
-                                            setValueAs: (value) => value === 'true',
+                                            setValueAs: (value) => {
+                                                if (typeof value === 'boolean') return value;
+                                                return value === 'true';
+                                            },
                                         })}
                                         className="form-select"
                                     >
@@ -388,7 +440,7 @@ const ProductDetail = () => {
                                                 id="product_promo_discount_percentage"
                                                 className={!isDiscount ? 'form-input bg-gray-100 dark:bg-gray-700' : 'form-input'}
                                                 disabled={!isDiscount}
-                                                value={!isDiscount ? 0 : value}
+                                                value={value}
                                                 onValueChange={(values) => {
                                                     onChange(Number(values.value));
                                                 }}
@@ -406,7 +458,7 @@ const ProductDetail = () => {
                                     <Controller
                                         control={control}
                                         name="product_promo_final_price"
-                                        render={({ field: { value } }) => (
+                                        render={({ field: { onChange, value } }) => (
                                             <div className="flex">
                                                 <div className="bg-[#eee] flex justify-center items-center rounded-l-md px-3 font-semibold border border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                                     Rp
@@ -418,6 +470,12 @@ const ProductDetail = () => {
                                                     thousandSeparator="."
                                                     decimalSeparator=","
                                                     disabled
+                                                    onValueChange={(values) => {
+                                                        const numericValue = values.value.replace(/\./g, '').replace(',', '.');
+                                                        onChange(Number(numericValue));
+                                                    }}
+                                                    allowNegative={false}
+                                                    decimalScale={0}
                                                 />
                                             </div>
                                         )}
@@ -430,8 +488,8 @@ const ProductDetail = () => {
                                 <input
                                     type="datetime-local"
                                     id="product_promo_expired_date"
-                                    className={!isDiscount ? 'form-input bg-gray-100 dark:bg-gray-700' : 'form-input'}
-                                    disabled={!isDiscount}
+                                    className={!isBestDeal ? 'form-input bg-gray-100 dark:bg-gray-700' : 'form-input'}
+                                    disabled={!isBestDeal}
                                     {...register('product_promo_expired_date')}
                                 />
                                 {errors.product_promo_expired_date && <span className="text-danger">{errors.product_promo_expired_date.message}</span>}
@@ -488,7 +546,7 @@ const ProductDetail = () => {
                                 {...register('product_category_id')}
                                 onChange={(e) => {
                                     setSelectedCategory(e.target.value);
-                                    setValue('product_subcategory_id', ''); // Reset sub category when category changes
+                                    setValue('product_subcategory_id', '');
                                 }}
                             >
                                 <option value="">Select Category</option>
@@ -519,11 +577,11 @@ const ProductDetail = () => {
                 </div>
 
                 <div className="flex gap-4 justify-end">
-                    <button type="button" className="btn btn-outline-danger" onClick={() => navigate(-1)}>
+                    <button type="button" className="btn btn-outline-danger" onClick={() => navigate(-1)} disabled={isUpdatePending}>
                         Cancel
                     </button>
-                    <button type="submit" className="btn btn-primary">
-                        Save Changes
+                    <button type="submit" className="btn btn-primary" disabled={isUpdatePending}>
+                        {isUpdatePending ? 'Saving...' : 'Save Changes'}
                     </button>
                 </div>
             </form>

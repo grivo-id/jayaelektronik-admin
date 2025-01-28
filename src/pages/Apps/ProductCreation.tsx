@@ -164,8 +164,6 @@ const ProductCreation = () => {
         createProduct(data);
     };
 
-    console.log('useForm errors:', errors);
-
     const disabledInputClass = 'form-input bg-[#eee] cursor-not-allowed dark:bg-[#1b2e4b]';
 
     return (
