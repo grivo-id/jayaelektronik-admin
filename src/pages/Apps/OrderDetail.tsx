@@ -1,15 +1,50 @@
 import { useParams } from 'react-router-dom';
-import { useGetOrderByIdQuery } from '../../services/orderService';
+import { useGetOrderByIdQuery, useToggleVerified } from '../../services/orderService';
 import formatDate from '../../utils/formatDate';
 import IconArrowBackward from '../../components/Icon/IconArrowBackward';
 import { useNavigate } from 'react-router-dom';
-import { SkeletonOrderDetail } from '../../components';
+import { SkeletonOrderDetail, Tooltip } from '../../components';
 import formatToRupiah from '../../utils/formatToRupiah';
+import Swal from 'sweetalert2';
 
 const OrderDetail = () => {
     const { id } = useParams();
     const navigate = useNavigate();
     const { data: order, isFetching } = useGetOrderByIdQuery(id || '');
+    const { mutate: toggleVerified } = useToggleVerified();
+
+    const handleToggleVerified = (orderId: string, currentStatus: boolean) => {
+        const action = currentStatus ? 'mark as unverified' : 'mark as verified';
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: `This order will be ${action}`,
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            cancelButtonText: 'No',
+            padding: '2em',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Processing...',
+                    text: 'Please wait while we update the order status.',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+                toggleVerified(orderId, {
+                    onSuccess: () => {
+                        Swal.fire('Success', `Order has been ${action}`, 'success');
+                    },
+                    onError: () => {
+                        Swal.fire('Error', 'Failed to update order status', 'error');
+                    },
+                });
+            }
+        });
+    };
 
     if (isFetching) {
         return <SkeletonOrderDetail />;
@@ -61,7 +96,25 @@ const OrderDetail = () => {
                             </div>
                             <div>
                                 <p className="text-gray-500 mb-2">Verification Status</p>
-                                <span className={`badge ${order.order_user_verified ? 'badge-outline-primary' : 'badge-outline-danger'}`}>{order.order_user_verified ? 'Verified' : 'Unverified'}</span>
+                                <div className="flex items-center gap-2">
+                                    <Tooltip text={order.order_user_verified ? 'Unverify User' : 'Verify User'} position="bottom">
+                                        <label className="w-24 h-8 relative">
+                                            <input
+                                                type="checkbox"
+                                                className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
+                                                id={`verify_switch_${order.order_id}`}
+                                                checked={order.order_user_verified}
+                                                onChange={() => handleToggleVerified(order.order_id, order.order_user_verified)}
+                                            />
+                                            <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-6 before:h-6 before:rounded-full peer-checked:before:left-[4.3rem] peer-checked:bg-primary before:transition-all before:duration-300">
+                                                <span className="absolute inset-0 flex items-center justify-between px-2 text-xs font-bold text-white pointer-events-none">
+                                                    <span className={`transition-all duration-300 ${order.order_user_verified ? '' : 'invisible'} relative -right-2.5`}>Verified</span>
+                                                    <span className={`transition-all duration-300 ${order.order_user_verified ? 'invisible' : ''} relative -left-6`}>Unverified</span>
+                                                </span>
+                                            </span>
+                                        </label>
+                                    </Tooltip>
+                                </div>
                             </div>
                         </div>
                     </div>
