@@ -15,6 +15,8 @@ import { ApiUploadImageProduct } from '../../api/uploadApi';
 import IconChecks from '../../components/Icon/IconChecks';
 import IconX from '../../components/Icon/IconX';
 import IconArrowBackward from '../../components/Icon/IconArrowBackward';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 import { SkeletonProductDetail } from '../../components';
 
 const ProductDetail = () => {
@@ -67,6 +69,7 @@ const ProductDetail = () => {
         image3: false,
     });
     const [selectedCategory, setSelectedCategory] = useState<string>('');
+    const [editorContent, setEditorContent] = useState('');
 
     const { data: product, isFetching } = useGetProductByIdQuery(id as string);
     const { data: categories } = useGetAllProductCategory({});
@@ -104,12 +107,13 @@ const ProductDetail = () => {
     }, [isDiscount, productPrice, discountPercentage]);
 
     useEffect(() => {
-        if (product) {
+        if (product && !isFetching) {
             setValue('product_name', product.product_name);
+            setValue('product_desc', product.product_desc);
             setValue('product_code', product.product_code);
+            setEditorContent(product.product_desc);
             setValue('product_price', product.product_price);
             setValue('product_item_sold', product.product_item_sold);
-            setValue('product_desc', product.product_desc);
             setValue('product_is_available', product.product_is_available);
             setValue('product_is_show', product.product_is_show);
             setValue('product_is_bestseller', product.product_is_bestseller);
@@ -139,7 +143,7 @@ const ProductDetail = () => {
                 image3: product.product_image3,
             });
         }
-    }, [product]);
+    }, [product, setValue, isFetching]);
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>, imageKey: 'image1' | 'image2' | 'image3') => {
         const file = e.target.files?.[0];
@@ -186,12 +190,18 @@ const ProductDetail = () => {
     const onSubmit = async (data: UpdateProductPayload) => {
         if (!id) return;
 
+        const payload = {
+            ...data,
+            product_desc: editorContent,
+            product_image1: uploadedImages.image1 ? data.product_image1 : product?.product_image1,
+            product_image2: uploadedImages.image2 ? data.product_image2 : product?.product_image2,
+            product_image3: uploadedImages.image3 ? data.product_image3 : product?.product_image3,
+            product_promo_expired_date: data.product_promo_is_best_deal ? data.product_promo_expired_date : null,
+        };
+
         updateProduct({
             id,
-            payload: {
-                ...data,
-                product_promo_expired_date: data.product_promo_expired_date || null,
-            },
+            payload,
         });
     };
 
@@ -258,141 +268,6 @@ const ProductDetail = () => {
                             </div>
                             {errors.product_price && <span className="text-danger">{errors.product_price.message}</span>}
                         </div>
-                        <div>
-                            <label htmlFor="product_desc">Description</label>
-                            <textarea id="product_desc" className="form-textarea" {...register('product_desc')} />
-                            {errors.product_desc && <span className="text-danger">{errors.product_desc.message}</span>}
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <label htmlFor="product_is_available">Available</label>
-                                <select
-                                    id="product_is_available"
-                                    {...register('product_is_available', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="product_is_show">Show in Store</label>
-                                <select
-                                    id="product_is_show"
-                                    {...register('product_is_show', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <label htmlFor="product_is_bestseller">Bestseller</label>
-                                <select
-                                    id="product_is_bestseller"
-                                    {...register('product_is_bestseller', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="product_is_new_arrival">New Arrival</label>
-                                <select
-                                    id="product_is_new_arrival"
-                                    {...register('product_is_new_arrival', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="panel">
-                    <div className="flex items-center justify-between mb-5">
-                        <h5 className="font-semibold text-lg dark:text-white-light">Product Images</h5>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                        {[1, 2, 3].map((num) => (
-                            <div key={num} className="flex flex-col gap-4">
-                                <div className="w-full aspect-square relative border rounded-lg overflow-hidden">
-                                    <img
-                                        src={imagePreview[`image${num}` as keyof typeof imagePreview] || '/assets/images/file-preview.svg'}
-                                        alt={`Product Image ${num}`}
-                                        className="w-full h-full object-cover"
-                                    />
-                                    {showImageActions[`image${num}` as keyof typeof showImageActions] && (
-                                        <div className="absolute top-2 right-2 flex items-center gap-2">
-                                            <button
-                                                type="button"
-                                                onClick={() => handleImageConfirm(`image${num}` as keyof typeof showImageActions)}
-                                                disabled={isUploading[`image${num}` as keyof typeof isUploading]}
-                                                className="btn btn-success p-2 !rounded-full"
-                                            >
-                                                <IconChecks className="w-4 h-4" />
-                                            </button>
-                                            <button
-                                                type="button"
-                                                onClick={() => handleImageCancel(`image${num}` as keyof typeof showImageActions)}
-                                                disabled={isUploading[`image${num}` as keyof typeof isUploading]}
-                                                className="btn btn-danger p-2 !rounded-full"
-                                            >
-                                                <IconX className="w-4 h-4" />
-                                            </button>
-                                        </div>
-                                    )}
-                                    {isUploading[`image${num}` as keyof typeof isUploading] && (
-                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
-                                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                        </div>
-                                    )}
-                                </div>
-                                <input
-                                    type="file"
-                                    accept="image/*"
-                                    name={`product_image${num}`}
-                                    onChange={(e) => handleImageChange(e, `image${num}` as keyof typeof selectedImages)}
-                                    className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold hover:file:bg-primary/90 disabled:bg-[#eee] disabled:cursor-not-allowed"
-                                    disabled={uploadedImages[`image${num}` as keyof typeof uploadedImages]}
-                                />
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                <div className="panel">
-                    <div className="mb-5">
-                        <h5 className="font-semibold text-lg mb-4">Product Promotion</h5>
                         <div className="grid gap-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
@@ -495,6 +370,97 @@ const ProductDetail = () => {
                                 {errors.product_promo_expired_date && <span className="text-danger">{errors.product_promo_expired_date.message}</span>}
                             </div>
                         </div>
+                        <div>
+                            <label htmlFor="product_item_sold">Items Sold</label>
+                            <Controller
+                                control={control}
+                                name="product_item_sold"
+                                render={({ field: { onChange, value } }) => (
+                                    <NumberFormat
+                                        id="product_item_sold"
+                                        className="form-input"
+                                        value={value}
+                                        onValueChange={(values) => {
+                                            onChange(Number(values.value));
+                                        }}
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                    />
+                                )}
+                            />
+                            {errors.product_item_sold && <span className="text-danger">{errors.product_item_sold.message}</span>}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <label htmlFor="product_is_available">Available</label>
+                                <select
+                                    id="product_is_available"
+                                    {...register('product_is_available', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="product_is_show">Show in Store</label>
+                                <select
+                                    id="product_is_show"
+                                    {...register('product_is_show', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <label htmlFor="product_is_bestseller">Bestseller</label>
+                                <select
+                                    id="product_is_bestseller"
+                                    {...register('product_is_bestseller', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="product_is_new_arrival">New Arrival</label>
+                                <select
+                                    id="product_is_new_arrival"
+                                    {...register('product_is_new_arrival', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="true">Yes</option>
+                                    <option value="false">No</option>
+                                </select>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -574,6 +540,79 @@ const ProductDetail = () => {
                             {errors.product_subcategory_id && <span className="text-danger">{errors.product_subcategory_id.message}</span>}
                         </div>
                     </div>
+                </div>
+
+                <div className="panel">
+                    <div className="flex items-center justify-between mb-5">
+                        <h5 className="font-semibold text-lg dark:text-white-light">Product Images</h5>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        {[1, 2, 3].map((num) => (
+                            <div key={num} className="flex flex-col gap-4">
+                                <div className="w-full aspect-square relative border rounded-lg overflow-hidden">
+                                    <img
+                                        src={imagePreview[`image${num}` as keyof typeof imagePreview] || '/assets/images/file-preview.svg'}
+                                        alt={`Product Image ${num}`}
+                                        className="w-full h-full object-cover"
+                                    />
+                                    {showImageActions[`image${num}` as keyof typeof showImageActions] && (
+                                        <div className="absolute top-2 right-2 flex items-center gap-2">
+                                            <button
+                                                type="button"
+                                                onClick={() => handleImageConfirm(`image${num}` as keyof typeof showImageActions)}
+                                                disabled={isUploading[`image${num}` as keyof typeof isUploading]}
+                                                className="btn btn-success p-2 !rounded-full"
+                                            >
+                                                <IconChecks className="w-4 h-4" />
+                                            </button>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleImageCancel(`image${num}` as keyof typeof showImageActions)}
+                                                disabled={isUploading[`image${num}` as keyof typeof isUploading]}
+                                                className="btn btn-danger p-2 !rounded-full"
+                                            >
+                                                <IconX className="w-4 h-4" />
+                                            </button>
+                                        </div>
+                                    )}
+                                    {isUploading[`image${num}` as keyof typeof isUploading] && (
+                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                                            <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        </div>
+                                    )}
+                                </div>
+                                <input
+                                    type="file"
+                                    accept="image/*"
+                                    name={`product_image${num}`}
+                                    onChange={(e) => handleImageChange(e, `image${num}` as keyof typeof selectedImages)}
+                                    className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold hover:file:bg-primary/90 disabled:bg-[#eee] disabled:cursor-not-allowed"
+                                    disabled={uploadedImages[`image${num}` as keyof typeof uploadedImages]}
+                                />
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="panel">
+                    <div className="flex items-center justify-between mb-5">
+                        <label htmlFor="product_desc" className="font-semibold text-lg dark:text-white-light">
+                            Product Description <span className="text-danger">*</span>
+                        </label>
+                    </div>
+                    <div className="mb-10">
+                        <ReactQuill
+                            theme="snow"
+                            value={editorContent}
+                            onChange={(content) => {
+                                setEditorContent(content);
+                                setValue('product_desc', content);
+                            }}
+                            className="h-[200px] mb-10"
+                        />
+                    </div>
+                    {errors.product_desc && <span className="text-danger">{errors.product_desc.message}</span>}
                 </div>
 
                 <div className="flex gap-4 justify-end">
