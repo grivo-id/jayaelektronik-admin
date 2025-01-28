@@ -36,14 +36,29 @@ axiosInstance.interceptors.response.use(
     (response) => {
         const method = response.config?.method?.toUpperCase() ?? '';
         const url = response.config?.url ?? '';
-        if (method !== 'GET' && !(method === 'DELETE' && url.includes('/upload-image/blog')) && response.data && response.data.message) {
+        const isNotGetMethod = method !== 'GET';
+        const imageUploadEndpoint = url.includes('/upload-image');
+        const hasResponseMessage = response.data && response.data.message;
+
+        console.log(url);
+
+        if (isNotGetMethod && !imageUploadEndpoint && hasResponseMessage) {
             showMessage(response.data.message, 'success');
         }
         return response;
     },
     (error) => {
         if (error.response) {
+            if (!Cookies.get('accessToken')) {
+                showMessage('Authentication required. Please login.', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login';
+                }, 1000);
+                return Promise.reject(error);
+            }
+
             const { data, message } = error.response;
+
             if (message === 'session_expired') {
                 showMessage('Your session has expired. Please login again.', 'error');
                 Cookies.remove('accessToken');

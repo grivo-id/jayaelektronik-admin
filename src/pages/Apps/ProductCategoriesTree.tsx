@@ -22,7 +22,7 @@ import { CreateProductSubCategoryPayload, getCreateProductSubCategorySchema } fr
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import Swal from 'sweetalert2';
-import { Loader } from '../../components';
+import { Loader, Tooltip } from '../../components';
 import MainProductCatHeader from '../../components/MainProductCatHeader';
 
 interface CategoryItemProps {
@@ -51,18 +51,22 @@ const CategoryItem: React.FC<CategoryItemProps> = ({
                     {isExpanded ? <IconMinus className="w-5 h-5" /> : <IconChevronDown className="w-5 h-5" />}
                 </button>
                 <div className="flex items-center mx-3">
-                    <button
-                        className="btn btn-outline-primary p-2 mr-2"
-                        onClick={() => (isSubCategory && onEditSubCategory ? onEditSubCategory(category as ProductSubCategory) : onEditCategory && onEditCategory(category as ProductCategory))}
-                    >
-                        <IconPencil className="w-5 h-5" />
-                    </button>
-                    <button
-                        className="btn btn-outline-danger p-2"
-                        onClick={() => (isSubCategory && onDeleteSubCategory ? onDeleteSubCategory(category as ProductSubCategory) : onDeleteCategory && onDeleteCategory(category.id))}
-                    >
-                        <IconTrash className="w-5 h-5" />
-                    </button>
+                    <Tooltip text={`Edit ${isSubCategory ? 'Subcategory' : 'Category'}`} position="top">
+                        <button
+                            className="btn btn-outline-primary p-2 mr-2"
+                            onClick={() => (isSubCategory ? onEditSubCategory(category as ProductSubCategory) : onEditCategory(category as ProductCategory))}
+                        >
+                            <IconPencil className="w-5 h-5" />
+                        </button>
+                    </Tooltip>
+                    <Tooltip text={`Delete ${isSubCategory ? 'Subcategory' : 'Category'}`} position="top">
+                        <button
+                            className="btn btn-outline-danger p-2"
+                            onClick={() => (isSubCategory ? onDeleteSubCategory(category as ProductSubCategory) : onDeleteCategory && onDeleteCategory(category.id))}
+                        >
+                            <IconTrash className="w-5 h-5" />
+                        </button>
+                    </Tooltip>
                 </div>
                 <span className="font-medium text-gray-700 dark:text-gray-300 text-lg">{category.name}</span>
             </div>
@@ -352,9 +356,7 @@ const ProductCategoriesTree = () => {
                                 <IconX />
                             </button>
                             <div className="text-lg font-medium bg-[#fbfbfb] dark:bg-[#121c2c] ltr:pl-5 rtl:pr-5 py-3 ltr:pr-[50px] rtl:pl-[50px]">
-                                {formType === 'category' 
-                                    ? `${selectedCategory ? 'Edit' : 'Add'} Category` 
-                                    : `${selectedCategory ? 'Edit' : 'Add'} Subcategory`}
+                                {formType === 'category' ? `${selectedCategory ? 'Edit' : 'Add'} Category` : `${selectedCategory ? 'Edit' : 'Add'} Subcategory`}
                             </div>
                             <div className="p-5">
                                 {formType === 'category' ? (

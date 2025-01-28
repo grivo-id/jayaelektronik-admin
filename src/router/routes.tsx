@@ -95,6 +95,11 @@ const BlogDetail = lazy(() => import('../pages/Apps/BlogDetail'));
 const Brands = lazy(() => import('../pages/Apps/Brands'));
 const ProductCategoriesTree = lazy(() => import('../pages/Apps/ProductCategoriesTree'));
 const User = lazy(() => import('../pages/Apps/User'));
+const Products = lazy(() => import('../pages/Apps/Products'));
+const ProductDetail = lazy(() => import('../pages/Apps/ProductDetail'));
+const ProductCreation = lazy(() => import('../pages/Apps/ProductCreation'));
+const Orders = lazy(() => import('../pages/Apps/Orders'));
+const OrderDetail = lazy(() => import('../pages/Apps/OrderDetail'));
 
 const routes = [
     // dashboard
@@ -148,10 +153,29 @@ const routes = [
 
     {
         path: '/admin/list-order-customer',
+        element: <Orders />,
+    },
+
+    {
+        path: '/admin/list-order-customer/:id',
+        element: <OrderDetail />,
     },
 
     {
         path: '/admin/manage-product',
+        element: <Products />,
+    },
+    {
+        path: '/admin/manage-product/:id',
+        element: <ProductDetail />,
+    },
+    {
+        path: '/admin/manage-product/:id',
+        element: <ProductDetail />,
+    },
+    {
+        path: '/admin/manage-product/create',
+        element: <ProductCreation />,
     },
 
     {

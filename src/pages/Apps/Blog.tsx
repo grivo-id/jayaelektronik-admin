@@ -7,7 +7,7 @@ import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
 import { useDeleteBlog, useGetAllBlogQuery } from '../../services/blogService';
 import Pagination from '../../components/Pagination';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 import { QUILL_EDITOR_SANITIZATION_CONFIG } from '../../constants/quill-sanitize';
 import { useQueryClient } from '@tanstack/react-query';
@@ -20,11 +20,13 @@ const Blog = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [search, setSearch] = useState(searchParams.get('search') || '');
 
     const [queryParams, setQueryParams] = useState({
-        limit: 9,
-        page: 1,
-        search: '',
+        limit: 10,
+        page: Number(searchParams.get('page')) || 1,
+        search: searchParams.get('search') || '',
         sort: 'desc',
     });
 
@@ -38,8 +40,29 @@ const Blog = () => {
     const [showLoader, setShowLoader] = useState<boolean>(false);
 
     const handlePageChange = (newPage: number) => {
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            page: newPage.toString(),
+        });
         setQueryParams({ ...queryParams, page: newPage });
     };
+
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const searchValue = e.target.value;
+        setSearch(searchValue);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            search: searchValue,
+        });
+    };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setQueryParams({ ...queryParams, search, page: 1 });
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     useEffect(() => {
         const nextPage = (pagination?.currentPage ?? 1) + 1;
@@ -100,7 +123,7 @@ const Blog = () => {
                         </div>
                     </div>
                     <div className="relative">
-                        <input type="text" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" placeholder="Search..." value={''} onChange={() => {}} />
+                        <input type="text" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" placeholder="Search..." value={search} onChange={handleSearchChange} />
                         <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
                             <IconSearch className="mx-auto" />
                         </button>
@@ -178,7 +201,13 @@ const Blog = () => {
                 )}
             </div>
 
-            <Pagination activePage={queryParams.page} itemsCountPerPage={queryParams.limit} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
+            <Pagination
+                activePage={Number(searchParams.get('page')) || 1}
+                itemsCountPerPage={queryParams.limit}
+                totalItemsCount={pagination?.totalData || 0}
+                pageRangeDisplayed={5}
+                onChange={handlePageChange}
+            />
 
             {showLoader && <Loader />}
         </div>

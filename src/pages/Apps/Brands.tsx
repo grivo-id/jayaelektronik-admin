@@ -9,7 +9,7 @@ import { useGetAllBrandQuery, useCreateBrand, useUpdateBrand, useDeleteBrand, us
 import { CreateBrandPayload, getCreateBrandSchema } from '../../schema/brandsSchema';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { MainHeader, Loader, Pagination, SkeletonLoadingTable } from '../../components';
+import { MainHeader, Loader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllBrand } from '../../api/brandsApi';
 import { ApiUploadImageBrand } from '../../api/uploadApi';
@@ -17,15 +17,18 @@ import IconCheck from '../../components/Icon/IconChecks';
 import formatDate from '../../utils/formatDate';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
+import { useSearchParams } from 'react-router-dom';
 
 const BlogCategories = () => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
+    const [searchParams, setSearchParams] = useSearchParams();
+    const [search, setSearch] = useState(searchParams.get('search') || '');
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
-        page: 1,
-        search: '',
+        page: Number(searchParams.get('page')) || 1,
+        search: searchParams.get('search') || '',
         sort: 'desc',
     });
 
@@ -56,8 +59,6 @@ const BlogCategories = () => {
 
     const [addBrandModal, setAddBrandModal] = useState<boolean>(false);
     const [selectedBrand, setSelectedBrand] = useState<Brand | null>(null);
-    const [search, setSearch] = useState<string>('');
-
     const [selectedImage, setSelectedImage] = useState<File | null>(null);
     const [imagePreview, setImagePreview] = useState<string | null>(null);
     const [showImageActions, setShowImageActions] = useState(false);
@@ -203,13 +204,29 @@ const BlogCategories = () => {
     const isLoading = createBrandPending || updateBrandPending || deleteBrandPending;
 
     const handlePageChange = (newPage: number) => {
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            page: newPage.toString(),
+        });
         setQueryParams({ ...queryParams, page: newPage });
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSearch(e.target.value);
-        setQueryParams({ ...queryParams, search: e.target.value });
+        const searchValue = e.target.value;
+        setSearch(searchValue);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            search: searchValue,
+        });
     };
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setQueryParams({ ...queryParams, search, page: 1 });
+        }, 500);
+
+        return () => clearTimeout(timer);
+    }, [search]);
 
     useEffect(() => {
         const nextPage = (pagination?.currentPage ?? 1) + 1;
@@ -303,12 +320,16 @@ const BlogCategories = () => {
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(brand.brand_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
-                                                        <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editBrandAction(brand)} disabled={updateBrandPending}>
-                                                            <IconPencil className="w-4 h-4" />
-                                                        </button>
-                                                        <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteBrandAction(brand)} disabled={deleteBrandPending}>
-                                                            <IconTrash className="w-4 h-4" />
-                                                        </button>
+                                                        <Tooltip text="Edit Brand" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editBrandAction(brand)} disabled={updateBrandPending}>
+                                                                <IconPencil className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Delete Brand" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => deleteBrandAction(brand)} disabled={deleteBrandPending}>
+                                                                <IconTrash className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
                                                     </div>
                                                 </td>
                                             </tr>
@@ -319,7 +340,13 @@ const BlogCategories = () => {
                         </table>
                     </div>
                 </div>
-                <Pagination activePage={queryParams.page} itemsCountPerPage={queryParams.limit} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
+                <Pagination
+                    activePage={Number(searchParams.get('page')) || 1}
+                    itemsCountPerPage={queryParams.limit}
+                    totalItemsCount={pagination?.totalData || 0}
+                    pageRangeDisplayed={5}
+                    onChange={handlePageChange}
+                />
             </>
 
             {showLoader && <Loader />}
