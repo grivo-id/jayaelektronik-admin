@@ -395,7 +395,7 @@ const ProductDetail = () => {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="product_is_available">Available</label>
+                                <label htmlFor="product_is_available">Stock Available</label>
                                 <select
                                     id="product_is_available"
                                     {...register('product_is_available', {
