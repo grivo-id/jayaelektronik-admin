@@ -1,6 +1,6 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiCreateProduct, ApiGetAllProduct, ApiGetProductById } from '../api/productApi';
-import { CreateProductPayload } from '../schema/productSchema';
+import { ApiCreateProduct, ApiDeleteProduct, ApiGetAllProduct, ApiGetProductById, ApiUpdateProduct } from '../api/productApi';
+import { CreateProductPayload, UpdateProductPayload } from '../schema/productSchema';
 import { useNavigate } from 'react-router-dom';
 
 export const useGetAllProductQuery = (params: Record<string, any>) => {
@@ -20,7 +20,7 @@ export const useGetAllProductQuery = (params: Record<string, any>) => {
 
 export const useGetProductByIdQuery = (productId: string) => {
     return useQuery({
-        queryKey: ['product', productId],
+        queryKey: ['products', productId],
         queryFn: () => ApiGetProductById(productId),
         select: (response) => response.data,
     });
@@ -34,6 +34,28 @@ export const useCreateProductMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
             navigate('/admin/manage-product');
+        },
+    });
+};
+
+export const useUpdateProductMutation = () => {
+    const queryClient = useQueryClient();
+    const navigate = useNavigate();
+    return useMutation({
+        mutationFn: ({ id, payload }: { id: string; payload: UpdateProductPayload }) => ApiUpdateProduct(id, payload),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['products'] });
+            navigate('/admin/manage-product');
+        },
+    });
+};
+
+export const useDeleteProductMutation = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (productId: string) => ApiDeleteProduct(productId),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['products'] });
         },
     });
 };

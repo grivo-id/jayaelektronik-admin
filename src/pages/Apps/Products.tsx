@@ -5,12 +5,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllProduct } from '../../api/productApi';
-import { useGetAllProductQuery } from '../../services/productService';
+import { useDeleteProductMutation, useGetAllProductQuery } from '../../services/productService';
 import formatDate from '../../utils/formatDate';
 import formatRupiah from '../../utils/formatToRupiah';
 import { Badge } from '../../components/Badge';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
+import Swal from 'sweetalert2';
 
 const Products = () => {
     const dispatch = useDispatch();
@@ -27,6 +28,7 @@ const Products = () => {
     });
 
     const { data: { data: productData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllProductQuery(queryParams);
+    const { mutate: mutateDeleteProduct } = useDeleteProductMutation();
 
     useEffect(() => {
         dispatch(setPageTitle('Products Management'));
@@ -73,6 +75,37 @@ const Products = () => {
         }
     }, [queryParams, productData, isPlaceholderData, queryClient]);
 
+    const handleDeleteProduct = (productId: string) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'This product will be permanently deleted',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel',
+            padding: '2em',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Deleting...',
+                    text: 'Please wait while we delete the product.',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+                mutateDeleteProduct(productId, {
+                    onSuccess: () => {
+                        Swal.fire('Success', 'Product has been deleted', 'success');
+                    },
+                    onError: () => {
+                        Swal.fire('Error', 'Failed to delete product', 'error');
+                    },
+                });
+            }
+        });
+    };
     return (
         <div>
             <MainHeader
@@ -242,7 +275,7 @@ const Products = () => {
                                                             </button>
                                                         </Tooltip>
                                                         <Tooltip text="Delete Product" position="top">
-                                                            <button type="button" className="btn btn-sm btn-outline-danger p-2">
+                                                            <button type="button" className="btn btn-sm btn-outline-danger p-2" onClick={() => handleDeleteProduct(product.product_id)}>
                                                                 <IconTrash className="w-4 h-4" />
                                                             </button>
                                                         </Tooltip>

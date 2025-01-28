@@ -1,4 +1,4 @@
-import { CreateProductPayload } from '../schema/productSchema';
+import { CreateProductPayload, UpdateProductPayload } from '../schema/productSchema';
 import { ApiResponse } from '../types/api';
 import { axiosInstance } from './base';
 
@@ -18,5 +18,14 @@ export const ApiGetProductById = async (productId: string) => {
 
 export const ApiCreateProduct = async (payload: CreateProductPayload) => {
     const response = await axiosInstance.post<ApiResponse<Product>>('/products', payload);
+    return response.data;
+};
+
+export const ApiUpdateProduct = async (productId: string, payload: UpdateProductPayload) => {
+    const response = await axiosInstance.patch<ApiResponse<Product>>(`/products/${productId}`, payload);
+    return response.data;
+};
+export const ApiDeleteProduct = async (productId: string) => {
+    const response = await axiosInstance.delete<ApiResponse<null>>(`/products/${productId}`);
     return response.data;
 };
