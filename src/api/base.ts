@@ -39,10 +39,9 @@ axiosInstance.interceptors.response.use(
         const isNotGetMethod = method !== 'GET';
         const imageUploadEndpoint = url.includes('/upload-image');
         const hasResponseMessage = response.data && response.data.message;
+        const isProductsAllEndpoint = url.includes('/products/all') && method === 'POST';
 
-        console.log(url);
-
-        if (isNotGetMethod && !imageUploadEndpoint && hasResponseMessage) {
+        if (isNotGetMethod && !imageUploadEndpoint && !isProductsAllEndpoint && hasResponseMessage) {
             showMessage(response.data.message, 'success');
         }
         return response;

@@ -12,23 +12,36 @@ import { Badge } from '../../components/Badge';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
 import Swal from 'sweetalert2';
+import { useGetAllBrandSlugs } from '../../services/brandsService';
+import { useGetAllProductCategoryOptions } from '../../services/productCategoryService';
 
 const Products = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const queryClient = useQueryClient();
     const [searchParams, setSearchParams] = useSearchParams();
-    const [search, setSearch] = useState(searchParams.get('search') || '');
+    const [product_search, setProductSearch] = useState(searchParams.get('product_search') || '');
+    const [selectedBrand, setSelectedBrand] = useState<{ value: string; label: string } | null>(null);
+    const [selectedCategory, setSelectedCategory] = useState<{ value: string; label: string } | null>(null);
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
         page: Number(searchParams.get('page')) || 1,
-        search: searchParams.get('search') || '',
+        product_search: searchParams.get('product_search') || '',
         sort: 'desc',
     });
 
-    const { data: { data: productData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllProductQuery(queryParams);
+    const {
+        data: { data: productData, pagination } = { data: [], pagination: {} },
+        isFetching,
+        isPlaceholderData,
+    } = useGetAllProductQuery(queryParams, {
+        brand_slugs: selectedBrand ? [selectedBrand.value] : undefined,
+        sub_category_slugs: selectedCategory ? [selectedCategory.value] : undefined,
+    });
     const { mutate: mutateDeleteProduct } = useDeleteProductMutation();
+    const { data: brandSlugs, isLoading: isBrandLoading } = useGetAllBrandSlugs({ page: 1, limit: 1000 });
+    const { data: categoryOpt, isLoading: isCategoryLoading } = useGetAllProductCategoryOptions({ page: 1, limit: 1000 });
 
     useEffect(() => {
         dispatch(setPageTitle('Products Management'));
@@ -43,21 +56,29 @@ const Products = () => {
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const searchValue = e.target.value;
-        setSearch(searchValue);
+        const productSearchValue = e.target.value;
+        setProductSearch(productSearchValue);
         setSearchParams({
             ...Object.fromEntries(searchParams),
-            search: searchValue,
+            product_search: productSearchValue,
         });
+    };
+
+    const handleBrandFilterChange = (selected: { value: string; label: string } | null) => {
+        setSelectedBrand(selected);
+    };
+
+    const handleCategoryChange = (selected: { value: string; label: string } | null) => {
+        setSelectedCategory(selected);
     };
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setQueryParams({ ...queryParams, search, page: 1 });
+            setQueryParams({ ...queryParams, product_search: product_search, page: 1 });
         }, 500);
 
         return () => clearTimeout(timer);
-    }, [search]);
+    }, [product_search]);
 
     useEffect(() => {
         const nextPage = (pagination?.currentPage ?? 1) + 1;
@@ -106,15 +127,22 @@ const Products = () => {
             }
         });
     };
+
     return (
         <div>
             <MainHeader
                 title="Products Management"
                 subtitle="Manage and view all products"
                 onSearchChange={handleSearchChange}
-                search={search}
+                search={product_search}
                 onAdd={() => navigate('/admin/manage-product/create')}
                 addText="Add New"
+                primaryFilterOptions={!isBrandLoading ? brandSlugs : []}
+                secondaryFilterOptions={!isCategoryLoading ? categoryOpt : []}
+                onPrimaryFilterChange={handleBrandFilterChange}
+                onSecondaryFilterChange={handleCategoryChange}
+                primaryFilterPlaceholder="Filter by brand"
+                secondaryFilterPlaceholder="Filter by category"
             />
             <>
                 <div className="mt-5 panel p-0 border-0 overflow-hidden">

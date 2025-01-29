@@ -3,10 +3,15 @@ import { ApiCreateProduct, ApiDeleteProduct, ApiGetAllProduct, ApiGetProductById
 import { CreateProductPayload, UpdateProductPayload } from '../schema/productSchema';
 import { useNavigate } from 'react-router-dom';
 
-export const useGetAllProductQuery = (params: Record<string, any>) => {
+interface GetAllProductQueryBody {
+    brand_slugs?: string[];
+    sub_category_slugs?: string[];
+}
+
+export const useGetAllProductQuery = (params: Record<string, any>, body?: GetAllProductQueryBody) => {
     return useQuery({
-        queryKey: ['products', params],
-        queryFn: () => ApiGetAllProduct(params),
+        queryKey: ['products', params, body],
+        queryFn: () => ApiGetAllProduct(params, body),
         select: (response) => {
             const { data, pagination } = response;
             return {

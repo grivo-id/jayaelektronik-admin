@@ -2,8 +2,15 @@ import { CreateProductPayload, UpdateProductPayload } from '../schema/productSch
 import { ApiResponse } from '../types/api';
 import { axiosInstance } from './base';
 
-export const ApiGetAllProduct = async (params: Record<string, any>) => {
-    const response = await axiosInstance.get<ApiResponse<Product[]>>('/products', { params });
+interface GetAllProductPayload {
+    brand_slugs?: string[];
+    sub_category_slugs?: string[];
+}
+
+export const ApiGetAllProduct = async (params: Record<string, any>, body?: GetAllProductPayload) => {
+    const response = await axiosInstance.post<ApiResponse<Product[]>>('/products/all', body, {
+        params,
+    });
 
     return response.data;
 };

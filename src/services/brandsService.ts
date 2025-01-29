@@ -17,6 +17,19 @@ export const useGetAllBrandQuery = (params: Record<string, any>) => {
     });
 };
 
+export const useGetAllBrandSlugs = (params: Record<string, any>) => {
+    return useQuery({
+        queryKey: ['brands', params],
+        queryFn: () => ApiGetAllBrand(params),
+        select: (response) =>
+            response.data.map((brand) => ({
+                value: brand.brand_name.toLowerCase(),
+                label: brand.brand_name,
+            })),
+        placeholderData: keepPreviousData,
+    });
+};
+
 export const useCreateBrand = () => {
     const queryClient = useQueryClient();
 
