@@ -152,7 +152,7 @@ const Products = () => {
                                                 <td className="whitespace-nowrap">
                                                     <div className="w-20 h-20">
                                                         <img
-                                                            src={product.product_image1}
+                                                            src={product.product_image1 || undefined}
                                                             alt={product.product_name}
                                                             className="w-full h-full object-contain rounded-lg border"
                                                             onError={(e) => {
@@ -226,39 +226,25 @@ const Products = () => {
                                                 <td className="whitespace-nowrap">
                                                     <div className="flex flex-col gap-4">
                                                         <div className="flex flex-col gap-2">
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-sm font-medium min-w-[100px]">Availability:</span>
-                                                                <Badge color={product.product_is_available ? 'success' : 'danger'}>{product.product_is_available ? 'Yes' : 'No'}</Badge>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-sm font-medium min-w-[100px]">Visibility:</span>
-                                                                <Badge color={product.product_is_show ? 'success' : 'danger'}>{product.product_is_show ? 'Yes' : 'No'}</Badge>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-sm font-medium min-w-[100px]">Bestseller:</span>
-                                                                <Badge color={product.product_is_bestseller ? 'success' : 'danger'}>{product.product_is_bestseller ? 'Yes' : 'No'}</Badge>
-                                                            </div>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-sm font-medium min-w-[100px]">New Arrival:</span>
-                                                                <Badge color={product.product_is_new_arrival ? 'success' : 'danger'}>{product.product_is_new_arrival ? 'Yes' : 'No'}</Badge>
-                                                            </div>
-                                                            <div className="flex flex-col">
-                                                                <div className="flex items-center gap-2">
-                                                                    <span className="text-sm font-medium min-w-[100px]">Best Deal:</span>
-                                                                    <Badge color={product.product_promo?.product_promo_is_best_deal ? 'success' : 'danger'}>
-                                                                        {product.product_promo?.product_promo_is_best_deal ? 'Yes' : 'No'}
-                                                                    </Badge>
-                                                                </div>
+                                                            <div className="flex flex-col gap-2">
+                                                                {[
+                                                                    { label: 'Stock Available', value: product.product_is_available },
+                                                                    { label: 'Visibility', value: product.product_is_show },
+                                                                    { label: 'Bestseller', value: product.product_is_bestseller },
+                                                                    { label: 'New Arrival', value: product.product_is_new_arrival },
+                                                                    { label: 'Best Deal', value: product.product_promo?.product_promo_is_best_deal },
+                                                                ].map(({ label, value }) => (
+                                                                    <div key={label} className="flex items-center gap-2">
+                                                                        <span className="text-sm font-medium min-w-[120px]">{label}:</span>
+                                                                        <Badge color={value ? 'success' : 'danger'}>{value ? 'Yes' : 'No'}</Badge>
+                                                                    </div>
+                                                                ))}
                                                                 {product.product_promo?.product_promo_expired_date && (
-                                                                    <div className="flex items-center gap-2  mt-1">
+                                                                    <div className="flex items-center gap-2 mt-1">
                                                                         <span className="text-xs text-gray-500">Expired: {formatDate(product.product_promo.product_promo_expired_date)}</span>
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                        </div>
-
-                                                        <div className="flex flex-col text-xs text-gray-500">
-                                                            <span>Created: {formatDate(product.product_created_date)}</span>
                                                         </div>
                                                     </div>
                                                 </td>

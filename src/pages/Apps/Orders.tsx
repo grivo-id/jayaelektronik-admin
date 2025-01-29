@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useGetAllOrderQuery, useToggleComplete, useToggleVerified } from '../../services/orderService';
+import { useGetAllOrderQuery, useToggleComplete } from '../../services/orderService';
 import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -26,7 +26,6 @@ const Orders = () => {
 
     const { data: { data: ordersData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllOrderQuery(queryParams);
     const { mutate: toggleComplete } = useToggleComplete();
-    const { mutate: toggleVerified } = useToggleVerified();
 
     useEffect(() => {
         dispatch(setPageTitle('Orders'));
@@ -54,39 +53,6 @@ const Orders = () => {
                     },
                 });
                 toggleComplete(orderId, {
-                    onSuccess: () => {
-                        Swal.fire('Success', `Order has been ${action}d`, 'success');
-                    },
-                    onError: () => {
-                        Swal.fire('Error', 'Failed to update order status', 'error');
-                    },
-                });
-            }
-        });
-    };
-
-    const handleToggleVerified = (orderId: string, currentStatus: boolean) => {
-        const action = currentStatus ? 'mark as unverified' : 'mark as verified';
-        Swal.fire({
-            icon: 'warning',
-            title: 'Are you sure?',
-            text: `This order will be ${action}`,
-            showCancelButton: true,
-            confirmButtonText: 'Yes',
-            cancelButtonText: 'No',
-            padding: '2em',
-        }).then((result) => {
-            if (result.isConfirmed) {
-                Swal.fire({
-                    title: 'Processing...',
-                    text: 'Please wait while we update the order status.',
-                    allowOutsideClick: false,
-                    showConfirmButton: false,
-                    willOpen: () => {
-                        Swal.showLoading();
-                    },
-                });
-                toggleVerified(orderId, {
                     onSuccess: () => {
                         Swal.fire('Success', `Order has been ${action}d`, 'success');
                     },
@@ -150,16 +116,15 @@ const Orders = () => {
                                 <tr>
                                     <th>Order ID</th>
                                     <th>Customer</th>
-                                    <th>Contact</th>
+                                    <th className="min-w-[120px]">Order Date</th>
                                     <th>Products</th>
+                                    <th>Address </th>
                                     <th className="min-w-[150px]">Total</th>
                                     <th className="min-w-[100px]">Status</th>
-                                    <th className="min-w-[120px]">User Verified</th>
-                                    <th className="min-w-[120px]">Order Date</th>
                                 </tr>
                             </thead>
                             {isFetching ? (
-                                <SkeletonLoadingTable rows={11} columns={8} />
+                                <SkeletonLoadingTable rows={11} columns={8} noAction />
                             ) : ordersData.length === 0 ? (
                                 <tbody>
                                     <tr>
@@ -183,11 +148,10 @@ const Orders = () => {
                                                 <td>
                                                     <div className="font-semibold">{order.order_user_name}</div>
                                                     <div className="text-gray-500">{order.order_email}</div>
-                                                </td>
-                                                <td>
                                                     <div>{order.order_phone}</div>
-                                                    <div className="text-gray-500 truncate max-w-xs">{order.order_address}</div>
                                                 </td>
+                                                <td>{formatDate(order.order_created_date)}</td>
+
                                                 <td>
                                                     <div className="space-y-1">
                                                         {order.products.map((product) => (
@@ -199,11 +163,14 @@ const Orders = () => {
                                                     </div>
                                                 </td>
                                                 <td>
+                                                    <div className="text-gray-500 truncate max-w-xs">{order.order_address}</div>
+                                                </td>
+                                                <td>
                                                     <div className="font-semibold">{formatToRupiah(order.order_grand_total)}</div>
                                                 </td>
                                                 <td>
                                                     <Tooltip text={order.order_is_completed ? 'Mark as Incomplete' : 'Mark as Complete'} position="top">
-                                                        <label className="w-12 h-6 relative">
+                                                        <label className="w-28 h-8 relative">
                                                             <input
                                                                 type="checkbox"
                                                                 className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
@@ -211,25 +178,15 @@ const Orders = () => {
                                                                 checked={order.order_is_completed}
                                                                 onChange={() => handleToggleComplete(order.order_id, order.order_is_completed)}
                                                             />
-                                                            <label className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-success before:transition-all before:duration-300"></label>
+                                                            <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-6 before:h-6 before:rounded-full peer-checked:before:left-[5.3rem] peer-checked:bg-primary before:transition-all before:duration-300">
+                                                                <span className="absolute inset-0 flex items-center justify-between px-2 text-xs font-bold text-white pointer-events-none">
+                                                                    <span className={`transition-all duration-300 ${order.order_is_completed ? '' : 'invisible'} relative -right-2.4`}>Completed</span>
+                                                                    <span className={`transition-all duration-300 ${order.order_is_completed ? 'invisible' : ''} relative -left-9`}>Incomplete</span>
+                                                                </span>
+                                                            </span>
                                                         </label>
                                                     </Tooltip>
                                                 </td>
-                                                <td>
-                                                    <Tooltip text={order.order_user_verified ? 'Unverify Order' : 'Verify Order'} position="bottom">
-                                                        <label className="w-12 h-6 relative">
-                                                            <input
-                                                                type="checkbox"
-                                                                className="custom_switch absolute w-full h-full opacity-0 z-10 cursor-pointer peer"
-                                                                id={`verify_switch_${order.order_id}`}
-                                                                checked={order.order_user_verified}
-                                                                onChange={() => handleToggleVerified(order.order_id, order.order_user_verified)}
-                                                            />
-                                                            <label className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-4 before:h-4 before:rounded-full peer-checked:before:left-7 peer-checked:bg-primary before:transition-all before:duration-300"></label>
-                                                        </label>
-                                                    </Tooltip>
-                                                </td>
-                                                <td>{formatDate(order.order_created_date)}</td>
                                             </tr>
                                         );
                                     })}

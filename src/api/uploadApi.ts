@@ -45,3 +45,12 @@ export const ApiUploadImageProduct = async (file: File) => {
     });
     return response.data;
 };
+
+export const ApiDeleteImageProduct = async (fileName: string) => {
+    const response = await axiosInstance.delete<ApiResponse<UploadResponse>>(`/upload-image/product`, {
+        data: {
+            fileName,
+        },
+    });
+    return response.data;
+};

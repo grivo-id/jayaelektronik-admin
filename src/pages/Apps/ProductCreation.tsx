@@ -14,6 +14,9 @@ import IconCheck from '../../components/Icon/IconChecks';
 import IconX from '../../components/Icon/IconX';
 import { CreateProductPayload, getCreateProductSchema } from '../../schema/productSchema';
 import { useCreateProductMutation } from '../../services/productService';
+import IconArrowBackward from '../../components/Icon/IconArrowBackward';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const ProductCreation = () => {
     const dispatch = useDispatch();
@@ -64,6 +67,8 @@ const ProductCreation = () => {
         image2: false,
         image3: false,
     });
+
+    const [editorContent, setEditorContent] = useState('');
 
     const { mutate: createProduct, isPending: createProductPending } = useCreateProductMutation();
     const { data: categories } = useGetAllProductCategory({});
@@ -161,7 +166,7 @@ const ProductCreation = () => {
     };
 
     const onSubmit = async (data: CreateProductPayload) => {
-        createProduct(data);
+        createProduct({ ...data, product_desc: editorContent });
     };
 
     const disabledInputClass = 'form-input bg-[#eee] cursor-not-allowed dark:bg-[#1b2e4b]';
@@ -169,10 +174,16 @@ const ProductCreation = () => {
     return (
         <div className="pt-5">
             <div className="flex items-center justify-between mb-5">
-                <h2 className="text-xl">Create Product</h2>
-                <button type="button" className="btn btn-outline-primary" onClick={() => navigate(-1)}>
-                    Back
-                </button>
+                <div className="flex items-center gap-4">
+                    <button className="btn btn-primary p-2 rounded-full" onClick={() => navigate(-1)}>
+                        <IconArrowBackward className="h-5 w-5" />
+                        <span className="sr-only">Back</span>
+                    </button>
+                    <div>
+                        <h1 className="text-2xl font-bold">Product Creation</h1>
+                        <p className="text-sm text-gray-600">Create a new product</p>
+                    </div>
+                </div>
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
@@ -183,17 +194,23 @@ const ProductCreation = () => {
 
                     <div className="grid grid-cols-1 gap-4 mb-4">
                         <div>
-                            <label htmlFor="product_name">Product Name</label>
+                            <label htmlFor="product_name">
+                                Product Name <span className="text-red-500">*</span>
+                            </label>
                             <input id="product_name" type="text" className="form-input" {...register('product_name')} />
                             {errors.product_name && <span className="text-danger">{errors.product_name.message}</span>}
                         </div>
                         <div>
-                            <label htmlFor="product_code">Product Code</label>
+                            <label htmlFor="product_code">
+                                Product Code <span className="text-red-500">*</span>
+                            </label>
                             <input id="product_code" type="text" className="form-input" {...register('product_code')} />
                             {errors.product_code && <span className="text-danger">{errors.product_code.message}</span>}
                         </div>
                         <div>
-                            <label htmlFor="product_price">Price</label>
+                            <label htmlFor="product_price">
+                                Price <span className="text-red-500">*</span>
+                            </label>
                             <div className="flex">
                                 <div className="bg-[#eee] flex justify-center items-center rounded-l-md px-3 font-semibold border border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                     Rp
@@ -220,179 +237,12 @@ const ProductCreation = () => {
                             {errors.product_price && <span className="text-red-500 text-sm">{errors.product_price.message}</span>}
                         </div>
 
-                        <div>
-                            <label htmlFor="product_item_sold">Items Sold</label>
-                            <Controller
-                                control={control}
-                                name="product_item_sold"
-                                render={({ field: { onChange, value } }) => (
-                                    <NumberFormat
-                                        id="product_item_sold"
-                                        className="form-input"
-                                        value={value}
-                                        onValueChange={(values) => {
-                                            onChange(Number(values.value));
-                                        }}
-                                        thousandSeparator="."
-                                        decimalSeparator=","
-                                    />
-                                )}
-                            />
-                            {errors.product_item_sold && <span className="text-danger">{errors.product_item_sold.message}</span>}
-                        </div>
-                        <div>
-                            <label htmlFor="product_desc">Description</label>
-                            <textarea id="product_desc" className="form-textarea" {...register('product_desc')} />
-                            {errors.product_desc && <span className="text-danger">{errors.product_desc.message}</span>}
-                        </div>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 mb-4">
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <label htmlFor="product_is_available">Available</label>
-                                <select
-                                    id="product_is_available"
-                                    {...register('product_is_available', {
-                                        setValueAs: (value) => value === 'true',
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="product_is_show">Show in Store</label>
-                                <select
-                                    id="product_is_show"
-                                    {...register('product_is_show', {
-                                        setValueAs: (value) => value === 'true',
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-                        </div>
-                        <div className="flex flex-col gap-4">
-                            <div>
-                                <label htmlFor="product_is_bestseller">Bestseller</label>
-                                <select
-                                    id="product_is_bestseller"
-                                    {...register('product_is_bestseller', {
-                                        setValueAs: (value) => value === 'true',
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="product_is_new_arrival">New Arrival</label>
-                                <select
-                                    id="product_is_new_arrival"
-                                    {...register('product_is_new_arrival', {
-                                        setValueAs: (value) => value === 'true',
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="panel">
-                    <div className="flex items-center justify-between mb-5">
-                        <h5 className="font-semibold text-lg dark:text-white-light">Product Tags</h5>
-                    </div>
-
-                    <div className="mb-4">
-                        <MultipleSelect
-                            name="product_tag_names"
-                            control={control}
-                            options={
-                                tags?.data.map((tag) => ({
-                                    value: tag.product_tag_name,
-                                    label: tag.product_tag_name,
-                                })) || []
-                            }
-                            label="Product Tags"
-                            placeholder="Choose or type new tag"
-                            error={errors.product_tag_names?.message}
-                        />
-                    </div>
-                </div>
-
-                <div className="panel">
-                    <div className="flex items-center justify-between mb-5">
-                        <h5 className="font-semibold text-lg dark:text-white-light">Category & Brand</h5>
-                    </div>
-
-                    <div className="grid grid-cols-3 gap-4">
-                        <div>
-                            <label htmlFor="brand_id">Brand</label>
-                            <select id="brand_id" className="form-select" {...register('brand_id')}>
-                                <option value="">Select Brand</option>
-                                {brands?.data.map((brand) => (
-                                    <option key={brand.brand_id} value={brand.brand_id}>
-                                        {brand.brand_name}
-                                    </option>
-                                ))}
-                            </select>
-                            {errors.brand_id && <span className="text-danger">{errors.brand_id.message}</span>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="product_category_id">Category</label>
-                            <select
-                                id="product_category_id"
-                                className="form-select"
-                                {...register('product_category_id')}
-                                onChange={(e) => {
-                                    setSelectedCategory(e.target.value);
-                                    setValue('product_subcategory_id', '');
-                                }}
-                            >
-                                <option value="">Select Category</option>
-                                {categories?.data.map((category) => (
-                                    <option key={category.id} value={category.id}>
-                                        {category.name}
-                                    </option>
-                                ))}
-                            </select>
-                            {errors.product_category_id && <span className="text-danger">{errors.product_category_id.message}</span>}
-                        </div>
-
-                        <div>
-                            <label htmlFor="product_subcategory_id">Sub Category</label>
-                            <select id="product_subcategory_id" className="form-select" {...register('product_subcategory_id')}>
-                                <option value="">Select Sub Category</option>
-                                {categories?.data
-                                    .find((category) => category.id === selectedCategory)
-                                    ?.children?.map((subcategory) => (
-                                        <option key={subcategory.id} value={subcategory.id}>
-                                            {subcategory.name}
-                                        </option>
-                                    ))}
-                            </select>
-                            {errors.product_subcategory_id && <span className="text-danger">{errors.product_subcategory_id.message}</span>}
-                        </div>
-                    </div>
-                </div>
-
-                <div className="panel">
-                    <div className="mb-5">
-                        <h5 className="font-semibold text-lg mb-4">Product Promotion</h5>
                         <div className="grid gap-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="product_promo_is_discount">Discount</label>
+                                    <label htmlFor="product_promo_is_discount">
+                                        Discount <span className="text-red-500">*</span>
+                                    </label>
                                     <select
                                         id="product_promo_is_discount"
                                         {...register('product_promo_is_discount', {
@@ -405,7 +255,9 @@ const ProductCreation = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label htmlFor="product_promo_is_best_deal">Best Deal</label>
+                                    <label htmlFor="product_promo_is_best_deal">
+                                        Best Deal <span className="text-red-500">*</span>
+                                    </label>
                                     <select
                                         id="product_promo_is_best_deal"
                                         {...register('product_promo_is_best_deal', {
@@ -473,7 +325,6 @@ const ProductCreation = () => {
                                     </div>
                                     {errors.product_promo_final_price && <span className="text-red-500 text-sm">{errors.product_promo_final_price.message}</span>}
                                 </div>
-                                add
                                 <div>
                                     <label htmlFor="product_promo_expired_date">Expiry Date</label>
                                     <input
@@ -486,6 +337,181 @@ const ProductCreation = () => {
                                     {errors.product_promo_expired_date && <span className="text-red-500 text-sm">{errors.product_promo_expired_date.message}</span>}
                                 </div>
                             </div>
+                        </div>
+
+                        <div>
+                            <label htmlFor="product_item_sold">
+                                Items Sold <span className="text-red-500">*</span>
+                            </label>
+                            <Controller
+                                control={control}
+                                name="product_item_sold"
+                                render={({ field: { onChange, value } }) => (
+                                    <NumberFormat
+                                        id="product_item_sold"
+                                        className="form-input"
+                                        value={value}
+                                        onValueChange={(values) => {
+                                            onChange(Number(values.value));
+                                        }}
+                                        thousandSeparator="."
+                                        decimalSeparator=","
+                                    />
+                                )}
+                            />
+                            {errors.product_item_sold && <span className="text-danger">{errors.product_item_sold.message}</span>}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4 mb-4">
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <label htmlFor="product_is_available">
+                                    Stock Available <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="product_is_available"
+                                    {...register('product_is_available', {
+                                        setValueAs: (value) => value === 'true',
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="product_is_show">
+                                    Show in Store <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="product_is_show"
+                                    {...register('product_is_show', {
+                                        setValueAs: (value) => value === 'true',
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div className="flex flex-col gap-4">
+                            <div>
+                                <label htmlFor="product_is_bestseller">
+                                    Bestseller <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="product_is_bestseller"
+                                    {...register('product_is_bestseller', {
+                                        setValueAs: (value) => value === 'true',
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="product_is_new_arrival">
+                                    New Arrival <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="product_is_new_arrival"
+                                    {...register('product_is_new_arrival', {
+                                        setValueAs: (value) => value === 'true',
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div className="panel">
+                    <div className="flex items-center justify-between mb-5">
+                        <h5 className="font-semibold text-lg dark:text-white-light">Product Tags</h5>
+                    </div>
+
+                    <div className="mb-4">
+                        <MultipleSelect
+                            name="product_tag_names"
+                            control={control}
+                            options={
+                                tags?.data.map((tag) => ({
+                                    value: tag.product_tag_name,
+                                    label: tag.product_tag_name,
+                                })) || []
+                            }
+                            label="Product Tags"
+                            placeholder="Choose or type new tag"
+                            error={errors.product_tag_names?.message}
+                        />
+                    </div>
+                </div>
+
+                <div className="panel">
+                    <div className="flex items-center justify-between mb-5">
+                        <h5 className="font-semibold text-lg dark:text-white-light">Category & Brand</h5>
+                    </div>
+
+                    <div className="grid grid-cols-3 gap-4">
+                        <div>
+                            <label htmlFor="brand_id">
+                                Brand <span className="text-red-500">*</span>
+                            </label>
+                            <select id="brand_id" className="form-select" {...register('brand_id')}>
+                                <option value="">Select Brand</option>
+                                {brands?.data.map((brand) => (
+                                    <option key={brand.brand_id} value={brand.brand_id}>
+                                        {brand.brand_name}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.brand_id && <span className="text-danger">{errors.brand_id.message}</span>}
+                        </div>
+
+                        <div>
+                            <label htmlFor="product_category_id">
+                                Category <span className="text-red-500">*</span>
+                            </label>
+                            <select
+                                id="product_category_id"
+                                className="form-select"
+                                {...register('product_category_id')}
+                                onChange={(e) => {
+                                    setSelectedCategory(e.target.value);
+                                    setValue('product_subcategory_id', '');
+                                }}
+                            >
+                                <option value="">Select Category</option>
+                                {categories?.data.map((category) => (
+                                    <option key={category.id} value={category.id}>
+                                        {category.name}
+                                    </option>
+                                ))}
+                            </select>
+                            {errors.product_category_id && <span className="text-danger">{errors.product_category_id.message}</span>}
+                        </div>
+
+                        <div>
+                            <label htmlFor="product_subcategory_id">
+                                Sub Category <span className="text-red-500">*</span>
+                            </label>
+                            <select id="product_subcategory_id" className="form-select" {...register('product_subcategory_id')}>
+                                <option value="">Select Sub Category</option>
+                                {categories?.data
+                                    .find((category) => category.id === selectedCategory)
+                                    ?.children?.map((subcategory) => (
+                                        <option key={subcategory.id} value={subcategory.id}>
+                                            {subcategory.name}
+                                        </option>
+                                    ))}
+                            </select>
+                            {errors.product_subcategory_id && <span className="text-danger">{errors.product_subcategory_id.message}</span>}
                         </div>
                     </div>
                 </div>
@@ -500,6 +526,7 @@ const ProductCreation = () => {
                             <div key={num} className="flex flex-col gap-4">
                                 <div className="w-full aspect-square relative border rounded-lg overflow-hidden">
                                     <img src={previewImages[`image${num}` as keyof typeof previewImages]} alt={`Product Image ${num}`} className="w-full h-full object-cover" />
+                                    {num === 1 && <div className="absolute bottom-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">Thumbnail*</div>}
                                     {showImageActions[`image${num}` as keyof typeof showImageActions] && (
                                         <div className="absolute top-2 right-2 flex items-center gap-2">
                                             <button
@@ -534,9 +561,30 @@ const ProductCreation = () => {
                                     className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold hover:file:bg-primary/90 disabled:bg-[#eee] disabled:cursor-not-allowed"
                                     disabled={uploadedImages[`image${num}` as keyof typeof uploadedImages]}
                                 />
+                                {errors[`product_image${num}` as keyof typeof errors] && <span className="text-danger">{errors[`product_image${num}` as keyof typeof errors]?.message}</span>}
                             </div>
                         ))}
                     </div>
+                </div>
+
+                <div className="panel">
+                    <div className="flex items-center justify-between mb-5">
+                        <label htmlFor="product_desc" className="font-semibold text-lg dark:text-white-light">
+                            Product Description <span className="text-danger">*</span>
+                        </label>
+                    </div>
+                    <div className="mb-10">
+                        <ReactQuill
+                            theme="snow"
+                            value={editorContent}
+                            onChange={(content) => {
+                                setEditorContent(content);
+                                setValue('product_desc', content);
+                            }}
+                            className="h-[200px]"
+                        />
+                    </div>
+                    {errors.product_desc && <span className="text-danger mt-1 inline-block">{errors.product_desc.message}</span>}
                 </div>
 
                 <div className="flex gap-4 justify-end">

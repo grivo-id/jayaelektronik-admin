@@ -40,7 +40,7 @@ export const useToggleVerified = () => {
 
 export const useGetOrderByIdQuery = (orderId: string) => {
     return useQuery({
-        queryKey: ['order', orderId],
+        queryKey: ['orders', orderId],
         queryFn: () => ApiGetOrderById(orderId),
         select: (response) => response.data,
     });

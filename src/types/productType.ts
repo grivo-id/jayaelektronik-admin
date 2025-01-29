@@ -8,9 +8,9 @@ interface Product {
     product_price: number;
     product_item_sold: number;
     product_desc: string;
-    product_image1: string;
-    product_image2: string;
-    product_image3: string;
+    product_image1: string | null;
+    product_image2: string | null;
+    product_image3: string | null;
     product_is_available: boolean;
     product_is_show: boolean;
     product_is_bestseller: boolean;
