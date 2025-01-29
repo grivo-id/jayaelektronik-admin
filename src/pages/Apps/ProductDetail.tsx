@@ -232,17 +232,23 @@ const ProductDetail = () => {
 
                     <div className="grid grid-cols-1 gap-4 mb-4">
                         <div>
-                            <label htmlFor="product_name">Product Name</label>
+                            <label htmlFor="product_name">
+                                Product Name <span className="text-danger">*</span>
+                            </label>
                             <input id="product_name" type="text" className="form-input" {...register('product_name')} />
                             {errors.product_name && <span className="text-danger">{errors.product_name.message}</span>}
                         </div>
                         <div>
-                            <label htmlFor="product_code">Product Code</label>
+                            <label htmlFor="product_code">
+                                Product Code <span className="text-danger">*</span>
+                            </label>
                             <input id="product_code" type="text" className="form-input" {...register('product_code')} />
                             {errors.product_code && <span className="text-danger">{errors.product_code.message}</span>}
                         </div>
                         <div>
-                            <label htmlFor="product_price">Price</label>
+                            <label htmlFor="product_price">
+                                Price <span className="text-danger">*</span>
+                            </label>
                             <div className="flex">
                                 <div className="bg-[#eee] flex justify-center items-center rounded-l-md px-3 font-semibold border border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
                                     Rp
@@ -271,7 +277,9 @@ const ProductDetail = () => {
                         <div className="grid gap-4">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label htmlFor="product_promo_is_discount">Discount</label>
+                                    <label htmlFor="product_promo_is_discount">
+                                        Discount <span className="text-danger">*</span>
+                                    </label>
                                     <select
                                         id="product_promo_is_discount"
                                         {...register('product_promo_is_discount', {
@@ -287,7 +295,9 @@ const ProductDetail = () => {
                                     </select>
                                 </div>
                                 <div>
-                                    <label htmlFor="product_promo_is_best_deal">Best Deal</label>
+                                    <label htmlFor="product_promo_is_best_deal">
+                                        Best Deal <span className="text-danger">*</span>
+                                    </label>
                                     <select
                                         id="product_promo_is_best_deal"
                                         {...register('product_promo_is_best_deal', {
@@ -371,7 +381,9 @@ const ProductDetail = () => {
                             </div>
                         </div>
                         <div>
-                            <label htmlFor="product_item_sold">Items Sold</label>
+                            <label htmlFor="product_item_sold">
+                                Items Sold <span className="text-danger">*</span>
+                            </label>
                             <Controller
                                 control={control}
                                 name="product_item_sold"
@@ -395,7 +407,9 @@ const ProductDetail = () => {
                     <div className="grid grid-cols-2 gap-4 mb-4">
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="product_is_available">Stock Available</label>
+                                <label htmlFor="product_is_available">
+                                    Stock Available <span className="text-danger">*</span>
+                                </label>
                                 <select
                                     id="product_is_available"
                                     {...register('product_is_available', {
@@ -411,7 +425,9 @@ const ProductDetail = () => {
                                 </select>
                             </div>
                             <div>
-                                <label htmlFor="product_is_show">Show in Store</label>
+                                <label htmlFor="product_is_show">
+                                    Show in Store <span className="text-danger">*</span>
+                                </label>
                                 <select
                                     id="product_is_show"
                                     {...register('product_is_show', {
@@ -429,7 +445,9 @@ const ProductDetail = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="product_is_bestseller">Bestseller</label>
+                                <label htmlFor="product_is_bestseller">
+                                    Bestseller <span className="text-danger">*</span>
+                                </label>
                                 <select
                                     id="product_is_bestseller"
                                     {...register('product_is_bestseller', {
@@ -445,7 +463,7 @@ const ProductDetail = () => {
                                 </select>
                             </div>
                             <div>
-                                <label htmlFor="product_is_new_arrival">New Arrival</label>
+                                <label htmlFor="product_is_new_arrival">New Arrival </label>
                                 <select
                                     id="product_is_new_arrival"
                                     {...register('product_is_new_arrival', {
@@ -492,7 +510,9 @@ const ProductDetail = () => {
 
                     <div className="grid grid-cols-3 gap-4">
                         <div>
-                            <label htmlFor="brand_id">Brand</label>
+                            <label htmlFor="brand_id">
+                                Brand <span className="text-danger">*</span>
+                            </label>
                             <select id="brand_id" className="form-select" {...register('brand_id')}>
                                 <option value="">Select Brand</option>
                                 {brands?.data.map((brand) => (
@@ -505,7 +525,9 @@ const ProductDetail = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="product_category_id">Category</label>
+                            <label htmlFor="product_category_id">
+                                Category <span className="text-danger">*</span>
+                            </label>
                             <select
                                 id="product_category_id"
                                 className="form-select"
@@ -526,7 +548,9 @@ const ProductDetail = () => {
                         </div>
 
                         <div>
-                            <label htmlFor="product_subcategory_id">Sub Category</label>
+                            <label htmlFor="product_subcategory_id">
+                                Sub Category <span className="text-danger">*</span>
+                            </label>
                             <select id="product_subcategory_id" className="form-select" {...register('product_subcategory_id')}>
                                 <option value="">Select Sub Category</option>
                                 {categories?.data
@@ -556,6 +580,7 @@ const ProductDetail = () => {
                                         alt={`Product Image ${num}`}
                                         className="w-full h-full object-cover"
                                     />
+                                    {num === 1 && <div className="absolute bottom-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">Thumbnail*</div>}
                                     {showImageActions[`image${num}` as keyof typeof showImageActions] && (
                                         <div className="absolute top-2 right-2 flex items-center gap-2">
                                             <button
