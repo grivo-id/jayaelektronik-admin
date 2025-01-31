@@ -48,14 +48,6 @@ axiosInstance.interceptors.response.use(
     },
     (error) => {
         if (error.response) {
-            if (!Cookies.get('accessToken')) {
-                showMessage('Authentication required. Please login.', 'error');
-                setTimeout(() => {
-                    window.location.href = '/login';
-                }, 1000);
-                return Promise.reject(error);
-            }
-
             const { data, message } = error.response;
 
             if (message === 'session_expired') {
