@@ -38,7 +38,7 @@ export const ApiDeleteProduct = async (productId: string) => {
 };
 
 export const ApiDeleteProductBulk = async (productIds: string[]) => {
-    const response = await axiosInstance.post<ApiResponse<null>>('/products/delete/bulk-product', {
+    const response = await axiosInstance.post<ApiResponse<null>>('/products/delete/bulk', {
         product_id: productIds,
     });
     return response.data;
