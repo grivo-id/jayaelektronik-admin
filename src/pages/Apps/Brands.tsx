@@ -91,9 +91,9 @@ const BlogCategories = () => {
 
     const handleImageCancel = () => {
         setSelectedImage(null);
-        setImagePreview(null);
+        setImagePreview(selectedBrand?.brand_image || null);
         setShowImageActions(false);
-        setUploadedImageUrl(null);
+        setUploadedImageUrl(selectedBrand?.brand_image || null);
 
         const fileInput = document.querySelector('input[type="file"]') as HTMLInputElement;
         if (fileInput) {
@@ -103,10 +103,14 @@ const BlogCategories = () => {
 
     const onSubmit = (data: CreateBrandPayload) => {
         if (selectedBrand) {
+            const payload = {
+                ...data,
+                brand_image: uploadedImageUrl || selectedBrand.brand_image,
+            };
             updateBrand(
                 {
                     id: selectedBrand.brand_id,
-                    payload: data,
+                    payload: payload,
                 },
                 {
                     onSuccess: () => {
@@ -141,6 +145,8 @@ const BlogCategories = () => {
     const editBrandAction = (brand: Brand) => {
         setSelectedBrand(brand);
         setValue('brand_name', brand.brand_name);
+        setUploadedImageUrl(brand.brand_image);
+        setImagePreview(brand.brand_image);
         setAddBrandModal(true);
     };
 
@@ -199,6 +205,8 @@ const BlogCategories = () => {
         setAddBrandModal(false);
         reset();
         setSelectedBrand(null);
+        setUploadedImageUrl(null);
+        setImagePreview(null);
     };
 
     const isLoading = createBrandPending || updateBrandPending || deleteBrandPending;
@@ -387,7 +395,7 @@ const BlogCategories = () => {
                                                 className="form-input file:py-2 file:px-4 file:border-0 file:font-semibold p-0 file:bg-primary/90 ltr:file:mr-5 rtl:file:ml-5 file:text-white file:hover:bg-primary disabled:opacity-50 disabled:cursor-not-allowed"
                                                 accept="image/*"
                                                 onChange={handleImageChange}
-                                                disabled={uploadedImageUrl !== null || isUploading}
+                                                disabled={isUploading}
                                             />
                                             {imagePreview && (
                                                 <div className="relative mt-4 inline-block">
