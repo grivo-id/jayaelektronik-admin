@@ -59,13 +59,13 @@ const Overview = () => {
                         <div className="text-gray-500 dark:text-gray-400">Blog articles</div>
                     </div>
 
-                    <div className="panel h-full bg-info/10 hover:bg-info/20 duration-300 dark:bg-info/5">
+                    <div className="panel h-full bg-danger/10 hover:bg-danger/20 duration-300 dark:bg-danger/5">
                         <div className="flex justify-between dark:text-white-light mb-5">
                             <h5 className="font-semibold text-lg">Visitors</h5>
-                            <span className="badge bg-info/20 text-info">Today</span>
+                            <span className="badge bg-danger/20 text-danger">Daily</span>
                         </div>
-                        <div className="text-3xl font-bold text-info mb-1">200</div>
-                        <div className="text-gray-500 dark:text-gray-400">Visitors today</div>
+                        <div className="text-3xl font-bold text-danger mb-1">5,000+</div>
+                        <div className="text-gray-500 dark:text-gray-400">Daily website traffic</div>
                     </div>
                 </div>
             </div>
