@@ -36,18 +36,14 @@ const LoginCover = () => {
         <div>
             <div className="relative flex min-h-screen items-center justify-center bg-black-light px-6 py-10 dark:bg-[#060818] sm:px-16">
                 <div className="relative flex w-full max-w-[1502px] flex-col justify-between overflow-hidden rounded-md bg-white/60 backdrop-blur-lg dark:bg-black/50 lg:min-h-[758px] lg:flex-row lg:gap-10 xl:gap-0">
-                    <div className="relative hidden w-full items-center justify-center bg-[linear-gradient(225deg,rgba(255,255,255,1)_0%,rgba(240,255,240,1)_40%,rgba(34,139,34,1)_80%,rgba(0,100,0,1)_100%)] p-5 lg:inline-flex lg:max-w-[835px] xl:-ms-28 ltr:xl:skew-x-[14deg] rtl:xl:skew-x-[-14deg]">
+                    <div className="relative hidden w-full items-center justify-center bg-[linear-gradient(225deg,rgba(255,255,255,1)_0%,rgba(255,127,80,0.15)_40%,rgba(255,127,80,0.7)_80%,rgba(255,127,80,1)_100%)] p-5 lg:inline-flex lg:max-w-[835px] xl:-ms-28 ltr:xl:skew-x-[14deg] rtl:xl:skew-x-[-14deg]">
                         <div className="absolute inset-y-0 w-8 from-primary/10 via-transparent to-transparent ltr:-right-10 ltr:bg-gradient-to-r rtl:-left-10 rtl:bg-gradient-to-l xl:w-16 ltr:xl:-right-20 rtl:xl:-left-20"></div>
                         <div className="ltr:xl:-skew-x-[14deg] rtl:xl:skew-x-[14deg]">
                             <Link to="/" className="w-48 block lg:w-72 ms-10">
                                 <img src="/assets/images/logo-nobg.png" alt="Logo" className="w-full" />
                             </Link>
                             <div className="mt-24 hidden w-full h-full max-w-[430px] lg:block">
-                                <img
-                                    src="/assets/images/auth/login.svg"
-                                    alt="Cover Image"
-                                    className="w-full h-auto object-contain"
-                                />
+                                <img src="/assets/images/auth/login.svg" alt="Cover Image" className="w-full h-auto object-contain" />
                             </div>
                         </div>
                     </div>
@@ -73,7 +69,7 @@ const LoginCover = () => {
                                             type="email"
                                             placeholder="Enter your email"
                                             className={`w-full rounded-lg border bg-white px-4 py-3 pl-12 text-black shadow-sm transition duration-300
-                        ${errors.user_email ? 'border-danger focus:border-danger focus:ring-danger/20' : 'border-gray-300 focus:border-primary focus:ring-primary/20'}
+                        ${errors.user_email ? 'border-danger focus:border-danger focus:ring-primary' : 'border-gray-300 focus:border-primary focus:ring-primary'}
                         dark:bg-black-DEFAULT dark:border-white-dark placeholder:text-gray-400`}
                                             {...register('user_email')}
                                         />
@@ -94,7 +90,7 @@ const LoginCover = () => {
                                             type="password"
                                             placeholder="Enter your password"
                                             className={`w-full rounded-lg border bg-white px-4 py-3 pl-12 text-black shadow-sm transition duration-300
-                        ${errors.user_password ? 'border-danger focus:border-danger focus:ring-danger/20' : 'border-gray-300 focus:border-primary focus:ring-primary/20'}
+                        ${errors.user_password ? 'border-danger focus:border-danger focus:ring-primary' : 'border-gray-300 focus:border-primary focus:ring-primary'}
                         dark:bg-black-DEFAULT dark:border-white-dark placeholder:text-gray-400`}
                                             {...register('user_password')}
                                         />
@@ -105,15 +101,13 @@ const LoginCover = () => {
                                     {errors.user_password && <p className="text-sm text-danger">{errors.user_password.message}</p>}
                                 </div>
 
-                                <button type="submit" className="btn btn-gradient !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(67,97,238,0.44)] mb-4" disabled={isPending}>
+                                <button type="submit" className="btn btn-primary !mt-6 w-full border-0 uppercase shadow-[0_10px_20px_-10px_rgba(255,127,80,0.44)] mb-4" disabled={isPending}>
                                     {isPending ? <IconLoaderDynamic /> : 'SIGN IN'}
                                 </button>
                             </form>
                         </div>
                         <div className="absolute bottom-6 w-full text-sm text-center px-4 md:px-0 dark:text-white">
-                            <p className="">
-                                © {new Date().getFullYear()} Jaya Elektronik. All Rights Reserved. Powered by Grivo.id
-                            </p>
+                            <p className="">© {new Date().getFullYear()} Jaya Elektronik. All Rights Reserved. Powered by Grivo.id</p>
                         </div>
                     </div>
                 </div>

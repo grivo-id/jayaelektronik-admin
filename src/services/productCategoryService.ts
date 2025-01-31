@@ -28,6 +28,24 @@ export const useGetAllProductCategory = (params: Record<string, any>) => {
     });
 };
 
+export const useGetAllProductCategoryOptions = (params: Record<string, any>) => {
+    return useQuery({
+        queryKey: ['product-categories-options', params],
+        queryFn: () => ApiGetAllProductCategory(params),
+        select: (response) => {
+            return response.data.map((category: ProductCategory) => ({
+                value: category.id,
+                label: category.name,
+                children: category.children?.map((child) => ({
+                    value: child.slug,
+                    label: child.name,
+                })),
+            }));
+        },
+        placeholderData: keepPreviousData,
+    });
+};
+
 export const useCreateProductCategory = () => {
     const queryClient = useQueryClient();
 

@@ -65,7 +65,7 @@ const ComingSoonCover = lazy(() => import('../pages/Pages/ComingSoonCover'));
 const ERROR404 = lazy(() => import('../pages/Pages/Error404'));
 const ERROR500 = lazy(() => import('../pages/Pages/Error500'));
 const ERROR503 = lazy(() => import('../pages/Pages/Error503'));
-const Maintenence = lazy(() => import('../pages/Pages/Maintenence'));
+const UnderDevelopment = lazy(() => import('../pages/Pages/Maintenence'));
 const LoginBoxed = lazy(() => import('../pages/Authentication/LoginCover'));
 const About = lazy(() => import('../pages/About'));
 const Error = lazy(() => import('../components/Error'));
@@ -184,19 +184,18 @@ const routes = [
     },
 
     {
-        path: '/admin/manage-product-sub-category',
-    },
-
-    {
         path: '/admin/manage-coupon-discount',
+        element: <UnderDevelopment />,
     },
 
     {
         path: '/admin/manage-home-banner',
+        element: <UnderDevelopment />,
     },
 
     {
         path: '/admin/manage-deals-of-the-week',
+        element: <UnderDevelopment />,
     },
 
     {
@@ -231,10 +230,6 @@ const routes = [
     {
         path: '/manager/manage-user',
         element: <User />,
-    },
-
-    {
-        path: '/manager/manage-admin',
     },
 
     {
@@ -511,11 +506,7 @@ const routes = [
         element: <ERROR503 />,
         layout: 'blank',
     },
-    {
-        path: '/pages/maintenence',
-        element: <Maintenence />,
-        layout: 'blank',
-    },
+
     //Authentication
     {
         path: '/login',

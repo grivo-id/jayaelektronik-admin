@@ -13,7 +13,7 @@ const Overview = () => {
         <div>
             <div className="pt-5">
                 <div className="grid grid-cols-1 gap-6 mb-6">
-                    <div className="panel h-full bg-gradient-to-r from-primary/20 to-primary-light hover:from-primary/30 hover:to-primary-light/70 duration-300">
+                    <div className="panel h-full bg-primary/10 hover:bg-primary/20 duration-300 dark:bg-primary/5">
                         <div className="flex items-center mb-5">
                             <h5 className="font-semibold text-lg dark:text-white-light">Welcome to the Jaya Elektronik Dashboard!</h5>
                             <IconInfoCircle className="w-5 h-5 ml-2 text-primary" />
@@ -32,7 +32,7 @@ const Overview = () => {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-6">
-                    <div className="panel h-full bg-gradient-to-br from-primary-light/50 via-primary/20 to-transparent hover:from-primary-light hover:via-primary/30 hover:to-transparent duration-300 cursor-pointer">
+                    <div className="panel h-full bg-primary/10 hover:bg-primary/20 duration-300 dark:bg-primary/5">
                         <div className="flex justify-between dark:text-white-light mb-5">
                             <h5 className="font-semibold text-lg">Total Products</h5>
                             <span className="badge bg-primary/20 text-primary">Active</span>
@@ -41,31 +41,31 @@ const Overview = () => {
                         <div className="text-gray-500 dark:text-gray-400">Available products</div>
                     </div>
 
-                    <div className="panel h-full bg-gradient-to-br from-success-light/50 via-success/20 to-transparent hover:from-success-light hover:via-success/30 hover:to-transparent duration-300 cursor-pointer ">
+                    <div className="panel h-full bg-success/10 hover:bg-success/20 duration-300 dark:bg-success/5">
                         <div className="flex justify-between dark:text-white-light mb-5">
-                            <h5 className="font-semibold text-lg group-hover:text-success duration-300">Categories</h5>
-                            <span className="badge bg-success/20 text-success group-hover:bg-success group-hover:text-white duration-300">Update</span>
+                            <h5 className="font-semibold text-lg">Categories</h5>
+                            <span className="badge bg-success/20 text-success">Update</span>
                         </div>
-                        <div className="text-3xl font-bold text-success mb-1 group-hover:scale-110 duration-300">10</div>
+                        <div className="text-3xl font-bold text-success mb-1">10</div>
                         <div className="text-gray-500 dark:text-gray-400">Product categories</div>
                     </div>
 
-                    <div className="panel h-full bg-gradient-to-br from-warning-light/50 via-warning/20 to-transparent hover:from-warning-light hover:via-warning/30 hover:to-transparent duration-300 cursor-pointer ">
+                    <div className="panel h-full bg-warning/10 hover:bg-warning/20 duration-300 dark:bg-warning/5">
                         <div className="flex justify-between dark:text-white-light mb-5">
-                            <h5 className="font-semibold text-lg group-hover:text-warning duration-300">Blog Posts</h5>
-                            <span className="badge bg-warning/20 text-warning group-hover:bg-warning group-hover:text-white duration-300">New</span>
+                            <h5 className="font-semibold text-lg">Blog Posts</h5>
+                            <span className="badge bg-warning/20 text-warning">New</span>
                         </div>
-                        <div className="text-3xl font-bold text-warning mb-1 group-hover:scale-110 duration-300">25+</div>
+                        <div className="text-3xl font-bold text-warning mb-1">25+</div>
                         <div className="text-gray-500 dark:text-gray-400">Blog articles</div>
                     </div>
 
-                    <div className="panel h-full bg-gradient-to-br from-info-light/50 via-success/20 to-transparent hover:from-info-light hover:via-success/30 hover:to-transparent duration-300 cursor-pointer ">
+                    <div className="panel h-full bg-danger/10 hover:bg-danger/20 duration-300 dark:bg-danger/5">
                         <div className="flex justify-between dark:text-white-light mb-5">
-                            <h5 className="font-semibold text-lg group-hover:text-info duration-300">Visitors</h5>
-                            <span className="badge bg-success/20 text-success group-hover:bg-success group-hover:text-white duration-300">Today</span>
+                            <h5 className="font-semibold text-lg">Visitors</h5>
+                            <span className="badge bg-danger/20 text-danger">Daily</span>
                         </div>
-                        <div className="text-3xl font-bold text-success mb-1 group-hover:scale-110 duration-300">200</div>
-                        <div className="text-gray-500 dark:text-gray-400">Visitors today</div>
+                        <div className="text-3xl font-bold text-danger mb-1">5,000+</div>
+                        <div className="text-gray-500 dark:text-gray-400">Daily website traffic</div>
                     </div>
                 </div>
             </div>

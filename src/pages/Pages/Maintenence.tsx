@@ -4,39 +4,33 @@ import { Link } from 'react-router-dom';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { IRootState } from '../../store';
 
-const Maintenence = () => {
+const UnderDevelopment = () => {
     const dispatch = useDispatch();
     useEffect(() => {
-        dispatch(setPageTitle('Maintenance'));
+        dispatch(setPageTitle('Under Development'));
     });
     const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
 
     return (
-        <div className="relative flex min-h-screen items-center justify-center overflow-hidden">
-            <div className="px-6 py-16 text-center font-semibold before:container before:absolute before:left-1/2 before:-translate-x-1/2 before:rounded-full before:bg-[linear-gradient(180deg,#4361EE_0%,rgba(67,97,238,0)_50.73%)] before:aspect-square before:opacity-10 md:py-20">
-                <div className="relative">
-                    <img
-                        src={isDark ? '/assets/images/error/maintenence-dark.svg' : '/assets/images/error/maintenence-light.svg'}
-                        alt="maintenence"
-                        className="mx-auto -mt-10 w-full max-w-xs object-cover md:-mt-20 md:max-w-lg"
-                    />
-                    <div className="-mt-8 font-semibold dark:text-white">
-                        <h2 className="mb-5 text-3xl font-bold text-primary md:text-5xl">Under Maintenance</h2>
-                        <h4 className="mb-7 text-xl sm:text-2xl">Thank you for visiting us.</h4>
-                        <p className="text-base">
-                            We are currently working on making some improvements <br className="hidden sm:block" />
-                            to give you better user experience. <br />
-                            <br />
-                            Please visit us again shortly.
-                        </p>
-                    </div>
-                    <Link to="/" className="btn btn-gradient mx-auto !mt-7 w-max border-0 uppercase shadow-none">
-                        Home
-                    </Link>
-                </div>
+        <div className="flex items-center justify-center h-full">
+            <div className="text-center">
+                <img
+                    src={isDark ? '/assets/images/error/maintenence-dark.svg' : '/assets/images/error/maintenence-light.svg'}
+                    alt="maintenance"
+                    className="mx-auto w-full max-w-xs object-cover md:max-w-sm"
+                />
+                <h2 className="mt-4 text-2xl font-bold text-primary md:text-3xl">Under Development</h2>
+                <p className="mt-2 text-base">
+                    We're working on this feature to improve your experience.
+                    <br />
+                    Please check back soon.
+                </p>
+                <Link to="/" className="btn btn-primary mt-4 inline-block">
+                    Back to Home
+                </Link>
             </div>
         </div>
     );
 };
 
-export default Maintenence;
+export default UnderDevelopment;
