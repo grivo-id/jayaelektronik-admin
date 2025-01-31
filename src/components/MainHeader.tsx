@@ -26,6 +26,8 @@ interface MainHeaderProps {
     onSecondaryFilterChange?: (selectedOption: FilterOption | null) => void;
     primaryFilterPlaceholder?: string;
     secondaryFilterPlaceholder?: string;
+    selectedCount?: number;
+    onBulkDelete?: () => void;
 }
 
 const MainHeader = ({
@@ -42,6 +44,8 @@ const MainHeader = ({
     onSecondaryFilterChange,
     primaryFilterPlaceholder = 'Filter primary...',
     secondaryFilterPlaceholder = 'Filter secondary...',
+    selectedCount = 0,
+    onBulkDelete,
 }: MainHeaderProps) => {
     const [activeCategory, setActiveCategory] = useState<CategoryOption | null>(null);
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -120,10 +124,16 @@ const MainHeader = ({
                     {!hideAddButton && (
                         <div className="flex gap-3">
                             <div>
-                                <button type="button" className="btn btn-primary" onClick={onAdd}>
-                                    <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
-                                    {addText}
-                                </button>
+                                {selectedCount > 0 ? (
+                                    <button type="button" className="btn btn-danger" onClick={onBulkDelete}>
+                                        Delete ({selectedCount})
+                                    </button>
+                                ) : (
+                                    <button type="button" className="btn btn-primary" onClick={onAdd}>
+                                        <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
+                                        {addText}
+                                    </button>
+                                )}
                             </div>
                         </div>
                     )}

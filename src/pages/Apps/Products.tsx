@@ -5,7 +5,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllProduct } from '../../api/productApi';
-import { useDeleteProductMutation, useGetAllProductQuery } from '../../services/productService';
+import { useDeleteProductBulkMutation, useDeleteProductMutation, useGetAllProductQuery } from '../../services/productService';
 import formatDate from '../../utils/formatDate';
 import formatRupiah from '../../utils/formatToRupiah';
 import { Badge } from '../../components/Badge';
@@ -23,6 +23,7 @@ const Products = () => {
     const [product_search, setProductSearch] = useState(searchParams.get('product_search') || '');
     const [selectedBrand, setSelectedBrand] = useState<{ value: string; label: string } | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<{ value: string; label: string } | null>(null);
+    const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
@@ -40,6 +41,7 @@ const Products = () => {
         sub_category_slugs: selectedCategory ? [selectedCategory.value] : undefined,
     });
     const { mutate: mutateDeleteProduct } = useDeleteProductMutation();
+    const { mutate: mutateDeleteProductBulk } = useDeleteProductBulkMutation();
     const { data: brandSlugs, isLoading: isBrandLoading } = useGetAllBrandSlugs({ page: 1, limit: 1000 });
     const { data: categoryOpt, isLoading: isCategoryLoading } = useGetAllProductCategoryOptions({ page: 1, limit: 1000 });
 
@@ -128,6 +130,48 @@ const Products = () => {
         });
     };
 
+    const handleSelectProduct = (productId: string) => {
+        setSelectedProducts((prev) => (prev.includes(productId) ? prev.filter((id) => id !== productId) : [...prev, productId]));
+    };
+
+    const handleBulkDelete = () => {
+        if (selectedProducts.length === 0) {
+            Swal.fire('Warning', 'Please select at least one product to delete', 'warning');
+            return;
+        }
+
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'Selected products will be permanently deleted',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel',
+            padding: '2em',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Deleting...',
+                    text: 'Please wait while we delete the products.',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+                mutateDeleteProductBulk(selectedProducts, {
+                    onSuccess: () => {
+                        Swal.fire('Success', 'Products have been deleted', 'success');
+                        setSelectedProducts([]);
+                    },
+                    onError: () => {
+                        Swal.fire('Error', 'Failed to delete products', 'error');
+                    },
+                });
+            }
+        });
+    };
+
     return (
         <div>
             <MainHeader
@@ -143,6 +187,8 @@ const Products = () => {
                 onSecondaryFilterChange={handleCategoryChange}
                 primaryFilterPlaceholder="Filter by brand"
                 secondaryFilterPlaceholder="Filter by category"
+                selectedCount={selectedProducts.length}
+                onBulkDelete={handleBulkDelete}
             />
             <>
                 <div className="mt-5 panel p-0 border-0 overflow-hidden">
@@ -150,6 +196,20 @@ const Products = () => {
                         <table className="table-striped table-hover">
                             <thead>
                                 <tr>
+                                    <th>
+                                        <input
+                                            type="checkbox"
+                                            className="form-checkbox"
+                                            checked={productData.length > 0 && selectedProducts.length === productData.length}
+                                            onChange={(e) => {
+                                                if (e.target.checked) {
+                                                    setSelectedProducts(productData.map((product) => product.product_id));
+                                                } else {
+                                                    setSelectedProducts([]);
+                                                }
+                                            }}
+                                        />
+                                    </th>
                                     <th>Image</th>
                                     <th>Product Info</th>
                                     <th>Price & Promo</th>
@@ -158,11 +218,11 @@ const Products = () => {
                                 </tr>
                             </thead>
                             {isFetching ? (
-                                <SkeletonLoadingTable rows={11} columns={5} />
+                                <SkeletonLoadingTable rows={11} columns={6} />
                             ) : productData.length === 0 ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan={5} className="text-center py-4">
+                                        <td colSpan={6} className="text-center py-4">
                                             <div className="flex flex-col items-center justify-center gap-4">
                                                 <p className="text-lg font-semibold text-gray-500">No products found</p>
                                                 <p className="text-sm text-gray-400">No products registered yet</p>
@@ -177,6 +237,14 @@ const Products = () => {
 
                                         return (
                                             <tr key={product.product_code}>
+                                                <td className="whitespace-nowrap">
+                                                    <input
+                                                        type="checkbox"
+                                                        className="form-checkbox"
+                                                        checked={selectedProducts.includes(product.product_id)}
+                                                        onChange={() => handleSelectProduct(product.product_id)}
+                                                    />
+                                                </td>
                                                 <td className="whitespace-nowrap">
                                                     <div className="w-20 h-20">
                                                         <img
