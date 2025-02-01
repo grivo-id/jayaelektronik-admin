@@ -169,7 +169,7 @@ const Orders = () => {
                                                     <div className="font-semibold">{formatToRupiah(order.order_grand_total)}</div>
                                                 </td>
                                                 <td>
-                                                    <Tooltip text={order.order_is_completed ? 'Mark as Incomplete' : 'Mark as Complete'} position="top">
+                                                    <Tooltip text={order.order_is_completed ? 'Mark as Pending' : 'Mark as Complete'} position="top">
                                                         <label className="w-28 h-8 relative">
                                                             <input
                                                                 type="checkbox"
@@ -179,9 +179,21 @@ const Orders = () => {
                                                                 onChange={() => handleToggleComplete(order.order_id, order.order_is_completed)}
                                                             />
                                                             <span className="bg-[#ebedf2] dark:bg-dark block h-full rounded-full before:absolute before:left-1 before:bg-white dark:before:bg-white-dark dark:peer-checked:before:bg-white before:bottom-1 before:w-6 before:h-6 before:rounded-full peer-checked:before:left-[5.3rem] peer-checked:bg-primary before:transition-all before:duration-300">
-                                                                <span className="absolute inset-0 flex items-center justify-between px-2 text-xs font-bold text-white pointer-events-none">
-                                                                    <span className={`transition-all duration-300 ${order.order_is_completed ? '' : 'invisible'} relative -right-2.4`}>Completed</span>
-                                                                    <span className={`transition-all duration-300 ${order.order_is_completed ? 'invisible' : ''} relative -left-9`}>Incomplete</span>
+                                                                <span className="absolute inset-0 flex items-center justify-between px-2 text-xs font-bold pointer-events-none">
+                                                                    <span
+                                                                        className={`transition-all duration-300 ${
+                                                                            order.order_is_completed ? '' : 'invisible'
+                                                                        } relative -right-2.4 text-gray-700 dark:text-white`}
+                                                                    >
+                                                                        Completed
+                                                                    </span>
+                                                                    <span
+                                                                        className={`transition-all duration-300 ${
+                                                                            order.order_is_completed ? 'invisible' : ''
+                                                                        } relative -left-9 text-gray-700 dark:text-white`}
+                                                                    >
+                                                                        Pending
+                                                                    </span>
                                                                 </span>
                                                             </span>
                                                         </label>
