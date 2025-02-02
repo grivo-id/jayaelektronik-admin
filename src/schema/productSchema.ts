@@ -46,8 +46,8 @@ export const getUpdateProductSchema = () =>
         product_promo_final_price: z.number(),
         product_promo_expired_date: z.string().nullable(),
         product_image1: z.string().min(1, 'At least one product image is required'),
-        product_image2: z.string().optional(),
-        product_image3: z.string().optional(),
+        product_image2: z.string().nullable(),
+        product_image3: z.string().nullable(),
     });
 
 export type CreateProductPayload = z.infer<ReturnType<typeof getCreateProductSchema>>;
