@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React from 'react';
 import IconSearch from './Icon/IconSearch';
 import IconUserPlus from './Icon/IconUserPlus';
-import Select from 'react-select';
+import IconFilter from './Icon/IconFilter';
 
 interface FilterOption {
     value: string;
@@ -20,99 +20,12 @@ interface MainHeaderProps {
     onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
     search: string;
     hideAddButton?: boolean;
-    primaryFilterOptions?: FilterOption[];
-    secondaryFilterOptions?: CategoryOption[];
-    onPrimaryFilterChange?: (selectedOption: FilterOption | null) => void;
-    onSecondaryFilterChange?: (selectedOption: FilterOption | null) => void;
-    primaryFilterPlaceholder?: string;
-    secondaryFilterPlaceholder?: string;
     selectedCount?: number;
     onBulkDelete?: () => void;
+    onFilterClick?: () => void;
 }
 
-const MainHeader = ({
-    title,
-    subtitle,
-    addText,
-    onAdd,
-    onSearchChange,
-    search,
-    hideAddButton,
-    primaryFilterOptions,
-    secondaryFilterOptions,
-    onPrimaryFilterChange,
-    onSecondaryFilterChange,
-    primaryFilterPlaceholder = 'Filter primary...',
-    secondaryFilterPlaceholder = 'Filter secondary...',
-    selectedCount = 0,
-    onBulkDelete,
-}: MainHeaderProps) => {
-    const [activeCategory, setActiveCategory] = useState<CategoryOption | null>(null);
-    const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
-    const [subMenuPosition, setSubMenuPosition] = useState(40);
-    const [isParentOpen, setIsParentOpen] = useState(false);
-    const [selectedChild, setSelectedChild] = useState<FilterOption | null>(null);
-    const dropdownRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        const handleClickOutside = (event: MouseEvent) => {
-            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-                setIsSubMenuOpen(false);
-                setActiveCategory(null);
-                setIsParentOpen(false);
-            }
-        };
-
-        document.addEventListener('mousedown', handleClickOutside);
-        return () => {
-            document.removeEventListener('mousedown', handleClickOutside);
-        };
-    }, []);
-
-    const CustomOption = ({ innerProps, label, data }: any) => {
-        const optionRef = useRef<HTMLDivElement>(null);
-        const hasChildren = data.children && data.children.length > 0;
-
-        const handleMouseEnter = () => {
-            if (hasChildren) {
-                setActiveCategory(data);
-                setIsSubMenuOpen(true);
-                setSubMenuPosition(45);
-            }
-        };
-
-        const handleMouseLeave = () => {
-            if (!dropdownRef.current?.contains(document.activeElement)) {
-                setIsSubMenuOpen(false);
-                setActiveCategory(null);
-            }
-        };
-
-        const handleClick = () => {
-            if (!hasChildren) {
-                onSecondaryFilterChange?.(data);
-                setIsParentOpen(false);
-                setIsSubMenuOpen(false);
-                setActiveCategory(null);
-                setSelectedChild(data);
-            }
-        };
-
-        return (
-            <div
-                {...innerProps}
-                ref={optionRef}
-                className="px-3 py-2 hover:bg-gray-100 cursor-pointer flex justify-between items-center"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
-                onClick={handleClick}
-            >
-                <span>{label}</span>
-                {hasChildren && <span className="text-gray-400">›</span>}
-            </div>
-        );
-    };
-
+const MainHeader = ({ title, subtitle, addText, onAdd, onSearchChange, search, hideAddButton, selectedCount = 0, onBulkDelete, onFilterClick }: MainHeaderProps) => {
     return (
         <>
             <div className="flex items-center justify-between flex-wrap gap-4 mb-5">
@@ -137,81 +50,24 @@ const MainHeader = ({
                             </div>
                         </div>
                     )}
-                    <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-                        <div className="flex flex-col sm:flex-row gap-2 w-full sm:w-auto">
-                            {secondaryFilterOptions && (
-                                <div className="relative w-full sm:w-44" ref={dropdownRef}>
-                                    <div className="w-full">
-                                        <Select
-                                            options={secondaryFilterOptions}
-                                            components={{ Option: CustomOption }}
-                                            onChange={(selected) => {
-                                                if (!selected) {
-                                                    onSecondaryFilterChange?.(null);
-                                                    setSelectedChild(null);
-                                                }
-                                            }}
-                                            placeholder={secondaryFilterPlaceholder}
-                                            className="basic-select"
-                                            classNamePrefix="select"
-                                            value={selectedChild}
-                                            menuIsOpen={isParentOpen}
-                                            onMenuOpen={() => setIsParentOpen(true)}
-                                            onMenuClose={() => {
-                                                if (!isSubMenuOpen) {
-                                                    setIsParentOpen(false);
-                                                }
-                                            }}
-                                            isClearable
-                                        />
-                                    </div>
-                                    {isSubMenuOpen && activeCategory && (
-                                        <div
-                                            className="absolute left-0 sm:left-full mt-2 sm:mt-0 ml-0 sm:ml-2 z-50 w-full sm:w-48"
-                                            style={{ top: window.innerWidth >= 640 ? subMenuPosition : 'auto' }}
-                                            onMouseEnter={() => setIsSubMenuOpen(true)}
-                                            onMouseLeave={() => setIsSubMenuOpen(false)}
-                                        >
-                                            <div className="w-full bg-white border rounded-lg shadow-lg py-1">
-                                                {activeCategory.children?.map((child) => (
-                                                    <div
-                                                        key={child.value}
-                                                        className="px-3 py-2 hover:bg-gray-100 cursor-pointer"
-                                                        onClick={() => {
-                                                            onSecondaryFilterChange?.(child);
-                                                            setIsSubMenuOpen(false);
-                                                            setActiveCategory(null);
-                                                            setIsParentOpen(false);
-                                                            setSelectedChild(child);
-                                                        }}
-                                                    >
-                                                        {child.label}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
-                            {primaryFilterOptions && (
-                                <div className="w-full sm:w-44">
-                                    <Select
-                                        options={primaryFilterOptions}
-                                        onChange={(selected) => onPrimaryFilterChange?.(selected as FilterOption | null)}
-                                        placeholder={primaryFilterPlaceholder}
-                                        className="basic-select"
-                                        classNamePrefix="select"
-                                        isClearable
-                                    />
-                                </div>
-                            )}
-                            <div className="relative w-full sm:w-auto">
-                                <input type="text" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer w-full" placeholder="Search..." value={search} onChange={onSearchChange} />
-                                <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
-                                    <IconSearch className="mx-auto" />
-                                </button>
-                            </div>
+                    <div className="flex gap-3 w-full sm:w-auto">
+                        <div className="flex-1 relative">
+                            <input
+                                type="text"
+                                className="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-4 rtl:sm:pl-4 ltr:pr-9 rtl:pl-9 peer sm:w-[200px]"
+                                placeholder="Search..."
+                                value={search}
+                                onChange={onSearchChange}
+                            />
+                            <button type="button" className="absolute ltr:left-2 rtl:right-2 top-1/2 -translate-y-1/2 peer-focus:text-primary">
+                                <IconSearch className="mx-auto" />
+                            </button>
                         </div>
+                        {onFilterClick && (
+                            <button type="button" className="btn btn-outline-primary p-2" onClick={onFilterClick}>
+                                <IconFilter className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
