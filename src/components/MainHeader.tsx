@@ -25,18 +25,7 @@ interface MainHeaderProps {
     onFilterClick?: () => void;
 }
 
-const MainHeader = ({
-    title,
-    subtitle,
-    addText,
-    onAdd,
-    onSearchChange,
-    search,
-    hideAddButton,
-    selectedCount = 0,
-    onBulkDelete,
-    onFilterClick,
-}: MainHeaderProps) => {
+const MainHeader = ({ title, subtitle, addText, onAdd, onSearchChange, search, hideAddButton, selectedCount = 0, onBulkDelete, onFilterClick }: MainHeaderProps) => {
     return (
         <>
             <div className="flex items-center justify-between flex-wrap gap-4 mb-5">
@@ -74,13 +63,11 @@ const MainHeader = ({
                                 <IconSearch className="mx-auto" />
                             </button>
                         </div>
-                        <button
-                            type="button"
-                            className="btn btn-outline-primary p-2"
-                            onClick={onFilterClick}
-                        >
-                            <IconFilter className="w-5 h-5" />
-                        </button>
+                        {onFilterClick && (
+                            <button type="button" className="btn btn-outline-primary p-2" onClick={onFilterClick}>
+                                <IconFilter className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
                 </div>
             </div>
