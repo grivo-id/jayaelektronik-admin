@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
+import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip, FilterSheet } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllProduct } from '../../api/productApi';
 import { useDeleteProductBulkMutation, useDeleteProductMutation, useGetAllProductQuery } from '../../services/productService';
@@ -14,6 +14,8 @@ import IconTrash from '../../components/Icon/IconTrash';
 import Swal from 'sweetalert2';
 import { useGetAllBrandSlugs } from '../../services/brandsService';
 import { useGetAllProductCategoryOptions } from '../../services/productCategoryService';
+import IconEye from '../../components/Icon/IconEye';
+import { formatLink } from '../../utils/formatLink';
 
 const Products = () => {
     const dispatch = useDispatch();
@@ -24,6 +26,7 @@ const Products = () => {
     const [selectedBrand, setSelectedBrand] = useState<{ value: string; label: string } | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<{ value: string; label: string } | null>(null);
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
@@ -181,14 +184,22 @@ const Products = () => {
                 search={product_search}
                 onAdd={() => navigate('/admin/manage-product/create')}
                 addText="Add New"
+                selectedCount={selectedProducts.length}
+                onBulkDelete={handleBulkDelete}
+                onFilterClick={() => setIsFilterOpen(true)}
+            />
+
+            <FilterSheet
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
                 primaryFilterOptions={!isBrandLoading ? brandSlugs : []}
                 secondaryFilterOptions={!isCategoryLoading ? categoryOpt : []}
                 onPrimaryFilterChange={handleBrandFilterChange}
                 onSecondaryFilterChange={handleCategoryChange}
                 primaryFilterPlaceholder="Filter by brand"
                 secondaryFilterPlaceholder="Filter by category"
-                selectedCount={selectedProducts.length}
-                onBulkDelete={handleBulkDelete}
+                selectedPrimaryFilter={selectedBrand}
+                selectedSecondaryFilter={selectedCategory}
             />
             <>
                 <div className="mt-5 panel p-0 border-0 overflow-hidden">
@@ -262,7 +273,12 @@ const Products = () => {
                                                 <td className="whitespace-nowrap">
                                                     <div className="flex flex-col gap-3">
                                                         <div>
-                                                            <h3 className="font-semibold text-base text-primary">{product.product_name}</h3>
+                                                            <h3
+                                                                className="font-semibold text-base text-primary cursor-pointer hover:underline"
+                                                                onClick={() => navigate(`/admin/manage-product/${product.product_id}`)}
+                                                            >
+                                                                {product.product_name}
+                                                            </h3>
                                                             <div className="flex items-center gap-2 text-xs text-gray-500">
                                                                 <span>{product.product_code}</span>
                                                                 <span>•</span>
@@ -284,6 +300,16 @@ const Products = () => {
                                                                 ))}
                                                             </div>
                                                         )}
+
+                                                        <a
+                                                            href={`${formatLink(product.product_id, product.product_name)}`}
+                                                            target="_blank"
+                                                            rel="noopener noreferrer"
+                                                            className="inline-flex items-center"
+                                                        >
+                                                            <IconEye className="text-primary w-5 h-5" />
+                                                            <span className="ml-1 text-xs text-gray-500 hover:text-primary transition-colors duration-300">View on website</span>
+                                                        </a>
                                                     </div>
                                                 </td>
 
@@ -337,7 +363,13 @@ const Products = () => {
                                                                 ))}
                                                                 {product.product_promo?.product_promo_expired_date && (
                                                                     <div className="flex items-center gap-2 mt-1">
-                                                                        <span className="text-xs text-gray-500">Expired: {formatDate(product.product_promo.product_promo_expired_date)}</span>
+                                                                        <span
+                                                                            className={`text-xs font-bold ${
+                                                                                new Date(product.product_promo.product_promo_expired_date) < new Date() ? 'text-red-500' : 'text-gray-500'
+                                                                            }`}
+                                                                        >
+                                                                            Expired: {formatDate(product.product_promo.product_promo_expired_date)}
+                                                                        </span>
                                                                     </div>
                                                                 )}
                                                             </div>

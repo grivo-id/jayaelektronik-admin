@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Select from 'react-select';
 import IconX from './Icon/IconX';
 
@@ -41,16 +41,29 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
     const [subMenuPosition, setSubMenuPosition] = useState(0);
     const dropdownRef = useRef<HTMLDivElement>(null);
 
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setIsSubMenuOpen(false);
+                setActiveCategory(null);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => {
+            document.removeEventListener('mousedown', handleClickOutside);
+        };
+    }, []);
+
     const CustomOption = ({ innerProps, label, data }: any) => {
         const optionRef = useRef<HTMLDivElement>(null);
         const hasChildren = data.children && data.children.length > 0;
 
         const handleMouseEnter = () => {
             if (hasChildren && optionRef.current) {
-                const rect = optionRef.current.getBoundingClientRect();
                 setActiveCategory(data);
                 setIsSubMenuOpen(true);
-                setSubMenuPosition(70);
+                setSubMenuPosition(74);
             }
         };
 
@@ -78,8 +91,10 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
                 onMouseLeave={handleMouseLeave}
                 onClick={handleClick}
             >
-                <span>{label}</span>
-                {hasChildren && <span className="text-gray-400">›</span>}
+                <span className="flex items-center">
+                    {hasChildren && <span className="text-gray-400 mr-2">‹</span>}
+                    {label}
+                </span>
             </div>
         );
     };
@@ -135,7 +150,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
                             />
                             {isSubMenuOpen && activeCategory && (
                                 <div
-                                    className="absolute right-full top-0 ml-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg py-1 w-48"
+                                    className="absolute right-full top-0 mr-2 bg-white dark:bg-gray-800 border dark:border-gray-700 rounded-lg shadow-lg py-1 w-48"
                                     style={{ top: `${subMenuPosition}px` }}
                                     onMouseEnter={() => setIsSubMenuOpen(true)}
                                     onMouseLeave={() => setIsSubMenuOpen(false)}
