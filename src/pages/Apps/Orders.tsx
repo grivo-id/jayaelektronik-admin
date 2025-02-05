@@ -105,6 +105,16 @@ const Orders = () => {
         }
     }, [queryParams, ordersData, isPlaceholderData, queryClient]);
 
+    const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newLimit = Number(e.target.value);
+        setQueryParams((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+        setSearchParams((prev) => {
+            prev.set('limit', String(newLimit));
+            prev.set('page', '1');
+            return prev;
+        });
+    };
+
     return (
         <div>
             <MainHeader title="Orders" subtitle="Manage and view all orders" onSearchChange={handleSearchChange} search={search} hideAddButton />
@@ -207,13 +217,25 @@ const Orders = () => {
                         </table>
                     </div>
                 </div>
-                <Pagination
-                    activePage={Number(searchParams.get('page')) || 1}
-                    itemsCountPerPage={queryParams.limit}
-                    totalItemsCount={pagination?.totalData || 0}
-                    pageRangeDisplayed={5}
-                    onChange={handlePageChange}
-                />
+                <div className="flex flex-col sm:flex-row items-center justify-between">
+                    <div className="flex items-center gap-2 mt-10">
+                        <span className="text-sm">Show:</span>
+                        <select className="form-select text-sm w-20" value={queryParams.limit} onChange={handleLimitChange}>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span className="text-sm">entries</span>
+                    </div>
+                    <Pagination
+                        activePage={Number(searchParams.get('page')) || 1}
+                        itemsCountPerPage={queryParams.limit}
+                        totalItemsCount={pagination?.totalData || 0}
+                        pageRangeDisplayed={5}
+                        onChange={handlePageChange}
+                    />
+                </div>
             </>
         </div>
     );
