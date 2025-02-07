@@ -18,6 +18,7 @@ import IconArrowBackward from '../../components/Icon/IconArrowBackward';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { SkeletonProductDetail } from '../../components';
+import formatDate from '../../utils/formatDate';
 
 const ProductDetail = () => {
     const dispatch = useDispatch();
@@ -220,6 +221,31 @@ const ProductDetail = () => {
                     <div>
                         <h1 className="text-2xl font-bold">Product Detail</h1>
                         <p className="text-sm text-gray-600">Details for product #{product?.product_id}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="panel mb-5">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Created by:</span>
+                            <span className="font-medium">{product?.created_by || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Created at:</span>
+                            <span className="font-medium">{product?.product_created_date ? formatDate(product?.product_created_date) : '-'}</span>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Last updated by:</span>
+                            <span className="font-medium">{product?.updated_by || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Last updated at:</span>
+                            <span className="font-medium">{product?.product_updated_at ? formatDate(product?.product_updated_at) : '-'}</span>
+                        </div>
                     </div>
                 </div>
             </div>
