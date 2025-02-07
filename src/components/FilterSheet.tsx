@@ -20,8 +20,11 @@ interface FilterSheetProps {
     onSecondaryFilterChange?: (selectedOption: FilterOption | null) => void;
     primaryFilterPlaceholder?: string;
     secondaryFilterPlaceholder?: string;
-    selectedPrimaryFilter: FilterOption | null;
-    selectedSecondaryFilter: FilterOption | null;
+    selectedPrimaryFilter?: FilterOption | null;
+    selectedSecondaryFilter?: FilterOption | null;
+    children?: React.ReactNode;
+    onApply?: () => void;
+    onReset?: () => void;
 }
 
 const FilterSheet: React.FC<FilterSheetProps> = ({
@@ -35,6 +38,9 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
     secondaryFilterPlaceholder = 'Filter secondary...',
     selectedPrimaryFilter,
     selectedSecondaryFilter,
+    children,
+    onApply,
+    onReset,
 }) => {
     const [activeCategory, setActiveCategory] = useState<CategoryOption | null>(null);
     const [isSubMenuOpen, setIsSubMenuOpen] = useState(false);
@@ -173,6 +179,8 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
                         </div>
                     )}
 
+                    {children}
+
                     <div className="flex justify-end mt-6">
                         <button
                             type="button"
@@ -180,11 +188,19 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
                             onClick={() => {
                                 onPrimaryFilterChange?.(null);
                                 onSecondaryFilterChange?.(null);
+                                onReset?.();
                             }}
                         >
                             Reset
                         </button>
-                        <button type="button" className="btn btn-primary" onClick={onClose}>
+                        <button
+                            type="button"
+                            className="btn btn-primary"
+                            onClick={() => {
+                                onApply?.();
+                                onClose();
+                            }}
+                        >
                             Apply
                         </button>
                     </div>

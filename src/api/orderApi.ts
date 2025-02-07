@@ -2,8 +2,13 @@ import { ApiResponse } from '../types/api';
 import { axiosInstance } from './base';
 import { Order } from '../types/orderType';
 
-export const ApiGetAllOrder = async (params: Record<string, any>) => {
-    const response = await axiosInstance.get<ApiResponse<Order[]>>('/orders', { params });
+export interface GetAllOrderPayload {
+    startDate: string;
+    endDate: string;
+}
+
+export const ApiGetAllOrder = async (params: Record<string, any>, body?: GetAllOrderPayload) => {
+    const response = await axiosInstance.post<ApiResponse<Order[]>>('/orders/all', body, { params });
 
     return response.data;
 };
