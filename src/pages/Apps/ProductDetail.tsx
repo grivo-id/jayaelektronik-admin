@@ -79,6 +79,7 @@ const ProductDetail = () => {
     const { mutate: updateProduct, isPending: isUpdatePending } = useUpdateProductMutation();
 
     const UpdateProductSchema = useMemo(() => getUpdateProductSchema(), []);
+    const [productStatus, setProductStatus] = useState('');
 
     const {
         register,
@@ -130,6 +131,12 @@ const ProductDetail = () => {
                 setValue('product_promo_final_price', product.product_promo.product_promo_final_price);
                 setValue('product_promo_discount_percentage', product.product_promo.product_promo_discount_percentage);
                 setValue('product_promo_expired_date', product.product_promo.product_promo_expired_date || null);
+            }
+
+            if (product.product_is_bestseller) {
+                setProductStatus('bestseller');
+            } else if (product.product_is_new_arrival) {
+                setProductStatus('new_arrival');
             }
 
             setValue('product_image1', product.product_image1);
@@ -204,6 +211,19 @@ const ProductDetail = () => {
             id,
             payload,
         });
+    };
+
+    const handleProductStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const status = e.target.value;
+        setProductStatus(status);
+
+        if (status === 'bestseller') {
+            setValue('product_is_bestseller', true);
+            setValue('product_is_new_arrival', false);
+        } else if (status === 'new_arrival') {
+            setValue('product_is_bestseller', false);
+            setValue('product_is_new_arrival', true);
+        }
     };
 
     if (isFetching) {
@@ -471,37 +491,12 @@ const ProductDetail = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="product_is_bestseller">
-                                    Bestseller <span className="text-danger">*</span>
+                                <label htmlFor="product_status">
+                                    Event <span className="text-danger">*</span>
                                 </label>
-                                <select
-                                    id="product_is_bestseller"
-                                    {...register('product_is_bestseller', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="product_is_new_arrival">New Arrival </label>
-                                <select
-                                    id="product_is_new_arrival"
-                                    {...register('product_is_new_arrival', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
+                                <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
+                                    <option value="bestseller">Best Seller</option>
+                                    <option value="new_arrival">New Arrival</option>
                                 </select>
                             </div>
                         </div>
