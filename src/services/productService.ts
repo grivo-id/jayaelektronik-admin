@@ -50,7 +50,7 @@ export const useUpdateProductMutation = () => {
         mutationFn: ({ id, payload }: { id: string; payload: UpdateProductPayload }) => ApiUpdateProduct(id, payload),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
-            navigate('/admin/manage-product');
+            navigate(-1);
         },
     });
 };

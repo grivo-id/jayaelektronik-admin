@@ -18,6 +18,7 @@ import IconArrowBackward from '../../components/Icon/IconArrowBackward';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { SkeletonProductDetail } from '../../components';
+import formatDate from '../../utils/formatDate';
 
 const ProductDetail = () => {
     const dispatch = useDispatch();
@@ -78,6 +79,7 @@ const ProductDetail = () => {
     const { mutate: updateProduct, isPending: isUpdatePending } = useUpdateProductMutation();
 
     const UpdateProductSchema = useMemo(() => getUpdateProductSchema(), []);
+    const [productStatus, setProductStatus] = useState('');
 
     const {
         register,
@@ -129,6 +131,12 @@ const ProductDetail = () => {
                 setValue('product_promo_final_price', product.product_promo.product_promo_final_price);
                 setValue('product_promo_discount_percentage', product.product_promo.product_promo_discount_percentage);
                 setValue('product_promo_expired_date', product.product_promo.product_promo_expired_date || null);
+            }
+
+            if (product.product_is_bestseller) {
+                setProductStatus('bestseller');
+            } else if (product.product_is_new_arrival) {
+                setProductStatus('new_arrival');
             }
 
             setValue('product_image1', product.product_image1);
@@ -205,6 +213,19 @@ const ProductDetail = () => {
         });
     };
 
+    const handleProductStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const status = e.target.value;
+        setProductStatus(status);
+
+        if (status === 'bestseller') {
+            setValue('product_is_bestseller', true);
+            setValue('product_is_new_arrival', false);
+        } else if (status === 'new_arrival') {
+            setValue('product_is_bestseller', false);
+            setValue('product_is_new_arrival', true);
+        }
+    };
+
     if (isFetching) {
         return <SkeletonProductDetail />;
     }
@@ -220,6 +241,31 @@ const ProductDetail = () => {
                     <div>
                         <h1 className="text-2xl font-bold">Product Detail</h1>
                         <p className="text-sm text-gray-600">Details for product #{product?.product_id}</p>
+                    </div>
+                </div>
+            </div>
+
+            <div className="panel mb-5">
+                <div className="grid grid-cols-2 gap-4 text-sm">
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Created by:</span>
+                            <span className="font-medium">{product?.created_by || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Created at:</span>
+                            <span className="font-medium">{product?.product_created_date ? formatDate(product?.product_created_date) : '-'}</span>
+                        </div>
+                    </div>
+                    <div className="space-y-2">
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Last updated by:</span>
+                            <span className="font-medium">{product?.updated_by || '-'}</span>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <span className="text-gray-500">Last updated at:</span>
+                            <span className="font-medium">{product?.product_updated_at ? formatDate(product?.product_updated_at) : '-'}</span>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -445,37 +491,12 @@ const ProductDetail = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="product_is_bestseller">
-                                    Bestseller <span className="text-danger">*</span>
+                                <label htmlFor="product_status">
+                                    Event <span className="text-danger">*</span>
                                 </label>
-                                <select
-                                    id="product_is_bestseller"
-                                    {...register('product_is_bestseller', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="product_is_new_arrival">New Arrival </label>
-                                <select
-                                    id="product_is_new_arrival"
-                                    {...register('product_is_new_arrival', {
-                                        setValueAs: (value) => {
-                                            if (typeof value === 'boolean') return value;
-                                            return value === 'true';
-                                        },
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="true">Yes</option>
-                                    <option value="false">No</option>
+                                <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
+                                    <option value="bestseller">Best Seller</option>
+                                    <option value="new_arrival">New Arrival</option>
                                 </select>
                             </div>
                         </div>

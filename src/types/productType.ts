@@ -20,6 +20,7 @@ interface Product {
     product_created_date: string;
     user_name: string;
     updated_by: string;
+    created_by: string;
     brand_name: string;
     brand_image: string;
     product_category_id: string;

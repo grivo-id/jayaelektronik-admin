@@ -1,10 +1,10 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiGetAllOrder, ApiGetOrderById, ApiUpdateOrderCompletion, ApiUpdateOrderUserVerified } from '../api/orderApi';
+import { ApiGetAllOrder, ApiGetOrderById, ApiUpdateOrderCompletion, ApiUpdateOrderUserVerified, GetAllOrderPayload } from '../api/orderApi';
 
-export const useGetAllOrderQuery = (params: Record<string, any>) => {
+export const useGetAllOrderQuery = (params: Record<string, any>, body?: GetAllOrderPayload) => {
     return useQuery({
-        queryKey: ['orders', params],
-        queryFn: () => ApiGetAllOrder(params),
+        queryKey: ['orders', params, body],
+        queryFn: () => ApiGetAllOrder(params, body),
         select: (response) => {
             const { data, pagination } = response;
             return {

@@ -11,3 +11,4 @@ export { default as Tooltip } from './Tooltip';
 export { default as SkeletonOrderDetail } from './SkeletonOrderDetail';
 export { default as SkeletonProductDetail } from './SkeletonProductDetail';
 export { default as FilterSheet } from './FilterSheet';
+export { default as SkeletonOverview } from './SkeletonOverview';

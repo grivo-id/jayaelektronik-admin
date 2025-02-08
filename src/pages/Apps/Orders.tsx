@@ -10,12 +10,24 @@ import formatDate from '../../utils/formatDate';
 import { ApiGetAllOrder } from '../../api/orderApi';
 import { Link } from 'react-router-dom';
 import formatToRupiah from '../../utils/formatToRupiah';
+import FilterSheet from '../../components/FilterSheet';
+import Flatpickr from 'react-flatpickr';
+import 'flatpickr/dist/themes/light.css';
 
 const Orders = () => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
     const [searchParams, setSearchParams] = useSearchParams();
     const [search, setSearch] = useState(searchParams.get('search') || '');
+    const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [startDate, setStartDate] = useState<Date | null>(() => {
+        const urlStartDate = searchParams.get('startDate');
+        return urlStartDate ? new Date(urlStartDate) : null;
+    });
+    const [endDate, setEndDate] = useState<Date | null>(() => {
+        const urlEndDate = searchParams.get('endDate');
+        return urlEndDate ? new Date(urlEndDate) : null;
+    });
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
@@ -24,7 +36,13 @@ const Orders = () => {
         sort: 'desc',
     });
 
-    const { data: { data: ordersData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllOrderQuery(queryParams);
+    const [filterParams, setFilterParams] = useState({
+        startDate: searchParams.get('startDate') || '',
+        endDate: searchParams.get('endDate') || '',
+    });
+
+    const { data: { data: ordersData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllOrderQuery(queryParams, filterParams);
+
     const { mutate: toggleComplete } = useToggleComplete();
 
     useEffect(() => {
@@ -105,9 +123,89 @@ const Orders = () => {
         }
     }, [queryParams, ordersData, isPlaceholderData, queryClient]);
 
+    const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newLimit = Number(e.target.value);
+        setQueryParams((prev) => ({ ...prev, limit: newLimit, page: 1 }));
+        setSearchParams((prev) => {
+            prev.set('limit', String(newLimit));
+            prev.set('page', '1');
+            return prev;
+        });
+    };
+
+    const handleApplyFilter = () => {
+        const formatDateParam = (date: Date | null) => {
+            if (!date) return '';
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const newFilterParams = {
+            startDate: formatDateParam(startDate),
+            endDate: formatDateParam(endDate),
+        };
+        setFilterParams(newFilterParams);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            page: '1',
+            startDate: newFilterParams.startDate,
+            endDate: newFilterParams.endDate,
+        });
+        setIsFilterOpen(false);
+    };
+
+    const handleResetFilter = () => {
+        setStartDate(null);
+        setEndDate(null);
+        setFilterParams({ startDate: '', endDate: '' });
+        const searchParamsObj = Object.fromEntries(searchParams);
+        delete searchParamsObj.startDate;
+        delete searchParamsObj.endDate;
+        setSearchParams(searchParamsObj);
+    };
+
     return (
         <div>
-            <MainHeader title="Orders" subtitle="Manage and view all orders" onSearchChange={handleSearchChange} search={search} hideAddButton />
+            <MainHeader title="Orders" subtitle="Manage and view all orders" onSearchChange={handleSearchChange} search={search} hideAddButton onFilterClick={() => setIsFilterOpen(true)} />
+
+            <FilterSheet isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} onApply={handleApplyFilter} onReset={handleResetFilter}>
+                <div className="space-y-4">
+                    <div>
+                        <label className="block text-sm font-medium mb-2 dark:text-white">Start Date</label>
+                        <Flatpickr
+                            className="form-input"
+                            value={startDate}
+                            onChange={(date) => setStartDate(date[0])}
+                            options={{
+                                dateFormat: 'd/m/Y',
+                                altInput: true,
+                                altFormat: 'd/m/Y',
+                                altInputClass: 'form-input',
+                            }}
+                            placeholder="Select start date"
+                        />
+                    </div>
+                    <div>
+                        <label className="block text-sm font-medium mb-2 dark:text-white">End Date</label>
+                        <Flatpickr
+                            className="form-input"
+                            value={endDate}
+                            onChange={(date) => setEndDate(date[0])}
+                            options={{
+                                dateFormat: 'd/m/Y',
+                                altInput: true,
+                                altFormat: 'd/m/Y',
+                                altInputClass: 'form-input',
+                                minDate: startDate,
+                            }}
+                            placeholder="Select end date"
+                        />
+                    </div>
+                </div>
+            </FilterSheet>
+
             <>
                 <div className="mt-5 panel p-0 border-0 overflow-hidden">
                     <div className="table-responsive">
@@ -207,13 +305,25 @@ const Orders = () => {
                         </table>
                     </div>
                 </div>
-                <Pagination
-                    activePage={Number(searchParams.get('page')) || 1}
-                    itemsCountPerPage={queryParams.limit}
-                    totalItemsCount={pagination?.totalData || 0}
-                    pageRangeDisplayed={5}
-                    onChange={handlePageChange}
-                />
+                <div className="flex flex-col sm:flex-row items-center justify-between">
+                    <div className="flex items-center gap-2 mt-10">
+                        <span className="text-sm">Show:</span>
+                        <select className="form-select text-sm w-20" value={queryParams.limit} onChange={handleLimitChange}>
+                            <option value="10">10</option>
+                            <option value="25">25</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                        <span className="text-sm">entries</span>
+                    </div>
+                    <Pagination
+                        activePage={Number(searchParams.get('page')) || 1}
+                        itemsCountPerPage={queryParams.limit}
+                        totalItemsCount={pagination?.totalData || 0}
+                        pageRangeDisplayed={5}
+                        onChange={handlePageChange}
+                    />
+                </div>
             </>
         </div>
     );

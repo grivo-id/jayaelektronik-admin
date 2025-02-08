@@ -100,6 +100,7 @@ const ProductDetail = lazy(() => import('../pages/Apps/ProductDetail'));
 const ProductCreation = lazy(() => import('../pages/Apps/ProductCreation'));
 const Orders = lazy(() => import('../pages/Apps/Orders'));
 const OrderDetail = lazy(() => import('../pages/Apps/OrderDetail'));
+const Coupon = lazy(() => import('../pages/Apps/Coupon'));
 
 const routes = [
     // dashboard
@@ -185,7 +186,7 @@ const routes = [
 
     {
         path: '/admin/manage-coupon-discount',
-        element: <UnderDevelopment />,
+        element: <Coupon />,
     },
 
     {

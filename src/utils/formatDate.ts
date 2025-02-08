@@ -9,6 +9,7 @@ const formatDate = (date: string | number | Date): string => {
         minute: '2-digit',
         second: '2-digit',
         hour12: false,
+        timeZone: 'Asia/Tokyo',
     });
 };
 

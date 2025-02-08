@@ -21,6 +21,8 @@ import 'react-quill/dist/quill.snow.css';
 const ProductCreation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const [productStatus, setProductStatus] = useState('bestseller');
+
     const [previewImages, setPreviewImages] = useState({
         image1: '/assets/images/file-preview.svg',
         image2: '/assets/images/file-preview.svg',
@@ -89,7 +91,7 @@ const ProductCreation = () => {
         defaultValues: {
             product_is_available: false,
             product_is_show: false,
-            product_is_bestseller: false,
+            product_is_bestseller: true,
             product_is_new_arrival: false,
             product_tag_names: [],
             product_promo_is_best_deal: false,
@@ -99,6 +101,22 @@ const ProductCreation = () => {
             product_promo_expired_date: null,
         },
     });
+
+    const handleProductStatusChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const status = e.target.value;
+        setProductStatus(status);
+
+        if (status === 'bestseller') {
+            setValue('product_is_bestseller', true);
+            setValue('product_is_new_arrival', false);
+        } else if (status === 'new_arrival') {
+            setValue('product_is_bestseller', false);
+            setValue('product_is_new_arrival', true);
+        } else {
+            setValue('product_is_bestseller', false);
+            setValue('product_is_new_arrival', false);
+        }
+    };
 
     const productPrice = watch('product_price');
     const isDiscount = watch('product_promo_is_discount');
@@ -398,34 +416,15 @@ const ProductCreation = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="product_is_bestseller">
-                                    Bestseller <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    id="product_is_bestseller"
-                                    {...register('product_is_bestseller', {
-                                        setValueAs: (value) => value === 'true',
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label htmlFor="product_is_new_arrival">
-                                    New Arrival <span className="text-red-500">*</span>
-                                </label>
-                                <select
-                                    id="product_is_new_arrival"
-                                    {...register('product_is_new_arrival', {
-                                        setValueAs: (value) => value === 'true',
-                                    })}
-                                    className="form-select"
-                                >
-                                    <option value="false">No</option>
-                                    <option value="true">Yes</option>
-                                </select>
+                                <div>
+                                    <label htmlFor="product_status">
+                                        Event <span className="text-red-500">*</span>
+                                    </label>
+                                    <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
+                                        <option value="bestseller">Best Seller</option>
+                                        <option value="new_arrival">New Arrival</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>
