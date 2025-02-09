@@ -6,6 +6,7 @@ import { useNavigate } from 'react-router-dom';
 import { SkeletonOrderDetail, Tooltip } from '../../components';
 import formatToRupiah from '../../utils/formatToRupiah';
 import Swal from 'sweetalert2';
+import { Badge } from '../../components/Badge';
 
 const OrderDetail = () => {
     const { id } = useParams();
@@ -141,6 +142,18 @@ const OrderDetail = () => {
                                 <p className="font-semibold">{formatDate(order.order_updated_at)}</p>
                             </div>
                             <div>
+                                <p className="text-gray-500 mb-2">Coupon</p>
+                                {order.coupon_detail ? (
+                                    <div>
+                                        <p className="font-semibold">{order.coupon_detail.coupon_code}</p>
+                                        <p className="text-xs text-gray-500">{order.coupon_detail.coupon_percentage}% discount</p>
+                                        <p className="text-xs text-gray-500">Max discount: {formatToRupiah(order.coupon_detail.coupon_max_discount)}</p>
+                                    </div>
+                                ) : (
+                                    <p className="font-semibold">-</p>
+                                )}
+                            </div>
+                            <div>
                                 <p className="text-gray-500 mb-2">Total Order</p>
                                 <p className="font-semibold">{formatToRupiah(order.order_grand_total)}</p>
                             </div>
@@ -177,10 +190,40 @@ const OrderDetail = () => {
                                                 <div className="font-semibold">{product.product_subcategory_name}</div>
                                             </td>
                                             <td>{product.product_qty}</td>
-                                            <td>{formatToRupiah(product.product_price)}</td>
-                                            <td>{formatToRupiah(product.product_price * product.product_qty)}</td>
+                                            <td>
+                                                <div className="flex flex-col">
+                                                    {product.order_discount_percentage ? (
+                                                        <>
+                                                            <div className="flex items-center gap-2">
+                                                                <span className="text-primary font-semibold">{formatToRupiah(product.product_price_at_purchase)}</span>
+                                                                <Badge color="warning">-{product.order_discount_percentage}%</Badge>
+                                                            </div>
+                                                            <span className="text-xs line-through text-gray-500">{formatToRupiah(product.product_price)}</span>
+                                                        </>
+                                                    ) : (
+                                                        <span className="font-semibold">{formatToRupiah(product.product_price)}</span>
+                                                    )}
+                                                </div>
+                                            </td>
+                                            <td>{formatToRupiah(product.product_subtotal)}</td>
                                         </tr>
                                     ))}
+                                    <tr className="bg-gray-50">
+                                        <td colSpan={5} className="text-right font-semibold">
+                                            Subtotal
+                                        </td>
+                                        <td className="font-semibold">{formatToRupiah(order.products.reduce((acc, product) => acc + product.product_price_at_purchase * product.product_qty, 0))}</td>
+                                    </tr>
+                                    {order.coupon_detail && (
+                                        <tr className="bg-gray-50">
+                                            <td colSpan={5} className="text-right font-semibold">
+                                                Coupon Discount ({order.coupon_detail.coupon_code} - {order.coupon_detail.coupon_percentage}%)
+                                            </td>
+                                            <td className="font-semibold text-danger">
+                                                -{formatToRupiah(order.products.reduce((acc, product) => acc + product.product_subtotal, 0) - order.order_grand_total)}
+                                            </td>
+                                        </tr>
+                                    )}
                                     <tr className="bg-gray-50">
                                         <td colSpan={5} className="text-right font-semibold">
                                             Grand Total

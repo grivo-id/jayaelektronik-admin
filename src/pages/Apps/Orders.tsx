@@ -218,6 +218,7 @@ const Orders = () => {
                                     <th>Products</th>
                                     <th>Address </th>
                                     <th className="min-w-[150px]">Total</th>
+                                    <th className="min-w-[100px]">Coupon</th>
                                     <th className="min-w-[100px]">Status</th>
                                 </tr>
                             </thead>
@@ -265,6 +266,17 @@ const Orders = () => {
                                                 </td>
                                                 <td>
                                                     <div className="font-semibold">{formatToRupiah(order.order_grand_total)}</div>
+                                                </td>
+                                                <td>
+                                                    {order.coupon_detail ? (
+                                                        <div className="flex flex-col gap-1">
+                                                            <div className="font-semibold">{order.coupon_detail.coupon_code}</div>
+                                                            <div className="text-xs text-gray-500">{order.coupon_detail.coupon_percentage}% off</div>
+                                                            <div className="text-xs text-gray-500">Max: {formatToRupiah(order.coupon_detail.coupon_max_discount)}</div>
+                                                        </div>
+                                                    ) : (
+                                                        <span className="text-gray-500">-</span>
+                                                    )}
                                                 </td>
                                                 <td>
                                                     <Tooltip text={order.order_is_completed ? 'Mark as Pending' : 'Mark as Complete'} position="top">
