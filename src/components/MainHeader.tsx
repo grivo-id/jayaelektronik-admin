@@ -64,8 +64,9 @@ const MainHeader = ({ title, subtitle, addText, onAdd, onSearchChange, search, h
                             </button>
                         </div>
                         {onFilterClick && (
-                            <button type="button" className="btn btn-outline-primary p-2" onClick={onFilterClick}>
-                                <IconFilter className="w-5 h-5" />
+                            <button type="button" className="btn btn-outline-primary" onClick={onFilterClick}>
+                                <IconFilter className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
+                                Filter
                             </button>
                         )}
                     </div>

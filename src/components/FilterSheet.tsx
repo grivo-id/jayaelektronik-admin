@@ -16,12 +16,16 @@ interface FilterSheetProps {
     onClose: () => void;
     primaryFilterOptions?: FilterOption[];
     secondaryFilterOptions?: CategoryOption[];
+    tertiaryFilterOptions?: FilterOption[];
     onPrimaryFilterChange?: (selectedOption: FilterOption | null) => void;
     onSecondaryFilterChange?: (selectedOption: FilterOption | null) => void;
+    onTertiaryFilterChange?: (selectedOption: FilterOption | null) => void;
     primaryFilterPlaceholder?: string;
     secondaryFilterPlaceholder?: string;
+    tertiaryFilterPlaceholder?: string;
     selectedPrimaryFilter?: FilterOption | null;
     selectedSecondaryFilter?: FilterOption | null;
+    selectedTertiaryFilter?: FilterOption | null;
     children?: React.ReactNode;
     onApply?: () => void;
     onReset?: () => void;
@@ -36,8 +40,12 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
     onSecondaryFilterChange,
     primaryFilterPlaceholder = 'Filter primary...',
     secondaryFilterPlaceholder = 'Filter secondary...',
+    tertiaryFilterPlaceholder = 'Filter tertiary...',
     selectedPrimaryFilter,
     selectedSecondaryFilter,
+    selectedTertiaryFilter,
+    tertiaryFilterOptions,
+    onTertiaryFilterChange,
     children,
     onApply,
     onReset,
@@ -179,6 +187,21 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
                         </div>
                     )}
 
+                    {tertiaryFilterOptions && (
+                        <div>
+                            <label className="block text-sm font-medium mb-2 dark:text-white">{tertiaryFilterPlaceholder}</label>
+                            <Select
+                                options={tertiaryFilterOptions}
+                                onChange={onTertiaryFilterChange}
+                                placeholder={tertiaryFilterPlaceholder}
+                                className="basic-select"
+                                classNamePrefix="select"
+                                value={selectedTertiaryFilter}
+                                isClearable
+                            />
+                        </div>
+                    )}
+
                     {children}
 
                     <div className="flex justify-end mt-6">
@@ -188,6 +211,7 @@ const FilterSheet: React.FC<FilterSheetProps> = ({
                             onClick={() => {
                                 onPrimaryFilterChange?.(null);
                                 onSecondaryFilterChange?.(null);
+                                onTertiaryFilterChange?.(null);
                                 onReset?.();
                             }}
                         >
