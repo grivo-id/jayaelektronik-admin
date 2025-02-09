@@ -137,6 +137,8 @@ const ProductDetail = () => {
                 setProductStatus('bestseller');
             } else if (product.product_is_new_arrival) {
                 setProductStatus('new_arrival');
+            } else {
+                setProductStatus('none');
             }
 
             setValue('product_image1', product.product_image1);
@@ -223,6 +225,9 @@ const ProductDetail = () => {
         } else if (status === 'new_arrival') {
             setValue('product_is_bestseller', false);
             setValue('product_is_new_arrival', true);
+        } else {
+            setValue('product_is_bestseller', false);
+            setValue('product_is_new_arrival', false);
         }
     };
 
@@ -491,13 +496,16 @@ const ProductDetail = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <label htmlFor="product_status">
-                                    Event <span className="text-danger">*</span>
-                                </label>
-                                <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
-                                    <option value="bestseller">Best Seller</option>
-                                    <option value="new_arrival">New Arrival</option>
-                                </select>
+                                <div>
+                                    <label htmlFor="product_status">
+                                        Event <span className="text-danger">*</span>
+                                    </label>
+                                    <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
+                                        <option value="none">None</option>
+                                        <option value="bestseller">Best Seller</option>
+                                        <option value="new_arrival">New Arrival</option>
+                                    </select>
+                                </div>
                             </div>
                         </div>
                     </div>

@@ -21,7 +21,7 @@ import 'react-quill/dist/quill.snow.css';
 const ProductCreation = () => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [productStatus, setProductStatus] = useState('bestseller');
+    const [productStatus, setProductStatus] = useState('none');
 
     const [previewImages, setPreviewImages] = useState({
         image1: '/assets/images/file-preview.svg',
@@ -91,7 +91,7 @@ const ProductCreation = () => {
         defaultValues: {
             product_is_available: false,
             product_is_show: false,
-            product_is_bestseller: true,
+            product_is_bestseller: false,
             product_is_new_arrival: false,
             product_tag_names: [],
             product_promo_is_best_deal: false,
@@ -421,6 +421,7 @@ const ProductCreation = () => {
                                         Event <span className="text-red-500">*</span>
                                     </label>
                                     <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
+                                        <option value="none">None</option>
                                         <option value="bestseller">Best Seller</option>
                                         <option value="new_arrival">New Arrival</option>
                                     </select>
