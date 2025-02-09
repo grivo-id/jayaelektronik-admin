@@ -251,7 +251,7 @@ const Profile = () => {
                                     </div>
                                     <div>
                                         <label htmlFor="user_email">Email</label>
-                                        <input id="user_email" type="email" className="form-input" {...register('user_email')} />
+                                        <input id="user_email" type="email" className="form-input bg-[#eee] dark:bg-[#1b2e4b] cursor-not-allowed" {...register('user_email')} disabled />
                                         {errors.user_email?.message && <span className="text-danger text-xs">{errors.user_email?.message}</span>}
                                     </div>
                                     <div>
