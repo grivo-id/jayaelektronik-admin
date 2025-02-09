@@ -8,8 +8,8 @@ export const ApiGetUserProfile = async () => {
     return response.data;
 };
 
-export const ApiUpdateUserProfile = async (id: string, payload: UpdateUserProfilePayload) => {
-    const response = await axiosInstance.patch<ApiResponse<UserProfile>>(`/users/${id}`, payload);
+export const ApiUpdateUserProfile = async (payload: UpdateUserProfilePayload) => {
+    const response = await axiosInstance.patch<ApiResponse<UserProfile>>(`/users`, payload);
     return response.data;
 };
 

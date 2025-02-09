@@ -65,7 +65,7 @@ const Profile = () => {
 
     const onEditProfile = (data: UpdateUserProfilePayload) => {
         updateProfile(
-            { id: profileData!.data.user_id, payload: data },
+            { payload: data },
             {
                 onSuccess: (response) => {
                     setModal(false);
