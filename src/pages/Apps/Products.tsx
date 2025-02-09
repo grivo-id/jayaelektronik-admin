@@ -27,12 +27,21 @@ const Products = () => {
     const [selectedCategory, setSelectedCategory] = useState<{ value: string; label: string } | null>(null);
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
+    const [selectedStatus, setSelectedStatus] = useState<{ value: string; label: string } | null>(null);
+    const [tempBrand, setTempBrand] = useState<{ value: string; label: string } | null>(null);
+    const [tempCategory, setTempCategory] = useState<{ value: string; label: string } | null>(null);
+    const [tempStatus, setTempStatus] = useState<{ value: string; label: string } | null>(null);
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
         page: Number(searchParams.get('page')) || 1,
         product_search: searchParams.get('product_search') || '',
         sort: 'desc',
+        product_is_new_arrival: searchParams.get('product_is_new_arrival') || '',
+        product_is_bestseller: searchParams.get('product_is_bestseller') || '',
+        product_is_available: searchParams.get('product_is_available') || '',
+        product_is_show: searchParams.get('product_is_show') || '',
+        product_promo_is_best_deal: searchParams.get('product_promo_is_best_deal') || '',
     });
 
     const {
@@ -52,6 +61,14 @@ const Products = () => {
         dispatch(setPageTitle('Products Management'));
     }, []);
 
+    const statusOptions = [
+        { value: 'product_is_new_arrival', label: 'New Arrival' },
+        { value: 'product_is_bestseller', label: 'Best Seller' },
+        { value: 'product_is_available', label: 'Available' },
+        { value: 'product_is_show', label: 'Visible' },
+        { value: 'product_promo_is_best_deal', label: 'Best Deal' },
+    ];
+
     const handlePageChange = (newPage: number) => {
         setSearchParams({
             ...Object.fromEntries(searchParams),
@@ -70,11 +87,54 @@ const Products = () => {
     };
 
     const handleBrandFilterChange = (selected: { value: string; label: string } | null) => {
-        setSelectedBrand(selected);
+        setTempBrand(selected);
     };
 
     const handleCategoryChange = (selected: { value: string; label: string } | null) => {
-        setSelectedCategory(selected);
+        setTempCategory(selected);
+    };
+
+    const handleStatusChange = (selected: { value: string; label: string } | null) => {
+        setTempStatus(selected);
+    };
+
+    const handleApplyFilters = () => {
+        setSelectedBrand(tempBrand);
+        setSelectedCategory(tempCategory);
+        setSelectedStatus(tempStatus);
+
+        setSearchParams((prev) => {
+            statusOptions.forEach((option) => {
+                prev.delete(option.value);
+            });
+            if (tempStatus) {
+                prev.set(tempStatus.value, 'true');
+            }
+            prev.set('page', '1');
+            return prev;
+        });
+
+        setQueryParams((prev) => {
+            const newParams = {
+                ...prev,
+                page: 1,
+            };
+            statusOptions.forEach((option) => {
+                newParams[option.value] = '';
+            });
+            if (tempStatus) {
+                newParams[tempStatus.value] = 'true';
+            }
+            return newParams;
+        });
+
+        setIsFilterOpen(false);
+    };
+
+    const handleResetFilters = () => {
+        setTempBrand(null);
+        setTempCategory(null);
+        setTempStatus(null);
     };
 
     useEffect(() => {
@@ -185,6 +245,15 @@ const Products = () => {
         });
     };
 
+    useEffect(() => {
+        statusOptions.forEach((option) => {
+            if (searchParams.get(option.value) === 'true') {
+                setSelectedStatus(option);
+                setTempStatus(option);
+            }
+        });
+    }, []);
+
     return (
         <div>
             <MainHeader
@@ -196,20 +265,36 @@ const Products = () => {
                 addText="Add New"
                 selectedCount={selectedProducts.length}
                 onBulkDelete={handleBulkDelete}
-                onFilterClick={() => setIsFilterOpen(true)}
+                onFilterClick={() => {
+                    setTempBrand(selectedBrand);
+                    setTempCategory(selectedCategory);
+                    setTempStatus(selectedStatus);
+                    setIsFilterOpen(true);
+                }}
             />
 
             <FilterSheet
                 isOpen={isFilterOpen}
-                onClose={() => setIsFilterOpen(false)}
+                onClose={() => {
+                    setIsFilterOpen(false);
+                    setTempBrand(selectedBrand);
+                    setTempCategory(selectedCategory);
+                    setTempStatus(selectedStatus);
+                }}
                 primaryFilterOptions={!isBrandLoading ? brandSlugs : []}
                 secondaryFilterOptions={!isCategoryLoading ? categoryOpt : []}
+                tertiaryFilterOptions={statusOptions}
                 onPrimaryFilterChange={handleBrandFilterChange}
                 onSecondaryFilterChange={handleCategoryChange}
+                onTertiaryFilterChange={handleStatusChange}
                 primaryFilterPlaceholder="Filter by brand"
                 secondaryFilterPlaceholder="Filter by category"
-                selectedPrimaryFilter={selectedBrand}
-                selectedSecondaryFilter={selectedCategory}
+                tertiaryFilterPlaceholder="Filter by status"
+                selectedPrimaryFilter={tempBrand}
+                selectedSecondaryFilter={tempCategory}
+                selectedTertiaryFilter={tempStatus}
+                onApply={handleApplyFilters}
+                onReset={handleResetFilters}
             />
             <>
                 <div className="mt-5 panel p-0 border-0 overflow-hidden">
