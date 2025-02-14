@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useGetAllOrderQuery, useToggleComplete } from '../../services/orderService';
+import { useDownloadOrder, useGetAllOrderQuery, useToggleComplete } from '../../services/orderService';
 import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -13,6 +13,7 @@ import formatToRupiah from '../../utils/formatToRupiah';
 import FilterSheet from '../../components/FilterSheet';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/themes/light.css';
+import IconDownload from '../../components/Icon/IconDownload';
 
 const Orders = () => {
     const dispatch = useDispatch();
@@ -44,6 +45,7 @@ const Orders = () => {
     const { data: { data: ordersData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllOrderQuery(queryParams, filterParams);
 
     const { mutate: toggleComplete } = useToggleComplete();
+    const { mutate: downloadOrder, isPending } = useDownloadOrder();
 
     useEffect(() => {
         dispatch(setPageTitle('Orders'));
@@ -166,9 +168,55 @@ const Orders = () => {
         setSearchParams(searchParamsObj);
     };
 
+    const handleDownloadOrders = () => {
+        const params = queryParams;
+        const body = { startDate: filterParams.startDate, endDate: filterParams.endDate };
+
+        Swal.fire({
+            title: 'Downloading...',
+            text: 'Please wait while we prepare your file.',
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            willOpen: () => {
+                Swal.showLoading();
+            },
+        });
+
+        downloadOrder(
+            { params, body },
+            {
+                onSuccess: ({ data, filename }) => {
+                    console.log('filename dari API:', filename);
+                    const blob = new Blob([data], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = filename;
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    window.URL.revokeObjectURL(url);
+                    Swal.close();
+                },
+                onError: () => {
+                    Swal.fire('Error', 'Failed to download orders', 'error');
+                },
+            }
+        );
+    };
+
     return (
         <div>
-            <MainHeader title="Orders" subtitle="Manage and view all orders" onSearchChange={handleSearchChange} search={search} hideAddButton onFilterClick={() => setIsFilterOpen(true)} />
+            <MainHeader
+                title="Orders"
+                subtitle="Manage and view all orders"
+                onSearchChange={handleSearchChange}
+                search={search}
+                onFilterClick={() => setIsFilterOpen(true)}
+                addText="Download"
+                onAdd={handleDownloadOrders}
+                icon={<IconDownload className="ltr:mr-2 rtl:ml-2" />}
+            />
 
             <FilterSheet isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} onApply={handleApplyFilter} onReset={handleResetFilter}>
                 <div className="space-y-4">

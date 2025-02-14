@@ -32,3 +32,23 @@ export const ApiGetOrderById = async (orderId: string) => {
 
     return response.data;
 };
+
+export const ApiDownloadOrder = async (params: Record<string, any>, body?: GetAllOrderPayload) => {
+    const response = await axiosInstance.post('orders/download', body, {
+        params,
+        responseType: 'arraybuffer',
+        headers: {
+            Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        },
+    });
+
+    const contentDisposition = response.headers['content-disposition'];
+    const filename = contentDisposition ? decodeURIComponent(contentDisposition.split('filename=')[1].replace(/['"]/g, '')) : 'orders.xlsx';
+
+    return {
+        data: new Blob([response.data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        }),
+        filename,
+    };
+};
