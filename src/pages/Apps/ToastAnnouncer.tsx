@@ -17,6 +17,8 @@ import IconPencil from '../../components/Icon/IconPencil';
 import IconTrash from '../../components/Icon/IconTrash';
 import { useSearchParams } from 'react-router-dom';
 import { useStore } from '../../store/store';
+import ToastPreview from '../../components/Toast/ToastPreview';
+import IconEye from '../../components/Icon/IconEye';
 
 const ToastAnnouncer = () => {
     const user = useStore((state) => state.user);
@@ -57,7 +59,13 @@ const ToastAnnouncer = () => {
 
     const [addToastModal, setAddToastModal] = useState<boolean>(false);
     const [selectedToast, setSelectedToast] = useState<Toast | null>(null);
+    const [previewModal, setPreviewModal] = useState(false);
+    const [selectedPreviewToast, setSelectedPreviewToast] = useState<Toast | null>(null);
 
+    const handlePreview = (toast: Toast) => {
+        setSelectedPreviewToast(toast);
+        setPreviewModal(true);
+    };
     const onSubmit = (data: CreateToastPayload) => {
         const localDate = new Date(data.toast_expired_date);
         const utcDate = new Date(localDate.getTime() - localDate.getTimezoneOffset() * 60000);
@@ -249,6 +257,11 @@ const ToastAnnouncer = () => {
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{formatDate(toast.toast_created_date)}</td>
                                                 <td>
                                                     <div className="flex gap-4 items-center justify-center">
+                                                        <Tooltip text="Preview Toast" position="top">
+                                                            <button type="button" className="btn btn-sm btn-outline-info" onClick={() => handlePreview(toast)}>
+                                                                <IconEye className="w-4 h-4" />
+                                                            </button>
+                                                        </Tooltip>
                                                         <Tooltip text="Edit Toast" position="top">
                                                             <button type="button" className="btn btn-sm btn-outline-primary" onClick={() => editToast(toast)} disabled={deleteToastPending}>
                                                                 <IconPencil className="w-4 h-4" />
@@ -344,6 +357,14 @@ const ToastAnnouncer = () => {
                     </div>
                 </div>
             </Dialog>
+            <ToastPreview
+                toast={selectedPreviewToast}
+                isOpen={previewModal}
+                onClose={() => {
+                    setPreviewModal(false);
+                    setSelectedPreviewToast(null);
+                }}
+            />
         </div>
     );
 };
