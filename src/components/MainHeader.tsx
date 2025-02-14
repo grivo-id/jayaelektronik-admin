@@ -23,9 +23,22 @@ interface MainHeaderProps {
     selectedCount?: number;
     onBulkDelete?: () => void;
     onFilterClick?: () => void;
+    icon?: React.ReactNode;
 }
 
-const MainHeader = ({ title, subtitle, addText, onAdd, onSearchChange, search, hideAddButton, selectedCount = 0, onBulkDelete, onFilterClick }: MainHeaderProps) => {
+const MainHeader = ({
+    title,
+    subtitle,
+    addText,
+    onAdd,
+    onSearchChange,
+    search,
+    hideAddButton,
+    selectedCount = 0,
+    onBulkDelete,
+    onFilterClick,
+    icon = <IconUserPlus className="ltr:mr-2 rtl:ml-2" />,
+}: MainHeaderProps) => {
     return (
         <>
             <div className="flex items-center justify-between flex-wrap gap-4 mb-5">
@@ -43,12 +56,18 @@ const MainHeader = ({ title, subtitle, addText, onAdd, onSearchChange, search, h
                                     </button>
                                 ) : (
                                     <button type="button" className="btn btn-primary" onClick={onAdd}>
-                                        <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
+                                        {icon}
                                         {addText}
                                     </button>
                                 )}
                             </div>
                         </div>
+                    )}
+                    {onFilterClick && (
+                        <button type="button" className="btn btn-outline-primary" onClick={onFilterClick}>
+                            <IconFilter className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
+                            Filter
+                        </button>
                     )}
                     <div className="flex gap-3 w-full sm:w-auto">
                         <div className="flex-1 relative">
@@ -63,12 +82,6 @@ const MainHeader = ({ title, subtitle, addText, onAdd, onSearchChange, search, h
                                 <IconSearch className="mx-auto" />
                             </button>
                         </div>
-                        {onFilterClick && (
-                            <button type="button" className="btn btn-outline-primary" onClick={onFilterClick}>
-                                <IconFilter className="w-5 h-5 ltr:mr-2 rtl:ml-2" />
-                                Filter
-                            </button>
-                        )}
                     </div>
                 </div>
             </div>

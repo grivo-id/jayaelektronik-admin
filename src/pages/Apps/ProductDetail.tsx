@@ -131,6 +131,12 @@ const ProductDetail = () => {
                 setValue('product_promo_final_price', product.product_promo.product_promo_final_price);
                 setValue('product_promo_discount_percentage', product.product_promo.product_promo_discount_percentage);
                 setValue('product_promo_expired_date', product.product_promo.product_promo_expired_date || null);
+            } else {
+                setValue('product_promo_is_best_deal', false);
+                setValue('product_promo_is_discount', false);
+                setValue('product_promo_final_price', 0);
+                setValue('product_promo_discount_percentage', 0);
+                setValue('product_promo_expired_date', null);
             }
 
             if (product.product_is_bestseller) {
