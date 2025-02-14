@@ -40,7 +40,7 @@ const LoginCover = () => {
                         <div className="absolute inset-y-0 w-8 from-primary/10 via-transparent to-transparent ltr:-right-10 ltr:bg-gradient-to-r rtl:-left-10 rtl:bg-gradient-to-l xl:w-16 ltr:xl:-right-20 rtl:xl:-left-20"></div>
                         <div className="ltr:xl:-skew-x-[14deg] rtl:xl:skew-x-[14deg]">
                             <Link to="/" className="w-48 block lg:w-72 ms-10">
-                                <img src="/assets/images/logo-nobg.png" alt="Logo" className="w-full" />
+                                <img src="/assets/logo/logo.png" alt="Logo" className="w-full" />
                             </Link>
                             <div className="mt-24 hidden w-full h-full max-w-[430px] lg:block">
                                 <img src="/assets/images/auth/login.svg" alt="Cover Image" className="w-full h-auto object-contain" />
@@ -50,7 +50,7 @@ const LoginCover = () => {
                     <div className="relative flex w-full flex-col items-center justify-center gap-6 px-4 pb-16 pt-6 sm:px-6 lg:max-w-[667px]">
                         <div className="flex w-full max-w-[440px] items-center gap-2 lg:absolute lg:end-6 lg:top-6 lg:max-w-full">
                             <Link to="/" className="w-full h-auto block lg:hidden">
-                                <img src="/assets/images/logo-nobg.png" alt="Logo" className="mx-auto w-15 h-10" />
+                                <img src="/assets/logo/logo.png" alt="Logo" className="mx-auto w-15 h-10" />
                             </Link>
                         </div>
                         <div className="w-full max-w-[440px] lg:mt-16 sm:mb-5">
