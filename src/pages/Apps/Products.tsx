@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip, FilterSheet } from '../../components';
+import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip, FilterSheet, ProductFilterSheet } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllProduct } from '../../api/productApi';
 import { useDeleteProductBulkMutation, useDeleteProductMutation, useGetAllProductQuery } from '../../services/productService';
@@ -27,10 +27,14 @@ const Products = () => {
     const [selectedCategory, setSelectedCategory] = useState<{ value: string; label: string } | null>(null);
     const [selectedProducts, setSelectedProducts] = useState<string[]>([]);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
-    const [selectedStatus, setSelectedStatus] = useState<{ value: string; label: string } | null>(null);
+    const [selectedEvent, setSelectedEvent] = useState<{ value: string; label: string } | null>(null);
     const [tempBrand, setTempBrand] = useState<{ value: string; label: string } | null>(null);
     const [tempCategory, setTempCategory] = useState<{ value: string; label: string } | null>(null);
-    const [tempStatus, setTempStatus] = useState<{ value: string; label: string } | null>(null);
+    const [tempEvent, setTempEvent] = useState<{ value: string; label: string } | null>(null);
+    const [selectedAvailability, setSelectedAvailability] = useState<{ value: string; label: string } | null>(null);
+    const [selectedVisibility, setSelectedVisibility] = useState<{ value: string; label: string } | null>(null);
+    const [tempAvailability, setTempAvailability] = useState<{ value: string; label: string } | null>(null);
+    const [tempVisibility, setTempVisibility] = useState<{ value: string; label: string } | null>(null);
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
@@ -61,12 +65,20 @@ const Products = () => {
         dispatch(setPageTitle('Products Management'));
     }, []);
 
-    const statusOptions = [
+    const eventOptions = [
         { value: 'product_is_new_arrival', label: 'New Arrival' },
         { value: 'product_is_bestseller', label: 'Best Seller' },
-        { value: 'product_is_available', label: 'Available' },
-        { value: 'product_is_show', label: 'Visible' },
         { value: 'product_promo_is_best_deal', label: 'Best Deal' },
+    ];
+
+    const availabilityOptions = [
+        { value: 'true', label: 'Yes' },
+        { value: 'false', label: 'No' },
+    ];
+
+    const visibilityOptions = [
+        { value: 'true', label: 'Yes' },
+        { value: 'false', label: 'No' },
     ];
 
     const handlePageChange = (newPage: number) => {
@@ -94,21 +106,40 @@ const Products = () => {
         setTempCategory(selected);
     };
 
-    const handleStatusChange = (selected: { value: string; label: string } | null) => {
-        setTempStatus(selected);
+    const handleEventChange = (selected: { value: string; label: string } | null) => {
+        setTempEvent(selected);
+    };
+
+    const handleAvailabilityChange = (selected: { value: string; label: string } | null) => {
+        setTempAvailability(selected);
+    };
+
+    const handleVisibilityChange = (selected: { value: string; label: string } | null) => {
+        setTempVisibility(selected);
     };
 
     const handleApplyFilters = () => {
         setSelectedBrand(tempBrand);
         setSelectedCategory(tempCategory);
-        setSelectedStatus(tempStatus);
+        setSelectedEvent(tempEvent);
+        setSelectedAvailability(tempAvailability);
+        setSelectedVisibility(tempVisibility);
 
         setSearchParams((prev) => {
-            statusOptions.forEach((option) => {
+            eventOptions.forEach((option) => {
                 prev.delete(option.value);
             });
-            if (tempStatus) {
-                prev.set(tempStatus.value, 'true');
+            prev.delete('product_is_available');
+            prev.delete('product_is_show');
+
+            if (tempEvent) {
+                prev.set(tempEvent.value, 'true');
+            }
+            if (tempAvailability) {
+                prev.set('product_is_available', tempAvailability.value);
+            }
+            if (tempVisibility) {
+                prev.set('product_is_show', tempVisibility.value);
             }
             prev.set('page', '1');
             return prev;
@@ -118,12 +149,14 @@ const Products = () => {
             const newParams = {
                 ...prev,
                 page: 1,
+                product_is_available: tempAvailability?.value || '',
+                product_is_show: tempVisibility?.value || '',
             };
-            statusOptions.forEach((option) => {
+            eventOptions.forEach((option) => {
                 newParams[option.value] = '';
             });
-            if (tempStatus) {
-                newParams[tempStatus.value] = 'true';
+            if (tempEvent) {
+                newParams[tempEvent.value] = 'true';
             }
             return newParams;
         });
@@ -134,7 +167,9 @@ const Products = () => {
     const handleResetFilters = () => {
         setTempBrand(null);
         setTempCategory(null);
-        setTempStatus(null);
+        setTempEvent(null);
+        setTempAvailability(null);
+        setTempVisibility(null);
     };
 
     useEffect(() => {
@@ -246,12 +281,30 @@ const Products = () => {
     };
 
     useEffect(() => {
-        statusOptions.forEach((option) => {
+        eventOptions.forEach((option) => {
             if (searchParams.get(option.value) === 'true') {
-                setSelectedStatus(option);
-                setTempStatus(option);
+                setSelectedEvent(option);
+                setTempEvent(option);
             }
         });
+
+        const availParam = searchParams.get('product_is_available');
+        if (availParam) {
+            const availOption = availabilityOptions.find((opt) => opt.value === availParam);
+            if (availOption) {
+                setSelectedAvailability(availOption);
+                setTempAvailability(availOption);
+            }
+        }
+
+        const visibParam = searchParams.get('product_is_show');
+        if (visibParam) {
+            const visibOption = visibilityOptions.find((opt) => opt.value === visibParam);
+            if (visibOption) {
+                setSelectedVisibility(visibOption);
+                setTempVisibility(visibOption);
+            }
+        }
     }, []);
 
     return (
@@ -268,31 +321,43 @@ const Products = () => {
                 onFilterClick={() => {
                     setTempBrand(selectedBrand);
                     setTempCategory(selectedCategory);
-                    setTempStatus(selectedStatus);
+                    setTempEvent(selectedEvent);
+                    setTempAvailability(selectedAvailability);
+                    setTempVisibility(selectedVisibility);
                     setIsFilterOpen(true);
                 }}
             />
 
-            <FilterSheet
+            <ProductFilterSheet
                 isOpen={isFilterOpen}
                 onClose={() => {
                     setIsFilterOpen(false);
                     setTempBrand(selectedBrand);
                     setTempCategory(selectedCategory);
-                    setTempStatus(selectedStatus);
+                    setTempEvent(selectedEvent);
+                    setTempAvailability(selectedAvailability);
+                    setTempVisibility(selectedVisibility);
                 }}
-                primaryFilterOptions={!isBrandLoading ? brandSlugs : []}
-                secondaryFilterOptions={!isCategoryLoading ? categoryOpt : []}
-                tertiaryFilterOptions={statusOptions}
-                onPrimaryFilterChange={handleBrandFilterChange}
-                onSecondaryFilterChange={handleCategoryChange}
-                onTertiaryFilterChange={handleStatusChange}
-                primaryFilterPlaceholder="Filter by brand"
-                secondaryFilterPlaceholder="Filter by category"
-                tertiaryFilterPlaceholder="Filter by status"
-                selectedPrimaryFilter={tempBrand}
-                selectedSecondaryFilter={tempCategory}
-                selectedTertiaryFilter={tempStatus}
+                brandFilterOptions={!isBrandLoading ? brandSlugs : []}
+                categoryFilterOptions={!isCategoryLoading ? categoryOpt : []}
+                eventFilterOptions={eventOptions}
+                availabilityFilterOptions={availabilityOptions}
+                visibilityFilterOptions={visibilityOptions}
+                onBrandFilterChange={handleBrandFilterChange}
+                onCategoryFilterChange={handleCategoryChange}
+                onEventFilterChange={handleEventChange}
+                onAvailabilityFilterChange={handleAvailabilityChange}
+                onVisibilityFilterChange={handleVisibilityChange}
+                brandFilterPlaceholder="Filter by Brand"
+                categoryFilterPlaceholder="Filter by Category"
+                eventFilterPlaceholder="Filter by Event"
+                availabilityFilterPlaceholder="Filter by Available"
+                visibilityFilterPlaceholder="Filter by Show In Store"
+                selectedBrandFilter={tempBrand}
+                selectedCategoryFilter={tempCategory}
+                selectedEventFilter={tempEvent}
+                selectedAvailabilityFilter={tempAvailability}
+                selectedVisibilityFilter={tempVisibility}
                 onApply={handleApplyFilters}
                 onReset={handleResetFilters}
             />

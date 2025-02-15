@@ -101,6 +101,7 @@ const ProductCreation = lazy(() => import('../pages/Apps/ProductCreation'));
 const Orders = lazy(() => import('../pages/Apps/Orders'));
 const OrderDetail = lazy(() => import('../pages/Apps/OrderDetail'));
 const Coupon = lazy(() => import('../pages/Apps/Coupon'));
+const Toast = lazy(() => import('../pages/Apps/ToastAnnouncer'));
 
 const routes = [
     // dashboard
@@ -226,6 +227,10 @@ const routes = [
     {
         path: '/admin/manage-brand',
         element: <Brands />,
+    },
+    {
+        path: '/admin/toast-announcer',
+        element: <Toast />,
     },
 
     {
