@@ -191,16 +191,6 @@ const routes = [
     },
 
     {
-        path: '/admin/manage-home-banner',
-        element: <UnderDevelopment />,
-    },
-
-    {
-        path: '/admin/manage-deals-of-the-week',
-        element: <UnderDevelopment />,
-    },
-
-    {
         path: '/admin/manage-blog',
         element: <Blog />,
     },
