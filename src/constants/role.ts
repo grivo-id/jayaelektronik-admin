@@ -11,4 +11,5 @@ export const getRoleIdByName = (roleName: string): number => {
 export const roleCodeOpt = [
     { value: 'lvl_perms_member', label: 'Member' },
     { value: 'lvl_perms_admin', label: 'Admin' },
+    { value: 'lvl_perms_manager', label: 'Manager' },
 ];
