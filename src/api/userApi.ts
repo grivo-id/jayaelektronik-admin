@@ -26,3 +26,15 @@ export const ApiChangePassword = async (payload: ChangePasswordPayload) => {
 
     return response.data;
 };
+
+export const ApiDeleteUser = async (id: string) => {
+    const response = await axiosInstance.delete<ApiResponse<UserProfile>>(`/users/${id}`);
+
+    return response.data;
+};
+
+export const ApiResetUserPassword = async (id: string) => {
+    const response = await axiosInstance.patch<ApiResponse<UserProfile>>(`/users/reset-password/user/${id}`);
+
+    return response.data;
+};

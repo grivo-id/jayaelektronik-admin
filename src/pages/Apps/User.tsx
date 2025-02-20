@@ -5,7 +5,7 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import { Pagination, SkeletonLoadingTable, MainUserHeader, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { ApiGetAllUser } from '../../api/userApi';
-import { useGetAllUserQuery, useUpdateUser, useCreateUser } from '../../services/userService';
+import { useGetAllUserQuery, useUpdateUser, useCreateUser, useDeleteUser, useResetUserPassword } from '../../services/userService';
 import { useResetPasswordManager } from '../../services/profileService';
 import IconPencil from '../../components/Icon/IconPencil';
 import IconX from '../../components/Icon/IconX';
@@ -16,10 +16,10 @@ import { CreateUserPayload, UpdateUserPayload, getCreateUserSchema, getUpdateUse
 import { getRoleIdByName, roleOptions } from '../../constants/role';
 import { UserProfile } from '../../types/userProfile';
 import Swal from 'sweetalert2';
-import Loader from '../../components/Loader';
 import IconEye from '../../components/Icon/IconEye';
 import IconEyeOff from '../../components/Icon/IconEyeOff';
 import { useSearchParams } from 'react-router-dom';
+import IconTrash from '../../components/Icon/IconTrash';
 
 const User = () => {
     const dispatch = useDispatch();
@@ -39,6 +39,8 @@ const User = () => {
     const { mutate: updateUser, isPending: updateUserPending } = useUpdateUser();
     const { mutate: createUser, isPending: createUserPending } = useCreateUser();
     const { mutate: mutateResetPassword, isPending: isResetPasswordPending } = useResetPasswordManager();
+    const { mutate: deleteUser, isPending: deleteUserPending } = useDeleteUser();
+    const { mutate: resetUserPassword, isPending: resetUserPasswordPending } = useResetUserPassword();
 
     const updateUserSchema = useMemo(() => getUpdateUserSchema(), []);
     const createUserSchema = useMemo(() => getCreateUserSchema(), []);
@@ -188,7 +190,7 @@ const User = () => {
         return `${user.user_fname} ${user.user_lname}`;
     };
 
-    const handleResetPassword = (userId: string) => {
+    const handleResetPassword = (user: UserProfile) => {
         Swal.fire({
             icon: 'warning',
             title: 'Reset Password',
@@ -202,12 +204,44 @@ const User = () => {
             },
         }).then((result) => {
             if (result.isConfirmed) {
-                mutateResetPassword(userId, {
+                const resetFunction = user.role_name === 'Member' ? resetUserPassword : mutateResetPassword;
+
+                resetFunction(user.user_id, {
                     onSuccess: () => {
                         Swal.fire({
                             icon: 'success',
                             title: 'Password Successfully Reset',
                             text: 'New password: Admin.Jaya@2025',
+                            padding: '2em',
+                            customClass: {
+                                popup: 'sweet-alerts',
+                            },
+                        });
+                    },
+                });
+            }
+        });
+    };
+
+    const handleDeleteUser = (user: UserProfile) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            padding: '2em',
+            customClass: {
+                popup: 'sweet-alerts',
+            },
+        }).then((result) => {
+            if (result.value) {
+                deleteUser(user.user_id, {
+                    onSuccess: () => {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: 'User has been deleted.',
                             padding: '2em',
                             customClass: {
                                 popup: 'sweet-alerts',
@@ -289,10 +323,17 @@ const User = () => {
                                                             </button>
                                                         </Tooltip>
                                                         <Tooltip text="Reset Password" position="top">
-                                                            <button type="button" className="btn btn-sm btn-outline-warning" onClick={() => handleResetPassword(user.user_id)}>
+                                                            <button type="button" className="btn btn-sm btn-outline-warning" onClick={() => handleResetPassword(user)}>
                                                                 <IconLockDots className="w-4 h-4" />
                                                             </button>
                                                         </Tooltip>
+                                                        {user.role_name === 'Member' && (
+                                                            <Tooltip text="Delete User" position="top">
+                                                                <button type="button" className="btn btn-sm btn-outline-danger" onClick={() => handleDeleteUser(user)} disabled={deleteUserPending}>
+                                                                    <IconTrash className="w-4 h-4" />
+                                                                </button>
+                                                            </Tooltip>
+                                                        )}
                                                     </div>
                                                 </td>
                                             </tr>
@@ -335,11 +376,13 @@ const User = () => {
                                         </label>
                                         <select id="role_id" className="form-select" {...updateRegister('role_id', { valueAsNumber: true })}>
                                             <option value={0}>Select Role</option>
-                                            {roleOptions.map((option) => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
+                                            {roleOptions
+                                                .filter((option) => option.label !== 'Member')
+                                                .map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
                                         </select>
                                         {createErrors.role_id && <span className="text-danger">{createErrors.role_id.message}</span>}
                                     </div>
@@ -443,11 +486,13 @@ const User = () => {
                                         </label>
                                         <select id="role_id" className="form-select" {...createRegister('role_id', { valueAsNumber: true })}>
                                             <option value={0}>Select Role</option>
-                                            {roleOptions.map((option) => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
+                                            {roleOptions
+                                                .filter((option) => option.label !== 'Member')
+                                                .map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
                                         </select>
                                         {createErrors.role_id && <span className="text-danger">{createErrors.role_id.message}</span>}
                                     </div>
@@ -579,8 +624,6 @@ const User = () => {
                     </div>
                 </div>
             </Dialog>
-
-            {isResetPasswordPending && <Loader />}
         </div>
     );
 };
