@@ -191,6 +191,9 @@ const User = () => {
     };
 
     const handleResetPassword = (user: UserProfile) => {
+        const isMember = user.role_name === 'Member';
+        const defaultPassword = isMember ? `${user.user_email.split('@')[0]}@Jaya2025` : 'Admin.Jaya@2025';
+
         Swal.fire({
             icon: 'warning',
             title: 'Reset Password',
@@ -204,14 +207,14 @@ const User = () => {
             },
         }).then((result) => {
             if (result.isConfirmed) {
-                const resetFunction = user.role_name === 'Member' ? resetUserPassword : mutateResetPassword;
+                const resetFunction = isMember ? resetUserPassword : mutateResetPassword;
 
                 resetFunction(user.user_id, {
                     onSuccess: () => {
                         Swal.fire({
                             icon: 'success',
                             title: 'Password Successfully Reset',
-                            text: 'New password: Admin.Jaya@2025',
+                            text: `New password: ${defaultPassword}`,
                             padding: '2em',
                             customClass: {
                                 popup: 'sweet-alerts',
