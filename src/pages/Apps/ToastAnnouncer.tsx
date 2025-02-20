@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { Dialog, DialogPanel } from '@headlessui/react';
 import Swal from 'sweetalert2';
 import { useDispatch } from 'react-redux';
@@ -19,6 +19,8 @@ import { useSearchParams } from 'react-router-dom';
 import { useStore } from '../../store/store';
 import ToastPreview from '../../components/Toast/ToastPreview';
 import IconEye from '../../components/Icon/IconEye';
+import ReactQuill from 'react-quill';
+import 'react-quill/dist/quill.snow.css';
 
 const ToastAnnouncer = () => {
     const user = useStore((state) => state.user);
@@ -27,6 +29,8 @@ const ToastAnnouncer = () => {
     const queryClient = useQueryClient();
     const [searchParams, setSearchParams] = useSearchParams();
     const [search, setSearch] = useState(searchParams.get('search') || '');
+    const [editorContent, setEditorContent] = useState('');
+    const quillRef = useRef<any>(null);
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
@@ -73,6 +77,7 @@ const ToastAnnouncer = () => {
         const payload = {
             ...data,
             user_id: user?.user_id,
+            toast_message: editorContent,
             toast_expired_date: utcDate.toISOString(),
         };
 
@@ -87,6 +92,7 @@ const ToastAnnouncer = () => {
                         setAddToastModal(false);
                         reset();
                         setSelectedToast(null);
+                        setEditorContent('');
                     },
                 }
             );
@@ -95,6 +101,7 @@ const ToastAnnouncer = () => {
                 onSuccess: () => {
                     setAddToastModal(false);
                     reset();
+                    setEditorContent('');
                     setQueryParams({ ...queryParams, page: 1 });
                 },
             });
@@ -104,7 +111,7 @@ const ToastAnnouncer = () => {
     const editToast = (toast: Toast) => {
         setSelectedToast(toast);
         setValue('toast_title', toast.toast_title);
-        setValue('toast_message', toast.toast_message);
+        setEditorContent(toast.toast_message);
         const date = new Date(toast.toast_expired_date);
         const formattedDate = date.toISOString().slice(0, 16);
         setValue('toast_expired_date', formattedDate);
@@ -156,6 +163,7 @@ const ToastAnnouncer = () => {
         setAddToastModal(false);
         reset();
         setSelectedToast(null);
+        setEditorContent('');
     };
 
     const isLoading = createToastPending || updateToastPending || deleteToastPending;
@@ -246,7 +254,7 @@ const ToastAnnouncer = () => {
                                         return (
                                             <tr key={toast.toast_id}>
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">{toast.toast_title}</td>
-                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis">{toast.toast_message}</td>
+                                                <td className="whitespace-nowrap overflow-hidden text-ellipsis" dangerouslySetInnerHTML={{ __html: toast.toast_message }} />
                                                 <td className="whitespace-nowrap overflow-hidden text-ellipsis">
                                                     {(() => {
                                                         const date = new Date(toast.toast_expired_date);
@@ -322,17 +330,22 @@ const ToastAnnouncer = () => {
                                         {errors.toast_title && <span className="text-danger text-sm mt-1">{errors.toast_title.message}</span>}
                                     </div>
                                     <div className="mb-5">
-                                        <label htmlFor="toast_message" className="flex items-center">
+                                        <label htmlFor="toast_message" className="flex items-center mb-2">
                                             Message
                                             <span className="text-danger text-base">*</span>
                                         </label>
-                                        <textarea
-                                            id="toast_message"
-                                            placeholder="Enter Toast Message"
-                                            className={`form-textarea ${errors.toast_message ? 'error' : ''}`}
-                                            {...register('toast_message')}
-                                            rows={3}
-                                        ></textarea>
+                                        <div className="mb-10">
+                                            <ReactQuill
+                                                ref={quillRef}
+                                                theme="snow"
+                                                value={editorContent}
+                                                onChange={(content) => {
+                                                    setEditorContent(content);
+                                                    setValue('toast_message', content);
+                                                }}
+                                                className="h-[200px] mb-10"
+                                            />
+                                        </div>
                                         {errors.toast_message && <span className="text-danger text-sm mt-1">{errors.toast_message.message}</span>}
                                     </div>
                                     <div className="mb-5">
