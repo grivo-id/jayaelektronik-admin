@@ -1,6 +1,7 @@
 export const roleOptions = [
     { value: 1, label: 'Member' },
     { value: 2, label: 'Admin' },
+    { value: 3, label: 'Manager' },
 ];
 
 export const getRoleIdByName = (roleName: string): number => {

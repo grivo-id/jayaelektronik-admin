@@ -24,12 +24,14 @@ const MainUserHeader = ({ title, subtitle, addText, onAdd, onSearchChange, searc
                     <p className="text-sm text-gray-600">{subtitle}</p>
                 </div>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
-                    <div>
-                        <button type="button" className="btn btn-primary" onClick={onAdd}>
-                            <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
-                            {addText}
-                        </button>
-                    </div>
+                    {roleCode !== 'lvl_perms_member' && (
+                        <div>
+                            <button type="button" className="btn btn-primary" onClick={onAdd}>
+                                <IconUserPlus className="ltr:mr-2 rtl:ml-2" />
+                                {addText}
+                            </button>
+                        </div>
+                    )}
                     <div className="flex gap-3">
                         <div className="relative">
                             <select className="form-select pr-10" value={roleCode} onChange={onRoleChange}>

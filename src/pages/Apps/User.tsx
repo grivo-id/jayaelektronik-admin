@@ -376,11 +376,13 @@ const User = () => {
                                         </label>
                                         <select id="role_id" className="form-select" {...updateRegister('role_id', { valueAsNumber: true })}>
                                             <option value={0}>Select Role</option>
-                                            {roleOptions.map((option) => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
+                                            {roleOptions
+                                                .filter((option) => option.label !== 'Member')
+                                                .map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
                                         </select>
                                         {createErrors.role_id && <span className="text-danger">{createErrors.role_id.message}</span>}
                                     </div>
@@ -484,11 +486,13 @@ const User = () => {
                                         </label>
                                         <select id="role_id" className="form-select" {...createRegister('role_id', { valueAsNumber: true })}>
                                             <option value={0}>Select Role</option>
-                                            {roleOptions.map((option) => (
-                                                <option key={option.value} value={option.value}>
-                                                    {option.label}
-                                                </option>
-                                            ))}
+                                            {roleOptions
+                                                .filter((option) => option.label !== 'Member')
+                                                .map((option) => (
+                                                    <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                    </option>
+                                                ))}
                                         </select>
                                         {createErrors.role_id && <span className="text-danger">{createErrors.role_id.message}</span>}
                                     </div>
