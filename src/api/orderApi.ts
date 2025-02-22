@@ -5,11 +5,20 @@ import { Order } from '../types/orderType';
 export interface GetAllOrderPayload {
     startDate: string;
     endDate: string;
+    order_is_completed?: string; // Keep as string
 }
 
-export const ApiGetAllOrder = async (params: Record<string, any>, body?: GetAllOrderPayload) => {
-    const response = await axiosInstance.post<ApiResponse<Order[]>>('/orders/all', body, { params });
+export const ApiGetAllOrder = async (params: Record<string, any>, body?: Partial<GetAllOrderPayload>) => {
+    const processedBody = body
+        ? {
+              ...body,
+              order_is_completed: body.order_is_completed ? body.order_is_completed === 'true' : undefined,
+          }
+        : undefined;
 
+    const filteredBody = processedBody ? Object.fromEntries(Object.entries(processedBody).filter(([_, value]) => value !== null && value !== undefined)) : undefined;
+
+    const response = await axiosInstance.post<ApiResponse<Order[]>>('/orders/all', filteredBody, { params });
     return response.data;
 };
 

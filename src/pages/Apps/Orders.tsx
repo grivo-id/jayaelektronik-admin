@@ -29,6 +29,21 @@ const Orders = () => {
         const urlEndDate = searchParams.get('endDate');
         return urlEndDate ? new Date(urlEndDate) : null;
     });
+    const [selectedStatus, setSelectedStatus] = useState<{ value: string; label: string } | null>(() => {
+        const urlStatus = searchParams.get('order_is_completed');
+        if (urlStatus) {
+            return {
+                value: urlStatus,
+                label: urlStatus === 'true' ? 'Completed' : 'Pending',
+            };
+        }
+        return null;
+    });
+
+    const statusOptions = [
+        { value: 'true', label: 'Completed' },
+        { value: 'false', label: 'Pending' },
+    ];
 
     const [queryParams, setQueryParams] = useState({
         limit: 10,
@@ -37,9 +52,14 @@ const Orders = () => {
         sort: 'desc',
     });
 
-    const [filterParams, setFilterParams] = useState({
+    const [filterParams, setFilterParams] = useState<{
+        startDate: string;
+        endDate: string;
+        order_is_completed?: string;
+    }>({
         startDate: searchParams.get('startDate') || '',
         endDate: searchParams.get('endDate') || '',
+        order_is_completed: searchParams.get('order_is_completed') || undefined,
     });
 
     const { data: { data: ordersData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllOrderQuery(queryParams, filterParams);
@@ -135,6 +155,10 @@ const Orders = () => {
         });
     };
 
+    const handleStatusChange = (selected: { value: string; label: string } | null) => {
+        setSelectedStatus(selected);
+    };
+
     const handleApplyFilter = () => {
         const formatDateParam = (date: Date | null) => {
             if (!date) return '';
@@ -147,30 +171,50 @@ const Orders = () => {
         const newFilterParams = {
             startDate: formatDateParam(startDate),
             endDate: formatDateParam(endDate),
+            order_is_completed: selectedStatus?.value || undefined,
         };
         setFilterParams(newFilterParams);
-        setSearchParams({
+
+        const searchParamsObj: Record<string, string> = {
             ...Object.fromEntries(searchParams),
             page: '1',
             startDate: newFilterParams.startDate,
             endDate: newFilterParams.endDate,
-        });
+        };
+
+        if (selectedStatus) {
+            searchParamsObj.order_is_completed = selectedStatus.value;
+        } else {
+            delete searchParamsObj.order_is_completed;
+        }
+
+        setSearchParams(searchParamsObj);
         setIsFilterOpen(false);
     };
 
     const handleResetFilter = () => {
         setStartDate(null);
         setEndDate(null);
-        setFilterParams({ startDate: '', endDate: '' });
+        setSelectedStatus(null);
+        setFilterParams({
+            startDate: '',
+            endDate: '',
+            order_is_completed: undefined,
+        });
         const searchParamsObj = Object.fromEntries(searchParams);
         delete searchParamsObj.startDate;
         delete searchParamsObj.endDate;
+        delete searchParamsObj.order_is_completed;
         setSearchParams(searchParamsObj);
     };
 
     const handleDownloadOrders = () => {
         const params = queryParams;
-        const body = { startDate: filterParams.startDate, endDate: filterParams.endDate };
+        const body = {
+            startDate: filterParams.startDate,
+            endDate: filterParams.endDate,
+            order_is_completed: filterParams.order_is_completed,
+        };
 
         Swal.fire({
             title: 'Downloading...',
@@ -218,7 +262,16 @@ const Orders = () => {
                 icon={<IconDownload className="ltr:mr-2 rtl:ml-2" />}
             />
 
-            <FilterSheet isOpen={isFilterOpen} onClose={() => setIsFilterOpen(false)} onApply={handleApplyFilter} onReset={handleResetFilter}>
+            <FilterSheet
+                isOpen={isFilterOpen}
+                onClose={() => setIsFilterOpen(false)}
+                onApply={handleApplyFilter}
+                onReset={handleResetFilter}
+                tertiaryFilterOptions={statusOptions}
+                tertiaryFilterPlaceholder="Filter by status"
+                selectedTertiaryFilter={selectedStatus}
+                onTertiaryFilterChange={handleStatusChange}
+            >
                 <div className="space-y-4">
                     <div>
                         <label className="block text-sm font-medium mb-2 dark:text-white">Start Date</label>
