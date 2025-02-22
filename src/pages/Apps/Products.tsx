@@ -445,12 +445,10 @@ const Products = () => {
                                                                 <span>{product.brand_name}</span>
                                                             </div>
                                                         </div>
-
                                                         <div className="flex flex-col">
                                                             <span className="text-sm font-medium">{product.product_category_name}</span>
                                                             <span className="text-xs text-gray-500">{product.product_subcategory_name}</span>
                                                         </div>
-
                                                         {product.product_tags && product.product_tags.length > 0 && product.product_tags[0].product_tag_name && (
                                                             <div className="flex flex-wrap gap-1">
                                                                 {product.product_tags.map((tag, idx) => (
@@ -460,16 +458,22 @@ const Products = () => {
                                                                 ))}
                                                             </div>
                                                         )}
-
-                                                        <a
-                                                            href={`${formatLink(product.product_id, product.product_name)}`}
-                                                            target="_blank"
-                                                            rel="noopener noreferrer"
-                                                            className="inline-flex items-center"
-                                                        >
-                                                            <IconEye className="text-primary w-5 h-5" />
-                                                            <span className="ml-1 text-xs text-gray-500 hover:text-primary transition-colors duration-300">View on website</span>
-                                                        </a>
+                                                        {product.product_is_show ? (
+                                                            <a
+                                                                href={`${formatLink(product.product_id, product.product_name)}`}
+                                                                target="_blank"
+                                                                rel="noopener noreferrer"
+                                                                className="inline-flex items-center"
+                                                            >
+                                                                <IconEye className="text-primary w-5 h-5" />
+                                                                <span className="ml-1 text-xs text-gray-500 hover:text-primary transition-colors duration-300">View on website</span>
+                                                            </a>
+                                                        ) : (
+                                                            <div className="inline-flex items-center">
+                                                                <IconEye className="text-gray-400 w-5 h-5" />
+                                                                <span className="ml-1 text-xs text-gray-400">Not available on website</span>
+                                                            </div>
+                                                        )}
                                                     </div>
                                                 </td>
 
