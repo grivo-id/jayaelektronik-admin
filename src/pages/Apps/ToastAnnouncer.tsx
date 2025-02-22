@@ -111,6 +111,7 @@ const ToastAnnouncer = () => {
     const editToast = (toast: Toast) => {
         setSelectedToast(toast);
         setValue('toast_title', toast.toast_title);
+        setValue('toast_message', toast.toast_message);
         setEditorContent(toast.toast_message);
         const date = new Date(toast.toast_expired_date);
         const formattedDate = date.toISOString().slice(0, 16);
