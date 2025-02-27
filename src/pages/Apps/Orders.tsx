@@ -15,6 +15,8 @@ import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/themes/light.css';
 import IconDownload from '../../components/Icon/IconDownload';
 import IconTrash from '../../components/Icon/IconTrash';
+import { formatPhoneNumber, createOrderMessage } from '../../utils/whatsapp';
+import IconWA from '../../components/Icon/IconWA';
 
 const Orders = () => {
     const dispatch = useDispatch();
@@ -284,6 +286,14 @@ const Orders = () => {
         });
     };
 
+    const handleFollowUp = (order: any) => {
+        const formattedPhone = formatPhoneNumber(order.order_phone);
+        const message = createOrderMessage(order);
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
     return (
         <div>
             <MainHeader
@@ -447,11 +457,18 @@ const Orders = () => {
                                                     </Tooltip>
                                                 </td>
                                                 <td>
-                                                    <Tooltip text="Delete Order" position="top">
-                                                        <button type="button" className="btn btn-outline-danger p-2" onClick={() => handleDeleteOrder(order.order_id)}>
-                                                            <IconTrash className="w-4.5 h-4.5" />
-                                                        </button>
-                                                    </Tooltip>
+                                                    <div className="flex items-center gap-2">
+                                                        <Tooltip text="Follow Up Order" position="top">
+                                                            <button type="button" className="btn btn-outline-primary p-2" onClick={() => handleFollowUp(order)}>
+                                                                <IconWA className="w-4.5 h-4.5" />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Delete Order" position="top">
+                                                            <button type="button" className="btn btn-outline-danger p-2" onClick={() => handleDeleteOrder(order.order_id)}>
+                                                                <IconTrash className="w-4.5 h-4.5" />
+                                                            </button>
+                                                        </Tooltip>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );
