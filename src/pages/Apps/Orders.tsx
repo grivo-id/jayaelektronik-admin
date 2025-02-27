@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useDownloadOrder, useGetAllOrderQuery, useToggleComplete } from '../../services/orderService';
+import { useDownloadOrder, useGetAllOrderQuery, useToggleComplete, useDeleteOrder } from '../../services/orderService';
 import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -14,6 +14,7 @@ import FilterSheet from '../../components/FilterSheet';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/themes/light.css';
 import IconDownload from '../../components/Icon/IconDownload';
+import IconTrash from '../../components/Icon/IconTrash';
 
 const Orders = () => {
     const dispatch = useDispatch();
@@ -66,6 +67,7 @@ const Orders = () => {
 
     const { mutate: toggleComplete } = useToggleComplete();
     const { mutate: downloadOrder, isPending } = useDownloadOrder();
+    const { mutate: deleteOrder } = useDeleteOrder();
 
     useEffect(() => {
         dispatch(setPageTitle('Orders'));
@@ -249,6 +251,39 @@ const Orders = () => {
         );
     };
 
+    const handleDeleteOrder = (orderId: string) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'This order will be permanently deleted',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel',
+            padding: '2em',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Deleting...',
+                    text: 'Please wait while we delete the order.',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+                deleteOrder(orderId, {
+                    onSuccess: () => {
+                        Swal.fire('Success', 'Order has been deleted', 'success');
+                    },
+                    onError: (error: any) => {
+                        const errorMessage = error?.response?.data?.message || 'Failed to delete order';
+                        Swal.fire('Error', errorMessage, 'error');
+                    },
+                });
+            }
+        });
+    };
+
     return (
         <div>
             <MainHeader
@@ -321,6 +356,7 @@ const Orders = () => {
                                     <th className="min-w-[150px]">Total</th>
                                     <th className="min-w-[100px]">Coupon</th>
                                     <th className="min-w-[100px]">Status</th>
+                                    <th className="min-w-[100px]">Action</th>
                                 </tr>
                             </thead>
                             {isFetching ? (
@@ -408,6 +444,13 @@ const Orders = () => {
                                                                 </span>
                                                             </span>
                                                         </label>
+                                                    </Tooltip>
+                                                </td>
+                                                <td>
+                                                    <Tooltip text="Delete Order" position="top">
+                                                        <button type="button" className="btn btn-outline-danger p-2" onClick={() => handleDeleteOrder(order.order_id)}>
+                                                            <IconTrash className="w-4.5 h-4.5" />
+                                                        </button>
                                                     </Tooltip>
                                                 </td>
                                             </tr>
