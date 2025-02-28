@@ -33,6 +33,7 @@ interface Product {
     product_promo: {
         product_promo_id: string;
         product_promo_price: number;
+        product_promo_type: string;
         product_promo_final_price: number;
         product_promo_is_discount: boolean;
         product_promo_created_date: string;

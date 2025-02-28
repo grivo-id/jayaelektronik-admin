@@ -4,7 +4,7 @@ import { setPageTitle } from '../../store/themeConfigSlice';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useGetProductByIdQuery, useUpdateProductMutation } from '../../services/productService';
+import { useGetProductByIdForAdminQuery, useGetProductPromoTypes, useUpdateProductMutation } from '../../services/productService';
 import { useGetAllProductCategory } from '../../services/productCategoryService';
 import { useGetAllBrandQuery } from '../../services/brandsService';
 import { useGetAllProductTag } from '../../services/productTagService';
@@ -19,6 +19,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { SkeletonProductDetail } from '../../components';
 import formatDate from '../../utils/formatDate';
+import PriceSection from '../../components/product/PriceSection';
 
 const ProductDetail = () => {
     const dispatch = useDispatch();
@@ -72,14 +73,15 @@ const ProductDetail = () => {
     const [selectedCategory, setSelectedCategory] = useState<string>('');
     const [editorContent, setEditorContent] = useState('');
 
-    const { data: product, isFetching } = useGetProductByIdQuery(id as string);
+    const { data: product, isFetching } = useGetProductByIdForAdminQuery(id as string);
     const { data: categories } = useGetAllProductCategory({});
     const { data: brands } = useGetAllBrandQuery({ page: 1, limit: 1000 });
     const { data: tags } = useGetAllProductTag({ page: 1, limit: 1000 });
     const { mutate: updateProduct, isPending: isUpdatePending } = useUpdateProductMutation();
-
+    const { data: promoTypes } = useGetProductPromoTypes();
     const UpdateProductSchema = useMemo(() => getUpdateProductSchema(), []);
     const [productStatus, setProductStatus] = useState('');
+    const [promoType, setPromoType] = useState<string>('');
 
     const {
         register,
@@ -131,12 +133,23 @@ const ProductDetail = () => {
                 setValue('product_promo_final_price', product.product_promo.product_promo_final_price);
                 setValue('product_promo_discount_percentage', product.product_promo.product_promo_discount_percentage);
                 setValue('product_promo_expired_date', product.product_promo.product_promo_expired_date || null);
+                setValue('product_promo_type', product.product_promo.product_promo_type || '');
+                setPromoType(product.product_promo.product_promo_type || '');
+                if (product.product_promo.product_promo_type === 'cashback') {
+                    const cashbackAmount = product.product_price - product.product_promo.product_promo_final_price;
+                    setValue('product_promo_price', cashbackAmount);
+                } else if (product.product_promo.product_promo_type === 'discount_rupiah') {
+                    const discountAmount = product.product_price - product.product_promo.product_promo_final_price;
+                    setValue('product_promo_price', discountAmount);
+                }
             } else {
                 setValue('product_promo_is_best_deal', false);
                 setValue('product_promo_is_discount', false);
                 setValue('product_promo_final_price', 0);
                 setValue('product_promo_discount_percentage', 0);
                 setValue('product_promo_expired_date', null);
+                setValue('product_promo_type', '');
+                setPromoType('');
             }
 
             if (product.product_is_bestseller) {
@@ -302,141 +315,7 @@ const ProductDetail = () => {
                             <input id="product_code" type="text" className="form-input" {...register('product_code')} />
                             {errors.product_code && <span className="text-danger">{errors.product_code.message}</span>}
                         </div>
-                        <div>
-                            <label htmlFor="product_price">
-                                Price <span className="text-danger">*</span>
-                            </label>
-                            <div className="flex">
-                                <div className="bg-[#eee] flex justify-center items-center rounded-l-md px-3 font-semibold border border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                    Rp
-                                </div>
-                                <Controller
-                                    name="product_price"
-                                    control={control}
-                                    render={({ field: { onChange, value } }) => (
-                                        <NumberFormat
-                                            thousandSeparator="."
-                                            decimalSeparator=","
-                                            id="product_price"
-                                            className="form-input rounded-l-none"
-                                            placeholder="Enter price"
-                                            value={value}
-                                            onValueChange={(values) => {
-                                                const numericValue = values.value.replace(/\./g, '').replace(',', '.');
-                                                onChange(Number(numericValue));
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </div>
-                            {errors.product_price && <span className="text-danger">{errors.product_price.message}</span>}
-                        </div>
-                        <div className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="product_promo_is_discount">
-                                        Discount <span className="text-danger">*</span>
-                                    </label>
-                                    <select
-                                        id="product_promo_is_discount"
-                                        {...register('product_promo_is_discount', {
-                                            setValueAs: (value) => {
-                                                if (typeof value === 'boolean') return value;
-                                                return value === 'true';
-                                            },
-                                        })}
-                                        className="form-select"
-                                    >
-                                        <option value="false">No</option>
-                                        <option value="true">Yes</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="product_promo_is_best_deal">
-                                        Best Deal <span className="text-danger">*</span>
-                                    </label>
-                                    <select
-                                        id="product_promo_is_best_deal"
-                                        {...register('product_promo_is_best_deal', {
-                                            setValueAs: (value) => {
-                                                if (typeof value === 'boolean') return value;
-                                                return value === 'true';
-                                            },
-                                        })}
-                                        className="form-select"
-                                    >
-                                        <option value="false">No</option>
-                                        <option value="true">Yes</option>
-                                    </select>
-                                </div>
-                            </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="product_promo_discount_percentage">Discount Percentage (%)</label>
-                                    <Controller
-                                        control={control}
-                                        name="product_promo_discount_percentage"
-                                        render={({ field: { onChange, value } }) => (
-                                            <NumberFormat
-                                                id="product_promo_discount_percentage"
-                                                className={!isDiscount ? 'form-input bg-gray-100 dark:bg-gray-700' : 'form-input'}
-                                                disabled={!isDiscount}
-                                                value={value}
-                                                onValueChange={(values) => {
-                                                    onChange(Number(values.value));
-                                                }}
-                                                allowNegative={false}
-                                                decimalScale={0}
-                                                placeholder="Enter discount percentage"
-                                            />
-                                        )}
-                                    />
-                                    {errors.product_promo_discount_percentage && <span className="text-danger">{errors.product_promo_discount_percentage.message}</span>}
-                                </div>
-
-                                <div>
-                                    <label htmlFor="product_promo_final_price">Final Price</label>
-                                    <Controller
-                                        control={control}
-                                        name="product_promo_final_price"
-                                        render={({ field: { onChange, value } }) => (
-                                            <div className="flex">
-                                                <div className="bg-[#eee] flex justify-center items-center rounded-l-md px-3 font-semibold border border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                                    Rp
-                                                </div>
-                                                <NumberFormat
-                                                    id="product_promo_final_price"
-                                                    className="form-input rounded-l-none bg-gray-100 dark:bg-gray-700"
-                                                    value={value}
-                                                    thousandSeparator="."
-                                                    decimalSeparator=","
-                                                    disabled
-                                                    onValueChange={(values) => {
-                                                        const numericValue = values.value.replace(/\./g, '').replace(',', '.');
-                                                        onChange(Number(numericValue));
-                                                    }}
-                                                    allowNegative={false}
-                                                    decimalScale={0}
-                                                />
-                                            </div>
-                                        )}
-                                    />
-                                </div>
-                            </div>
-
-                            <div>
-                                <label htmlFor="product_promo_expired_date">Expired Date</label>
-                                <input
-                                    type="datetime-local"
-                                    id="product_promo_expired_date"
-                                    className={!isBestDeal ? 'form-input bg-gray-100 dark:bg-gray-700' : 'form-input'}
-                                    disabled={!isBestDeal}
-                                    {...register('product_promo_expired_date')}
-                                />
-                                {errors.product_promo_expired_date && <span className="text-danger">{errors.product_promo_expired_date.message}</span>}
-                            </div>
-                        </div>
                         <div>
                             <label htmlFor="product_item_sold">
                                 Items Sold <span className="text-danger">*</span>
@@ -502,19 +381,54 @@ const ProductDetail = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <div>
-                                    <label htmlFor="product_status">
-                                        Event <span className="text-danger">*</span>
-                                    </label>
-                                    <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
-                                        <option value="none">None</option>
-                                        <option value="bestseller">Best Seller</option>
-                                        <option value="new_arrival">New Arrival</option>
-                                    </select>
-                                </div>
+                                <label htmlFor="product_status">
+                                    Event <span className="text-danger">*</span>
+                                </label>
+                                <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
+                                    <option value="none">None</option>
+                                    <option value="bestseller">Best Seller</option>
+                                    <option value="new_arrival">New Arrival</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="product_promo_is_best_deal">
+                                    Best Deal <span className="text-danger">*</span>
+                                </label>
+                                <select
+                                    id="product_promo_is_best_deal"
+                                    {...register('product_promo_is_best_deal', {
+                                        setValueAs: (value) => {
+                                            if (typeof value === 'boolean') return value;
+                                            return value === 'true';
+                                        },
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
                             </div>
                         </div>
+                        <div>
+                            <label htmlFor="product_promo_expired_date">Expired Date</label>
+                            <input
+                                type="datetime-local"
+                                id="product_promo_expired_date"
+                                className={!isBestDeal ? 'form-input bg-gray-100 dark:bg-gray-700' : 'form-input'}
+                                disabled={!isBestDeal}
+                                {...register('product_promo_expired_date')}
+                            />
+                            {errors.product_promo_expired_date && <span className="text-danger">{errors.product_promo_expired_date.message}</span>}
+                        </div>
                     </div>
+                </div>
+
+                <div className="panel">
+                    <div className="flex items-center justify-between mb-5">
+                        <h5 className="font-semibold text-lg dark:text-white-light">Product Price</h5>
+                    </div>
+
+                    <PriceSection control={control} register={register} setValue={setValue} watch={watch} errors={errors} promoTypes={promoTypes} />
                 </div>
 
                 <div className="panel">

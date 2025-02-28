@@ -13,10 +13,11 @@ import { ApiUploadImageProduct } from '../../api/uploadApi';
 import IconCheck from '../../components/Icon/IconChecks';
 import IconX from '../../components/Icon/IconX';
 import { CreateProductPayload, getCreateProductSchema } from '../../schema/productSchema';
-import { useCreateProductMutation } from '../../services/productService';
+import { useCreateProductMutation, useGetProductPromoTypes } from '../../services/productService';
 import IconArrowBackward from '../../components/Icon/IconArrowBackward';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import PriceSection from '../../components/product/PriceSection';
 
 const ProductCreation = () => {
     const dispatch = useDispatch();
@@ -76,6 +77,9 @@ const ProductCreation = () => {
     const { data: categories } = useGetAllProductCategory({});
     const { data: brands } = useGetAllBrandQuery({ page: 1, limit: 1000 });
     const { data: tags } = useGetAllProductTag({ page: 1, limit: 1000 });
+    const { data: promoTypes } = useGetProductPromoTypes();
+
+    const [promoType, setPromoType] = useState('');
 
     const createProductSchema = useMemo(() => getCreateProductSchema(), []);
 
@@ -99,6 +103,7 @@ const ProductCreation = () => {
             product_promo_discount_percentage: 0,
             product_promo_final_price: 0,
             product_promo_expired_date: null,
+            product_promo_type: '',
         },
     });
 
@@ -225,137 +230,6 @@ const ProductCreation = () => {
                             <input id="product_code" type="text" className="form-input" {...register('product_code')} />
                             {errors.product_code && <span className="text-danger">{errors.product_code.message}</span>}
                         </div>
-                        <div>
-                            <label htmlFor="product_price">
-                                Price <span className="text-red-500">*</span>
-                            </label>
-                            <div className="flex">
-                                <div className="bg-[#eee] flex justify-center items-center rounded-l-md px-3 font-semibold border border-r-0 border-white-light dark:border-[#17263c] dark:bg-[#1b2e4b]">
-                                    Rp
-                                </div>
-                                <Controller
-                                    control={control}
-                                    name="product_price"
-                                    render={({ field: { onChange, value } }) => (
-                                        <NumberFormat
-                                            thousandSeparator="."
-                                            decimalSeparator=","
-                                            id="product_price"
-                                            className="form-input rounded-l-none"
-                                            placeholder="Enter price"
-                                            value={value}
-                                            onValueChange={(values) => {
-                                                const numericValue = values.value.replace(/\./g, '').replace(',', '.');
-                                                onChange(Number(numericValue));
-                                            }}
-                                        />
-                                    )}
-                                />
-                            </div>
-                            {errors.product_price && <span className="text-red-500 text-sm">{errors.product_price.message}</span>}
-                        </div>
-
-                        <div className="grid gap-4">
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="product_promo_is_discount">
-                                        Discount <span className="text-red-500">*</span>
-                                    </label>
-                                    <select
-                                        id="product_promo_is_discount"
-                                        {...register('product_promo_is_discount', {
-                                            setValueAs: (value) => value === 'true',
-                                        })}
-                                        className="form-select"
-                                    >
-                                        <option value="false">No</option>
-                                        <option value="true">Yes</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label htmlFor="product_promo_is_best_deal">
-                                        Best Deal <span className="text-red-500">*</span>
-                                    </label>
-                                    <select
-                                        id="product_promo_is_best_deal"
-                                        {...register('product_promo_is_best_deal', {
-                                            setValueAs: (value) => value === 'true',
-                                        })}
-                                        className="form-select"
-                                    >
-                                        <option value="false">No</option>
-                                        <option value="true">Yes</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="product_promo_discount_percentage">Discount Percentage (%)</label>
-                                    <Controller
-                                        control={control}
-                                        name="product_promo_discount_percentage"
-                                        render={({ field: { onChange, value } }) => (
-                                            <NumberFormat
-                                                id="product_promo_discount_percentage"
-                                                className={!isDiscount ? disabledInputClass : 'form-input'}
-                                                disabled={!isDiscount}
-                                                allowNegative={false}
-                                                decimalScale={0}
-                                                placeholder="0"
-                                                value={value}
-                                                onValueChange={(values) => {
-                                                    const clampedValue = Math.min(100, Math.max(0, Number(values.value)));
-                                                    onChange(clampedValue);
-                                                }}
-                                            />
-                                        )}
-                                    />
-                                    {errors.product_promo_discount_percentage && <span className="text-red-500 text-sm">{errors.product_promo_discount_percentage.message}</span>}
-                                </div>
-                                <div>
-                                    <label htmlFor="product_promo_final_price">Final Price</label>
-                                    <div className="flex">
-                                        <span className="bg-[#eee] flex items-center justify-center px-3 font-semibold border ltr:rounded-l rtl:rounded-r dark:bg-[#1b2e4b] dark:border-[#191e3a]">
-                                            Rp
-                                        </span>
-                                        <Controller
-                                            control={control}
-                                            name="product_promo_final_price"
-                                            render={({ field: { onChange, value } }) => (
-                                                <NumberFormat
-                                                    id="product_promo_final_price"
-                                                    className={`rounded-l-none ${disabledInputClass}`}
-                                                    disabled={true}
-                                                    thousandSeparator="."
-                                                    decimalSeparator=","
-                                                    allowNegative={false}
-                                                    decimalScale={0}
-                                                    placeholder="0"
-                                                    value={value}
-                                                    onValueChange={(values) => {
-                                                        const numericValue = values.value.replace(/\./g, '').replace(',', '.');
-                                                        onChange(Number(numericValue));
-                                                    }}
-                                                />
-                                            )}
-                                        />
-                                    </div>
-                                    {errors.product_promo_final_price && <span className="text-red-500 text-sm">{errors.product_promo_final_price.message}</span>}
-                                </div>
-                                <div>
-                                    <label htmlFor="product_promo_expired_date">Expiry Date</label>
-                                    <input
-                                        id="product_promo_expired_date"
-                                        type="datetime-local"
-                                        {...register('product_promo_expired_date')}
-                                        className={!isBestDeal ? disabledInputClass : 'form-input'}
-                                        disabled={!isBestDeal}
-                                    />
-                                    {errors.product_promo_expired_date && <span className="text-red-500 text-sm">{errors.product_promo_expired_date.message}</span>}
-                                </div>
-                            </div>
-                        </div>
 
                         <div>
                             <label htmlFor="product_item_sold">
@@ -416,19 +290,52 @@ const ProductCreation = () => {
                         </div>
                         <div className="flex flex-col gap-4">
                             <div>
-                                <div>
-                                    <label htmlFor="product_status">
-                                        Event <span className="text-red-500">*</span>
-                                    </label>
-                                    <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
-                                        <option value="none">None</option>
-                                        <option value="bestseller">Best Seller</option>
-                                        <option value="new_arrival">New Arrival</option>
-                                    </select>
-                                </div>
+                                <label htmlFor="product_status">
+                                    Event <span className="text-red-500">*</span>
+                                </label>
+                                <select id="product_status" className="form-select" value={productStatus} onChange={handleProductStatusChange}>
+                                    <option value="none">None</option>
+                                    <option value="bestseller">Best Seller</option>
+                                    <option value="new_arrival">New Arrival</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label htmlFor="product_promo_is_best_deal">
+                                    Best Deal <span className="text-red-500">*</span>
+                                </label>
+                                <select
+                                    id="product_promo_is_best_deal"
+                                    {...register('product_promo_is_best_deal', {
+                                        setValueAs: (value) => value === 'true',
+                                    })}
+                                    className="form-select"
+                                >
+                                    <option value="false">No</option>
+                                    <option value="true">Yes</option>
+                                </select>
                             </div>
                         </div>
                     </div>
+
+                    <div>
+                        <label htmlFor="product_promo_expired_date">Expiry Date</label>
+                        <input
+                            id="product_promo_expired_date"
+                            type="datetime-local"
+                            {...register('product_promo_expired_date')}
+                            className={!isBestDeal ? disabledInputClass : 'form-input'}
+                            disabled={!isBestDeal}
+                        />
+                        {errors.product_promo_expired_date && <span className="text-red-500 text-sm">{errors.product_promo_expired_date.message}</span>}
+                    </div>
+                </div>
+
+                <div className="panel">
+                    <div className="flex items-center justify-between mb-5">
+                        <h5 className="font-semibold text-lg dark:text-white-light">Product Price</h5>
+                    </div>
+
+                    <PriceSection control={control} register={register} setValue={setValue} watch={watch} errors={errors} promoTypes={promoTypes} />
                 </div>
 
                 <div className="panel">

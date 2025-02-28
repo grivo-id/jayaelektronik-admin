@@ -484,7 +484,7 @@ const Products = () => {
                                                                 <>
                                                                     <div className="flex items-center gap-2">
                                                                         <span className="text-success font-semibold">{formatRupiah(product.product_promo.product_promo_final_price)}</span>
-                                                                        {product.product_promo.product_promo_is_discount && (
+                                                                        {product.product_promo.product_promo_is_discount && product.product_promo.product_promo_type !== 'cashback' && (
                                                                             <Badge color="warning">-{product.product_promo.product_promo_discount_percentage}%</Badge>
                                                                         )}
                                                                     </div>

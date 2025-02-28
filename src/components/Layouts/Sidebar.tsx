@@ -146,6 +146,9 @@ const Sidebar = () => {
                                                 <NavLink to="/admin/manage-product-category">{t('manage_product_category')}</NavLink>
                                             </li>
                                             <li>
+                                                <NavLink to="/admin/manage-product-tags">{t('manage_product_tags')}</NavLink>
+                                            </li>
+                                            <li>
                                                 <NavLink to="/admin/manage-coupon-discount">{t('manage_coupon_discount')}</NavLink>
                                             </li>
                                         </ul>

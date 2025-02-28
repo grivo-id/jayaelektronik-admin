@@ -7,6 +7,11 @@ interface GetAllProductPayload {
     sub_category_slugs?: string[];
 }
 
+interface PromoType {
+    code: string;
+    name: string;
+}
+
 export const ApiGetAllProduct = async (params: Record<string, any>, body?: GetAllProductPayload) => {
     const response = await axiosInstance.post<ApiResponse<Product[]>>('/products/all', body, {
         params,
@@ -41,5 +46,15 @@ export const ApiDeleteProductBulk = async (productIds: string[]) => {
     const response = await axiosInstance.post<ApiResponse<null>>('/products/delete/bulk', {
         product_id: productIds,
     });
+    return response.data;
+};
+
+export const ApiGetProductPromoTypes = async () => {
+    const response = await axiosInstance.get<ApiResponse<PromoType[]>>('/product-promos/type');
+    return response.data;
+};
+
+export const ApiGetProductByIdForAdmin = async (productId: string) => {
+    const response = await axiosInstance.get<ApiResponse<Product>>(`/products/${productId}`);
     return response.data;
 };

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useDownloadOrder, useGetAllOrderQuery, useToggleComplete } from '../../services/orderService';
+import { useDownloadOrder, useGetAllOrderQuery, useToggleComplete, useDeleteOrder } from '../../services/orderService';
 import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -14,6 +14,9 @@ import FilterSheet from '../../components/FilterSheet';
 import Flatpickr from 'react-flatpickr';
 import 'flatpickr/dist/themes/light.css';
 import IconDownload from '../../components/Icon/IconDownload';
+import IconTrash from '../../components/Icon/IconTrash';
+import { formatPhoneNumber, createOrderMessage } from '../../utils/whatsapp';
+import IconWA from '../../components/Icon/IconWA';
 
 const Orders = () => {
     const dispatch = useDispatch();
@@ -48,7 +51,6 @@ const Orders = () => {
     const [queryParams, setQueryParams] = useState({
         limit: 10,
         page: Number(searchParams.get('page')) || 1,
-        search: searchParams.get('search') || '',
         sort: 'desc',
     });
 
@@ -56,6 +58,7 @@ const Orders = () => {
         startDate: string;
         endDate: string;
         order_is_completed?: string;
+        order_search?: string;
     }>({
         startDate: searchParams.get('startDate') || '',
         endDate: searchParams.get('endDate') || '',
@@ -66,6 +69,7 @@ const Orders = () => {
 
     const { mutate: toggleComplete } = useToggleComplete();
     const { mutate: downloadOrder, isPending } = useDownloadOrder();
+    const { mutate: deleteOrder } = useDeleteOrder();
 
     useEffect(() => {
         dispatch(setPageTitle('Orders'));
@@ -123,7 +127,10 @@ const Orders = () => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setQueryParams({ ...queryParams, search, page: 1 });
+            setFilterParams((prev) => ({
+                ...prev,
+                order_search: search || undefined,
+            }));
         }, 500);
 
         return () => clearTimeout(timer);
@@ -149,9 +156,10 @@ const Orders = () => {
         const newLimit = Number(e.target.value);
         setQueryParams((prev) => ({ ...prev, limit: newLimit, page: 1 }));
         setSearchParams((prev) => {
-            prev.set('limit', String(newLimit));
-            prev.set('page', '1');
-            return prev;
+            const newParams = new URLSearchParams(prev);
+            newParams.set('limit', String(newLimit));
+            newParams.set('page', '1');
+            return newParams;
         });
     };
 
@@ -249,6 +257,57 @@ const Orders = () => {
         );
     };
 
+    const handleDeleteOrder = (orderId: string) => {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Are you sure?',
+            text: 'This order will be permanently deleted',
+            showCancelButton: true,
+            confirmButtonText: 'Delete',
+            cancelButtonText: 'Cancel',
+            padding: '2em',
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Swal.fire({
+                    title: 'Deleting...',
+                    text: 'Please wait while we delete the order.',
+                    allowOutsideClick: false,
+                    showConfirmButton: false,
+                    willOpen: () => {
+                        Swal.showLoading();
+                    },
+                });
+                deleteOrder(orderId, {
+                    onSuccess: () => {
+                        Swal.fire('Success', 'Order has been deleted', 'success');
+                    },
+                    onError: (error: any) => {
+                        const errorMessage = error?.response?.data?.message || 'Failed to delete order';
+                        Swal.fire('Error', errorMessage, 'error');
+                    },
+                });
+            }
+        });
+    };
+
+    const handleFollowUp = (order: any) => {
+        const formattedPhone = formatPhoneNumber(order.order_phone);
+        const message = createOrderMessage(order);
+        const encodedMessage = encodeURIComponent(message);
+        const whatsappUrl = `https://wa.me/${formattedPhone}?text=${encodedMessage}`;
+        window.open(whatsappUrl, '_blank');
+    };
+
+    const handleClearSearch = () => {
+        setSearch('');
+        setSearchParams((prev) => {
+            const newParams = new URLSearchParams(prev);
+            newParams.delete('search');
+            return newParams;
+        });
+        setFilterParams((prev) => ({ ...prev, order_search: undefined }));
+    };
+
     return (
         <div>
             <MainHeader
@@ -260,6 +319,7 @@ const Orders = () => {
                 addText="Download"
                 onAdd={handleDownloadOrders}
                 icon={<IconDownload className="ltr:mr-2 rtl:ml-2" />}
+                onClearSearch={handleClearSearch}
             />
 
             <FilterSheet
@@ -321,14 +381,15 @@ const Orders = () => {
                                     <th className="min-w-[150px]">Total</th>
                                     <th className="min-w-[100px]">Coupon</th>
                                     <th className="min-w-[100px]">Status</th>
+                                    <th className="min-w-[100px]">Action</th>
                                 </tr>
                             </thead>
                             {isFetching ? (
-                                <SkeletonLoadingTable rows={11} columns={8} noAction />
+                                <SkeletonLoadingTable rows={11} columns={10} noAction />
                             ) : ordersData.length === 0 ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan={8} className="text-center py-4">
+                                        <td colSpan={9} className="text-center py-4">
                                             <div className="flex flex-col items-center justify-center gap-4">
                                                 <p className="text-lg font-semibold text-gray-500">No orders found</p>
                                             </div>
@@ -409,6 +470,20 @@ const Orders = () => {
                                                             </span>
                                                         </label>
                                                     </Tooltip>
+                                                </td>
+                                                <td>
+                                                    <div className="flex items-center gap-2">
+                                                        <Tooltip text="Follow Up Order" position="top">
+                                                            <button type="button" className="btn btn-outline-primary p-2" onClick={() => handleFollowUp(order)}>
+                                                                <IconWA className="w-4.5 h-4.5" />
+                                                            </button>
+                                                        </Tooltip>
+                                                        <Tooltip text="Delete Order" position="top">
+                                                            <button type="button" className="btn btn-outline-danger p-2" onClick={() => handleDeleteOrder(order.order_id)}>
+                                                                <IconTrash className="w-4.5 h-4.5" />
+                                                            </button>
+                                                        </Tooltip>
+                                                    </div>
                                                 </td>
                                             </tr>
                                         );

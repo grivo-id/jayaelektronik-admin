@@ -5,7 +5,8 @@ import { Order } from '../types/orderType';
 export interface GetAllOrderPayload {
     startDate: string;
     endDate: string;
-    order_is_completed?: string; // Keep as string
+    order_is_completed?: string;
+    order_search?: string;
 }
 
 export const ApiGetAllOrder = async (params: Record<string, any>, body?: Partial<GetAllOrderPayload>) => {
@@ -39,6 +40,11 @@ export const ApiGetOrderById = async (orderId: string) => {
         params: { order_id: orderId },
     });
 
+    return response.data;
+};
+
+export const ApiDeleteOrder = async (id: string) => {
+    const response = await axiosInstance.delete<ApiResponse<Order>>(`/orders/${id}`);
     return response.data;
 };
 

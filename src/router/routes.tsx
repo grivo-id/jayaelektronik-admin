@@ -1,4 +1,5 @@
 import { lazy } from 'react';
+
 // const Index = lazy(() => import('../pages/Index'));
 const Analytics = lazy(() => import('../pages/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
@@ -102,6 +103,7 @@ const Orders = lazy(() => import('../pages/Apps/Orders'));
 const OrderDetail = lazy(() => import('../pages/Apps/OrderDetail'));
 const Coupon = lazy(() => import('../pages/Apps/Coupon'));
 const Toast = lazy(() => import('../pages/Apps/ToastAnnouncer'));
+const ProductTags = lazy(() => import('../pages/Apps/ProductTags'));
 
 const routes = [
     // dashboard
@@ -183,6 +185,11 @@ const routes = [
     {
         path: '/admin/manage-product-category',
         element: <ProductCategoriesTree />,
+    },
+
+    {
+        path: '/admin/manage-product-tags',
+        element: <ProductTags />,
     },
 
     {
