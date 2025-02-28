@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiCreateProduct, ApiDeleteProduct, ApiDeleteProductBulk, ApiGetAllProduct, ApiGetProductById, ApiUpdateProduct } from '../api/productApi';
+import { ApiCreateProduct, ApiDeleteProduct, ApiDeleteProductBulk, ApiGetAllProduct, ApiGetProductById, ApiGetProductByIdForAdmin, ApiGetProductPromoTypes, ApiUpdateProduct } from '../api/productApi';
 import { CreateProductPayload, UpdateProductPayload } from '../schema/productSchema';
 import { useNavigate } from 'react-router-dom';
 
@@ -72,5 +72,21 @@ export const useDeleteProductBulkMutation = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['products'] });
         },
+    });
+};
+
+export const useGetProductPromoTypes = () => {
+    return useQuery({
+        queryKey: ['product-promo-types'],
+        queryFn: () => ApiGetProductPromoTypes(),
+        select: (response) => response.data,
+    });
+};
+
+export const useGetProductByIdForAdminQuery = (productId: string) => {
+    return useQuery({
+        queryKey: ['products', 'admin', productId],
+        queryFn: () => ApiGetProductByIdForAdmin(productId),
+        select: (response) => response.data,
     });
 };
