@@ -24,7 +24,7 @@ const PriceSection = ({ control, register, setValue, watch, errors, promoTypes }
 
         setValue('product_promo_price', 0);
         setValue('product_promo_discount_percentage', 0);
-        setValue('product_promo_final_price', 0);
+        setValue('product_promo_final_price', productPrice || 0);
 
         setValue('product_promo_is_discount', type !== '');
     };
