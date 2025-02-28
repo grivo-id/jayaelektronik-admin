@@ -8,6 +8,8 @@ export interface Coupon {
     coupon_max_discount: number;
     coupon_expired_date: string;
     coupon_used: number;
+    coupon_max_used: number;
+    coupon_completed_used: number;
     coupon_created_date: string;
     created_by: string;
 }
