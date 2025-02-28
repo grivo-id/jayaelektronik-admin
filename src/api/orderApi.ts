@@ -6,6 +6,7 @@ export interface GetAllOrderPayload {
     startDate: string;
     endDate: string;
     order_is_completed?: string;
+    order_search?: string;
 }
 
 export const ApiGetAllOrder = async (params: Record<string, any>, body?: Partial<GetAllOrderPayload>) => {

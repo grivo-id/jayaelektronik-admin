@@ -24,6 +24,7 @@ interface MainHeaderProps {
     onBulkDelete?: () => void;
     onFilterClick?: () => void;
     icon?: React.ReactNode;
+    onClearSearch?: () => void;
 }
 
 const MainHeader = ({
@@ -38,6 +39,7 @@ const MainHeader = ({
     onBulkDelete,
     onFilterClick,
     icon = <IconUserPlus className="ltr:mr-2 rtl:ml-2" />,
+    onClearSearch,
 }: MainHeaderProps) => {
     return (
         <>
@@ -73,7 +75,7 @@ const MainHeader = ({
                         <div className="flex-1 relative">
                             <input
                                 type="text"
-                                className="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-4 rtl:sm:pl-4 ltr:pr-9 rtl:pl-9 peer sm:w-[200px]"
+                                className="form-input ltr:pl-9 rtl:pr-9 ltr:sm:pr-8 rtl:sm:pl-8 ltr:pr-8 rtl:pl-8 peer sm:w-[200px]"
                                 placeholder="Search..."
                                 value={search}
                                 onChange={onSearchChange}
@@ -81,6 +83,13 @@ const MainHeader = ({
                             <button type="button" className="absolute ltr:left-2 rtl:right-2 top-1/2 -translate-y-1/2 peer-focus:text-primary">
                                 <IconSearch className="mx-auto" />
                             </button>
+                            {search && onClearSearch && (
+                                <button type="button" className="absolute ltr:right-2 rtl:left-2 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700" onClick={onClearSearch}>
+                                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            )}
                         </div>
                     </div>
                 </div>

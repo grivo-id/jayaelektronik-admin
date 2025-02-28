@@ -51,7 +51,6 @@ const Orders = () => {
     const [queryParams, setQueryParams] = useState({
         limit: 10,
         page: Number(searchParams.get('page')) || 1,
-        search: searchParams.get('search') || '',
         sort: 'desc',
     });
 
@@ -59,6 +58,7 @@ const Orders = () => {
         startDate: string;
         endDate: string;
         order_is_completed?: string;
+        order_search?: string;
     }>({
         startDate: searchParams.get('startDate') || '',
         endDate: searchParams.get('endDate') || '',
@@ -127,7 +127,10 @@ const Orders = () => {
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            setQueryParams({ ...queryParams, search, page: 1 });
+            setFilterParams((prev) => ({
+                ...prev,
+                order_search: search || undefined,
+            }));
         }, 500);
 
         return () => clearTimeout(timer);
@@ -153,9 +156,10 @@ const Orders = () => {
         const newLimit = Number(e.target.value);
         setQueryParams((prev) => ({ ...prev, limit: newLimit, page: 1 }));
         setSearchParams((prev) => {
-            prev.set('limit', String(newLimit));
-            prev.set('page', '1');
-            return prev;
+            const newParams = new URLSearchParams(prev);
+            newParams.set('limit', String(newLimit));
+            newParams.set('page', '1');
+            return newParams;
         });
     };
 
@@ -294,6 +298,16 @@ const Orders = () => {
         window.open(whatsappUrl, '_blank');
     };
 
+    const handleClearSearch = () => {
+        setSearch('');
+        setSearchParams((prev) => {
+            const newParams = new URLSearchParams(prev);
+            newParams.delete('search');
+            return newParams;
+        });
+        setFilterParams((prev) => ({ ...prev, order_search: undefined }));
+    };
+
     return (
         <div>
             <MainHeader
@@ -305,6 +319,7 @@ const Orders = () => {
                 addText="Download"
                 onAdd={handleDownloadOrders}
                 icon={<IconDownload className="ltr:mr-2 rtl:ml-2" />}
+                onClearSearch={handleClearSearch}
             />
 
             <FilterSheet
@@ -370,11 +385,11 @@ const Orders = () => {
                                 </tr>
                             </thead>
                             {isFetching ? (
-                                <SkeletonLoadingTable rows={11} columns={8} noAction />
+                                <SkeletonLoadingTable rows={11} columns={10} noAction />
                             ) : ordersData.length === 0 ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan={8} className="text-center py-4">
+                                        <td colSpan={9} className="text-center py-4">
                                             <div className="flex flex-col items-center justify-center gap-4">
                                                 <p className="text-lg font-semibold text-gray-500">No orders found</p>
                                             </div>
