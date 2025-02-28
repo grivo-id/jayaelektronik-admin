@@ -95,6 +95,7 @@ const Coupons = () => {
         setValue('coupon_min_transaction', coupon.coupon_min_transaction);
         setValue('coupon_max_discount', coupon.coupon_max_discount);
         setValue('coupon_expired_date', coupon.coupon_expired_date);
+        setValue('coupon_max_used', coupon.coupon_max_used);
         setAddCouponModal(true);
     };
 
@@ -201,17 +202,19 @@ const Coupons = () => {
                                     <th className="w-2/12">Max Discount</th>
                                     <th className="w-2/12">Expired Date</th>
                                     <th className="w-1/12">Used</th>
+                                    <th className="w-1/12">Max Used</th>
+                                    <th className="w-1/12">Completed Used</th>
                                     <th className="w-2/12">Created Date</th>
                                     <th className="w-1/12">Created By</th>
                                     <th className="w-1/12 text-center">Actions</th>
                                 </tr>
                             </thead>
                             {isFetching ? (
-                                <SkeletonLoadingTable rows={11} columns={10} />
+                                <SkeletonLoadingTable rows={11} columns={12} />
                             ) : couponsData.length === 0 ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan={10} className="text-center py-4">
+                                        <td colSpan={12} className="text-center py-4">
                                             <div className="flex flex-col items-center justify-center gap-4">
                                                 <p className="text-lg font-semibold text-gray-500">No coupons</p>
                                                 <p className="text-sm text-gray-400">Please add a new coupon by clicking the "Add New" button above</p>
@@ -227,10 +230,12 @@ const Coupons = () => {
                                                 <td>{coupon.coupon_code}</td>
                                                 <td>{coupon.coupon_percentage}%</td>
                                                 <td>{coupon.coupon_min_product_qty}</td>
-                                                <td>Rp {formatToRupiah(coupon.coupon_min_transaction)}</td>
-                                                <td>Rp {formatToRupiah(coupon.coupon_max_discount)}</td>
+                                                <td>{formatToRupiah(coupon.coupon_min_transaction)}</td>
+                                                <td>{formatToRupiah(coupon.coupon_max_discount)}</td>
                                                 <td className={`${new Date(coupon.coupon_expired_date) < new Date() ? 'text-danger' : ''}`}>{formatDate(coupon.coupon_expired_date)}</td>
                                                 <td>{coupon.coupon_used}</td>
+                                                <td>{coupon.coupon_max_used}</td>
+                                                <td>{coupon.coupon_completed_used}</td>
                                                 <td>{formatDate(coupon.coupon_created_date)}</td>
                                                 <td>{coupon.created_by}</td>
                                                 <td>
@@ -407,6 +412,20 @@ const Coupons = () => {
                                             )}
                                         />
                                         {errors.coupon_expired_date && <span className="text-danger text-sm mt-1">{errors.coupon_expired_date.message}</span>}
+                                    </div>
+                                    <div className="mb-5">
+                                        <label htmlFor="coupon_max_used" className="flex items-center">
+                                            Maximum Usage
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <input
+                                            id="coupon_max_used"
+                                            type="number"
+                                            placeholder="Enter Maximum Usage"
+                                            className={`form-input ${errors.coupon_max_used ? 'error' : ''}`}
+                                            {...register('coupon_max_used', { valueAsNumber: true })}
+                                        />
+                                        {errors.coupon_max_used && <span className="text-danger text-sm mt-1">{errors.coupon_max_used.message}</span>}
                                     </div>
                                     <div className="flex justify-end items-center mt-8">
                                         <button type="button" className="btn btn-outline-danger" onClick={closeModal} disabled={isLoading}>

@@ -148,11 +148,17 @@ const Sidebar = () => {
                                             <li>
                                                 <NavLink to="/admin/manage-product-tags">{t('manage_product_tags')}</NavLink>
                                             </li>
-                                            <li>
-                                                <NavLink to="/admin/manage-coupon-discount">{t('manage_coupon_discount')}</NavLink>
-                                            </li>
                                         </ul>
                                     </AnimateHeight>
+                                </li>
+
+                                <li className="nav-item">
+                                    <NavLink to="/admin/manage-coupon-discount" className="group">
+                                        <div className="flex items-center">
+                                            <IconMenuBrand className="group-hover:!text-primary shrink-0" />
+                                            <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Coupon Discount</span>
+                                        </div>
+                                    </NavLink>
                                 </li>
 
                                 <li className="menu nav-item">
