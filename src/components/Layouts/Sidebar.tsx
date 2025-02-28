@@ -20,6 +20,8 @@ import IconMenuBlog from '../Icon/Menu/IconMenuBlog';
 import IconMenuBrand from '../Icon/Menu/IconMenuBrand';
 import IconMenuUsers from '../Icon/Menu/IconMenuUsers';
 import IconMenuAuthentication from '../Icon/Menu/IconMenuAuthentication';
+import IconMenuCoupon from '../Icon/Menu/IconMenuCoupon';
+import IconMenuToast from '../Icon/Menu/IconMenuToast';
 // import IconMenuComponents from '../Icon/Menu/IconMenuComponents';
 // import IconMenuElements from '../Icon/Menu/IconMenuElements';
 // import IconMenuCharts from '../Icon/Menu/IconMenuCharts';
@@ -155,7 +157,7 @@ const Sidebar = () => {
                                 <li className="nav-item">
                                     <NavLink to="/admin/manage-coupon-discount" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuBrand className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuCoupon className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Coupon Discount</span>
                                         </div>
                                     </NavLink>
@@ -199,7 +201,7 @@ const Sidebar = () => {
                                 <li className="nav-item">
                                     <NavLink to="/admin/toast-announcer" className="group">
                                         <div className="flex items-center">
-                                            <IconMenuBrand className="group-hover:!text-primary shrink-0" />
+                                            <IconMenuToast className="group-hover:!text-primary shrink-0" />
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('toast_announcer')}</span>
                                         </div>
                                     </NavLink>
