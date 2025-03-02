@@ -225,7 +225,7 @@ const ProductDetail = () => {
             product_image1: uploadedImages.image1 ? data.product_image1 : product?.product_image1,
             product_image2: uploadedImages.image2 ? data.product_image2 : product?.product_image2,
             product_image3: uploadedImages.image3 ? data.product_image3 : product?.product_image3,
-            product_promo_expired_date: data.product_promo_is_best_deal ? data.product_promo_expired_date : null,
+            product_promo_expired_date: data.product_promo_expired_date,
         };
 
         updateProduct({
@@ -408,17 +408,6 @@ const ProductDetail = () => {
                                     <option value="true">Yes</option>
                                 </select>
                             </div>
-                        </div>
-                        <div>
-                            <label htmlFor="product_promo_expired_date">Expired Date</label>
-                            <input
-                                type="datetime-local"
-                                id="product_promo_expired_date"
-                                className={!isBestDeal ? 'form-input bg-gray-100 dark:bg-gray-700' : 'form-input'}
-                                disabled={!isBestDeal}
-                                {...register('product_promo_expired_date')}
-                            />
-                            {errors.product_promo_expired_date && <span className="text-danger">{errors.product_promo_expired_date.message}</span>}
                         </div>
                     </div>
                 </div>
