@@ -96,6 +96,12 @@ const PriceSection = ({ control, register, setValue, watch, errors, promoTypes }
                 </select>
             </div>
 
+            <div>
+                <label htmlFor="product_promo_expired_date">Expired Date</label>
+                <input type="datetime-local" id="product_promo_expired_date" className="form-input" {...register('product_promo_expired_date')} />
+                {errors.product_promo_expired_date && <span className="text-danger">{errors.product_promo_expired_date.message}</span>}
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
                 {promoType === 'cashback' && (
                     <div className="col-span-2">
