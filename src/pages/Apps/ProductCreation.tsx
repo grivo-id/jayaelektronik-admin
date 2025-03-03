@@ -316,18 +316,6 @@ const ProductCreation = () => {
                             </div>
                         </div>
                     </div>
-
-                    <div>
-                        <label htmlFor="product_promo_expired_date">Expiry Date</label>
-                        <input
-                            id="product_promo_expired_date"
-                            type="datetime-local"
-                            {...register('product_promo_expired_date')}
-                            className={!isBestDeal ? disabledInputClass : 'form-input'}
-                            disabled={!isBestDeal}
-                        />
-                        {errors.product_promo_expired_date && <span className="text-red-500 text-sm">{errors.product_promo_expired_date.message}</span>}
-                    </div>
                 </div>
 
                 <div className="panel">
