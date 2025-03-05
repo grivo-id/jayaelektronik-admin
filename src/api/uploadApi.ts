@@ -54,3 +54,24 @@ export const ApiDeleteImageProduct = async (fileName: string) => {
     });
     return response.data;
 };
+
+export const ApiUploadImageBannerPopup = async (file: File) => {
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const response = await axiosInstance.post<ApiResponse<UploadResponse>>(`/upload-image/banner-popup`, formData, {
+        headers: {
+            'Content-Type': 'multipart/form-data',
+        },
+    });
+    return response.data;
+};
+
+export const ApiDeleteImageBannerPopup = async (fileName: string) => {
+    const response = await axiosInstance.delete<ApiResponse<UploadResponse>>(`/upload-image/banner-popup`, {
+        data: {
+            fileName,
+        },
+    });
+    return response.data;
+};
