@@ -405,7 +405,7 @@ const BannerPopupPage = () => {
                                 <div className="flex-1 bg-white dark:bg-gray-900 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-6 flex flex-col">
                                     <h3 className="text-lg font-semibold mb-4 text-gray-700 dark:text-gray-300">Banner Preview</h3>
                                     <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-800 rounded-lg p-4">
-                                        <div className="max-w-2xl max-h-[60vh] overflow-hidden">
+                                        <div className="w-full h-full overflow-hidden">
                                             <img
                                                 src={banner.banner_popup_image}
                                                 alt={banner.banner_popup_title}
