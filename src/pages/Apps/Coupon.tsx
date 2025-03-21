@@ -176,6 +176,11 @@ const Coupons = () => {
         }
     }, [queryParams, couponsData, isPlaceholderData, queryClient]);
 
+    const handleCouponCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const upperCaseValue = e.target.value.toUpperCase();
+        setValue('coupon_code', upperCaseValue);
+    };
+
     return (
         <div>
             <MainHeader
@@ -298,6 +303,10 @@ const Coupons = () => {
                                             placeholder="Enter Coupon Code"
                                             className={`form-input ${errors.coupon_code ? 'error' : ''}`}
                                             {...register('coupon_code')}
+                                            onChange={(e) => {
+                                                register('coupon_code').onChange(e);
+                                                handleCouponCodeChange(e);
+                                            }}
                                         />
                                         {errors.coupon_code && <span className="text-danger text-sm mt-1">{errors.coupon_code.message}</span>}
                                     </div>
