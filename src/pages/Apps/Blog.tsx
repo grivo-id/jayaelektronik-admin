@@ -136,6 +136,13 @@ const Blog = () => {
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                 {isFetching ? (
                     <SkeletonLoadingGrid />
+                ) : blogData.length === 0 ? (
+                    <div className="col-span-full">
+                        <div className="flex flex-col items-center justify-center gap-4">
+                            <p className="text-lg font-semibold text-gray-500">No blogs found</p>
+                            <p className="text-sm text-gray-400">Please add a new blog by clicking the "Add New" button above</p>
+                        </div>
+                    </div>
                 ) : (
                     blogData.map((blog) => (
                         <div key={blog.blog_id} className="panel h-full">
