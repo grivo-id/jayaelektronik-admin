@@ -343,8 +343,6 @@ const ProductCategoriesTree = () => {
                         </ul>
                     </div>
                 }
-                onSearchChange={() => {}}
-                search={''}
             />
 
             <Dialog as="div" open={addCategoryModal} onClose={closeModal} className="relative z-50">

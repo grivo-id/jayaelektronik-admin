@@ -5,8 +5,8 @@ interface MainProductCatHeaderProps {
     title: string;
     subtitle: string;
     addComponent: React.ReactNode;
-    onSearchChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
-    search: string;
+    onSearchChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+    search?: string;
 }
 
 const MainProductCatHeader = ({ title, subtitle, addComponent, onSearchChange, search }: MainProductCatHeaderProps) => {
@@ -19,12 +19,14 @@ const MainProductCatHeader = ({ title, subtitle, addComponent, onSearchChange, s
                 </div>
                 <div className="flex sm:flex-row flex-col sm:items-center sm:gap-3 gap-4 w-full sm:w-auto">
                     <div className="flex gap-3">{addComponent}</div>
-                    <div className="relative">
-                        <input type="text" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" placeholder="Search..." value={search} onChange={onSearchChange} />
-                        <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
-                            <IconSearch className="mx-auto" />
-                        </button>
-                    </div>
+                    {onSearchChange && (
+                        <div className="relative">
+                            <input type="text" className="form-input py-2 ltr:pr-11 rtl:pl-11 peer" placeholder="Search..." value={search} onChange={onSearchChange} />
+                            <button type="button" className="absolute ltr:right-[11px] rtl:left-[11px] top-1/2 -translate-y-1/2 peer-focus:text-primary">
+                                <IconSearch className="mx-auto" />
+                            </button>
+                        </div>
+                    )}
                 </div>
             </div>
 
