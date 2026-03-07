@@ -370,7 +370,7 @@ const LoyaltyCustomerDetail = () => {
                                                 {order.order_id}
                                             </Link>
                                         </td>
-                                        <td>{formatDate(order.created_at)}</td>
+                                        <td>{formatDate(order.order_created_date)}</td>
                                         <td>{formatToRupiah(order.order_grand_total)}</td>
                                         <td>
                                             {order.order_is_completed ? (
@@ -380,10 +380,10 @@ const LoyaltyCustomerDetail = () => {
                                             )}
                                         </td>
                                         <td>
-                                            {order.order_points_earned ? (
-                                                <span className="text-success font-semibold">+{formatNumber(order.order_points_earned)}</span>
+                                            {order.points_earned ? (
+                                                <span className="text-success font-semibold">+{formatNumber(order.points_earned)}</span>
                                             ) : (
-                                                <span className="text-gray-400">-</span>
+                                                <span className="text-gray-400">-{formatNumber(order.points_earned)}</span>
                                             )}
                                         </td>
                                     </tr>
