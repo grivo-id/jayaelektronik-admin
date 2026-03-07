@@ -40,8 +40,6 @@ const LoyaltyCustomerDetail = () => {
         limit: 10,
     });
 
-    console.log(customer, 'isi customer detail');
-
     // Fetch customer's order history
     const { data: ordersResponse, isLoading: ordersLoading } = useQuery({
         queryKey: ['customer-orders', userId, orderPage],
