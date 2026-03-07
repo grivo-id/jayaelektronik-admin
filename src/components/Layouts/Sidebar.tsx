@@ -22,6 +22,7 @@ import IconMenuUsers from '../Icon/Menu/IconMenuUsers';
 import IconMenuAuthentication from '../Icon/Menu/IconMenuAuthentication';
 import IconMenuCoupon from '../Icon/Menu/IconMenuCoupon';
 import IconMenuToast from '../Icon/Menu/IconMenuToast';
+import IconMenuLoyalty from '../Icon/Menu/IconMenuLoyalty';
 // import IconMenuComponents from '../Icon/Menu/IconMenuComponents';
 // import IconMenuElements from '../Icon/Menu/IconMenuElements';
 // import IconMenuCharts from '../Icon/Menu/IconMenuCharts';
@@ -214,6 +215,44 @@ const Sidebar = () => {
                                             <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">{t('toast_announcer')}</span>
                                         </div>
                                     </NavLink>
+                                </li>
+                                <li className="menu nav-item">
+                                    <button type="button" className={`${currentMenu === 'loyalty' ? 'active' : ''} nav-link group w-full`} onClick={() => toggleMenu('loyalty')}>
+                                        <div className="flex items-center">
+                                            <IconMenuLoyalty className="group-hover:!text-primary shrink-0" />
+                                            <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Loyalty Program</span>
+                                        </div>
+
+                                        <div className={currentMenu !== 'loyalty' ? 'rtl:rotate-90 -rotate-90' : ''}>
+                                            <IconCaretDown />
+                                        </div>
+                                    </button>
+
+                                    <AnimateHeight duration={300} height={currentMenu === 'loyalty' ? 'auto' : 0}>
+                                        <ul className="sub-menu text-gray-500">
+                                            <li>
+                                                <NavLink to="/admin/loyalty/dashboard">Dashboard</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/admin/loyalty/customers">Customers</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/admin/loyalty/config">Configuration</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/admin/loyalty/tiers">Tiers</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/admin/loyalty/bonuses">Bonuses</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/admin/loyalty/redemptions">Redemptions</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/admin/loyalty/vouchers">Vouchers</NavLink>
+                                            </li>
+                                        </ul>
+                                    </AnimateHeight>
                                 </li>
                             </PermissionWrapper>
 

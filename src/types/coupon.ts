@@ -11,5 +11,7 @@ export interface Coupon {
     coupon_max_used: number;
     coupon_completed_used: number;
     coupon_created_date: string;
+    tier_id: string | null;
+    tier_name: string | null;
     created_by: string;
 }

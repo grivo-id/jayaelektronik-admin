@@ -67,3 +67,15 @@ export const ApiDownloadOrder = async (params: Record<string, any>, body?: GetAl
         filename,
     };
 };
+
+export const ApiGetOrdersByEmail = async ({ email, page, limit }: { email: string; page: number; limit: number }) => {
+    const response = await axiosInstance.get<ApiResponse<Order[]>>('/orders/by-email', {
+        params: {
+            order_email: email,
+            page,
+            limit,
+            sort: 'created_at:desc',
+        },
+    });
+    return response.data;
+};

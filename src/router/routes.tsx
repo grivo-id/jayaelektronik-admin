@@ -106,6 +106,15 @@ const Toast = lazy(() => import('../pages/Apps/ToastAnnouncer'));
 const ProductTags = lazy(() => import('../pages/Apps/ProductTags'));
 const Banner = lazy(() => import('../pages/Apps/BannerPopup'));
 
+// Loyalty Program
+const LoyaltyDashboard = lazy(() => import('../pages/Apps/Loyalty'));
+const LoyaltyCustomers = lazy(() => import('../pages/Apps/LoyaltyCustomers'));
+const LoyaltyCustomerDetail = lazy(() => import('../pages/Apps/LoyaltyCustomerDetail'));
+const LoyaltyConfig = lazy(() => import('../pages/Apps/LoyaltyConfig'));
+const LoyaltyTiers = lazy(() => import('../pages/Apps/LoyaltyTiers'));
+const LoyaltyBonuses = lazy(() => import('../pages/Apps/LoyaltyBonuses'));
+const LoyaltyRedemptions = lazy(() => import('../pages/Apps/LoyaltyRedemptions'));
+const LoyaltyVouchers = lazy(() => import('../pages/Apps/LoyaltyVouchers'));
 const routes = [
     // dashboard
     // {
@@ -240,6 +249,40 @@ const routes = [
         element: <User />,
     },
 
+
+    // Loyalty Program
+    {
+        path: '/admin/loyalty/dashboard',
+        element: <LoyaltyDashboard />,
+    },
+    {
+        path: '/admin/loyalty/customers',
+        element: <LoyaltyCustomers />,
+    },
+    {
+        path: '/admin/loyalty/customers/:userId',
+        element: <LoyaltyCustomerDetail />,
+    },
+    {
+        path: '/admin/loyalty/config',
+        element: <LoyaltyConfig />,
+    },
+    {
+        path: '/admin/loyalty/tiers',
+        element: <LoyaltyTiers />,
+    },
+    {
+        path: '/admin/loyalty/bonuses',
+        element: <LoyaltyBonuses />,
+    },
+    {
+        path: '/admin/loyalty/redemptions',
+        element: <LoyaltyRedemptions />,
+    },
+    {
+        path: '/admin/loyalty/vouchers',
+        element: <LoyaltyVouchers />,
+    },
     {
         path: '/setting/account-profile',
         element: <Profile />,

@@ -18,6 +18,8 @@ import IconTrash from '../../components/Icon/IconTrash';
 import { useSearchParams } from 'react-router-dom';
 import { NumericFormat as NumberFormat } from 'react-number-format';
 import formatToRupiah from '../../utils/formatToRupiah';
+import { useGetAllTiers } from '../../services/loyaltyService';
+import { LoyaltyTier } from '../../types/loyaltyType';
 
 const Coupons = () => {
     const dispatch = useDispatch();
@@ -31,6 +33,9 @@ const Coupons = () => {
         search: searchParams.get('search') || '',
         sort: 'desc',
     });
+
+    // Fetch loyalty tiers for dropdown
+    const { data: tiersData = [] } = useGetAllTiers();
 
     const { data: { data: couponsData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllCouponQuery(queryParams);
     const { mutate: createCoupon, isPending: createCouponPending } = useCreateCoupon();
@@ -50,6 +55,16 @@ const Coupons = () => {
         resolver: zodResolver(createCouponSchema),
         mode: 'onBlur',
         reValidateMode: 'onBlur',
+        defaultValues: {
+            coupon_code: '',
+            coupon_percentage: 10,
+            coupon_min_product_qty: 1,
+            coupon_min_transaction: 0,
+            coupon_max_discount: 0,
+            coupon_max_used: 0,
+            coupon_expired_date: '',
+            tier_id: '',
+        },
     });
 
     const [showLoader, setShowLoader] = useState<boolean>(false);
@@ -96,6 +111,7 @@ const Coupons = () => {
         setValue('coupon_max_discount', coupon.coupon_max_discount);
         setValue('coupon_expired_date', coupon.coupon_expired_date);
         setValue('coupon_max_used', coupon.coupon_max_used);
+        setValue('tier_id', coupon.tier_id);
         setAddCouponModal(true);
     };
 
@@ -129,7 +145,16 @@ const Coupons = () => {
 
     const closeModal = () => {
         setAddCouponModal(false);
-        reset();
+        reset({
+            coupon_code: '',
+            coupon_percentage: 10,
+            coupon_min_product_qty: 1,
+            coupon_min_transaction: 0,
+            coupon_max_discount: 0,
+            coupon_max_used: 0,
+            coupon_expired_date: '',
+            tier_id: '',
+        });
         setSelectedCoupon(null);
     };
 
@@ -188,7 +213,17 @@ const Coupons = () => {
                 subtitle="Manage and view all registered coupons"
                 addText="Add New"
                 onAdd={() => {
-                    reset();
+                    reset({
+                        coupon_code: '',
+                        coupon_percentage: 10,
+                        coupon_min_product_qty: 1,
+                        coupon_min_transaction: 0,
+                        coupon_max_discount: 0,
+                        coupon_max_used: 0,
+                        coupon_expired_date: '',
+                        tier_id: '',
+                    });
+                    setSelectedCoupon(null);
                     setAddCouponModal(true);
                 }}
                 onSearchChange={handleSearchChange}
@@ -205,6 +240,7 @@ const Coupons = () => {
                                     <th className="w-1/12">Min. Product Qty</th>
                                     <th className="w-2/12">Min. Transaction</th>
                                     <th className="w-2/12">Max Discount</th>
+                                    <th className="w-1/12">Tier</th>
                                     <th className="w-2/12">Expired Date</th>
                                     <th className="w-1/12">Used</th>
                                     <th className="w-1/12">Max Used</th>
@@ -215,11 +251,11 @@ const Coupons = () => {
                                 </tr>
                             </thead>
                             {isFetching ? (
-                                <SkeletonLoadingTable rows={11} columns={12} />
+                                <SkeletonLoadingTable rows={11} columns={13} />
                             ) : couponsData.length === 0 ? (
                                 <tbody>
                                     <tr>
-                                        <td colSpan={12} className="text-center py-4">
+                                        <td colSpan={13} className="text-center py-4">
                                             <div className="flex flex-col items-center justify-center gap-4">
                                                 <p className="text-lg font-semibold text-gray-500">No coupons</p>
                                                 <p className="text-sm text-gray-400">Please add a new coupon by clicking the "Add New" button above</p>
@@ -237,6 +273,7 @@ const Coupons = () => {
                                                 <td>{coupon.coupon_min_product_qty}</td>
                                                 <td>{formatToRupiah(coupon.coupon_min_transaction)}</td>
                                                 <td>{formatToRupiah(coupon.coupon_max_discount)}</td>
+                                                <td>{coupon.tier_name || <span className="text-gray-400">All Users</span>}</td>
                                                 <td className={`${new Date(coupon.coupon_expired_date) < new Date() ? 'text-danger' : ''}`}>{formatDate(coupon.coupon_expired_date)}</td>
                                                 <td>{coupon.coupon_used}</td>
                                                 <td>{coupon.coupon_max_used}</td>
@@ -310,6 +347,7 @@ const Coupons = () => {
                                         />
                                         {errors.coupon_code && <span className="text-danger text-sm mt-1">{errors.coupon_code.message}</span>}
                                     </div>
+
                                     <div className="mb-5">
                                         <label htmlFor="coupon_percentage" className="flex items-center">
                                             Percentage
@@ -318,12 +356,13 @@ const Coupons = () => {
                                         <input
                                             id="coupon_percentage"
                                             type="number"
-                                            placeholder="Enter Coupon Percentage"
+                                            placeholder="Enter Coupon Percentage (0-100)"
                                             className={`form-input ${errors.coupon_percentage ? 'error' : ''}`}
                                             {...register('coupon_percentage', { valueAsNumber: true })}
                                         />
                                         {errors.coupon_percentage && <span className="text-danger text-sm mt-1">{errors.coupon_percentage.message}</span>}
                                     </div>
+
                                     <div className="mb-5">
                                         <label htmlFor="coupon_min_product_qty" className="flex items-center">
                                             Minimum Product Quantity
@@ -397,6 +436,25 @@ const Coupons = () => {
                                             />
                                         </div>
                                         {errors.coupon_max_discount && <span className="text-danger text-sm mt-1">{errors.coupon_max_discount.message}</span>}
+                                    </div>
+                                    <div className="mb-5">
+                                        <label htmlFor="tier_id" className="flex items-center">
+                                            Tier Restriction (Optional)
+                                        </label>
+                                        <select
+                                            id="tier_id"
+                                            className="form-select"
+                                            {...register('tier_id')}
+                                        >
+                                            <option value="">All Users (No Tier Restriction)</option>
+                                            {tiersData.map((tier: LoyaltyTier) => (
+                                                <option key={tier.tier_id} value={tier.tier_id}>
+                                                    {tier.tier_name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                        <span className="text-gray-400 text-sm">Leave empty to allow all users to use this coupon</span>
+                                        {errors.tier_id && <span className="text-danger text-sm mt-1">{errors.tier_id.message}</span>}
                                     </div>
                                     <div className="mb-5">
                                         <label htmlFor="coupon_expired_date" className="flex items-center">
