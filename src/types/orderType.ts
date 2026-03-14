@@ -1,6 +1,7 @@
 export interface Order {
     order_id: string;
     coupon_code?: string;
+    redemption_id?: string;
     order_email: string;
     order_user_name: string;
     order_phone: string;
@@ -8,6 +9,9 @@ export interface Order {
     order_grand_total: number;
     order_is_completed: boolean;
     order_user_verified: boolean;
+    points_earned?: number;
+    points_redeemed?: number;
+    points_used_discount?: number;
     order_updated_at: string;
     order_created_date: string;
     products: Array<{
@@ -32,5 +36,12 @@ export interface Order {
         coupon_max_discount: number;
         coupon_min_product_qty: number;
         coupon_min_transaction: number;
+    };
+    redemption_detail?: {
+        redemption_id: string;
+        redemption_name: string;
+        points_required: number;
+        discount_amount: number;
+        max_redemption_per_order: number;
     };
 }
