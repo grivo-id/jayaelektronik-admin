@@ -48,7 +48,7 @@ export const ApiGetCustomerDetail = async (userId: string) => {
     return response.data;
 };
 
-export const ApiAdjustCustomerPoints = async (data: { user_id: string; points_amount: number; reason: string }) => {
+export const ApiAdjustCustomerPoints = async (data: { user_id?: string; customer_loyalty_id?: string; email?: string; points_amount: number; reason: string }) => {
     const response = await axiosInstance.post<ApiResponse<PointTransaction>>('/admin/loyalty/points/adjust', data);
     return response.data;
 };

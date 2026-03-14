@@ -40,8 +40,7 @@ export const useUpdateLoyaltyConfig = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: { point_conversion_rate?: number; is_active?: boolean; birthday_bonus_points?: number }) =>
-            ApiUpdateLoyaltyConfig(data),
+        mutationFn: (data: { point_conversion_rate?: number; is_active?: boolean; birthday_bonus_points?: number }) => ApiUpdateLoyaltyConfig(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyConfig'] });
             queryClient.invalidateQueries({ queryKey: ['loyaltyStats'] });
@@ -86,7 +85,6 @@ export const useGetCustomerDetail = (userId: string) => {
     });
 };
 
-
 export const useCreateCustomerLoyalty = () => {
     const queryClient = useQueryClient();
 
@@ -101,7 +99,7 @@ export const useAdjustCustomerPoints = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: { user_id: string; points_amount: number; reason: string }) => ApiAdjustCustomerPoints(data),
+        mutationFn: (data: { customer_loyalty_id: string; points_amount: number; reason: string }) => ApiAdjustCustomerPoints(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyCustomers'] });
             queryClient.invalidateQueries({ queryKey: ['loyaltyCustomer'] });
@@ -136,19 +134,12 @@ export const useGetAllTiers = () => {
     });
 };
 
-
 export const useCreateTier = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: {
-            tier_name: string;
-            tier_order: number;
-            min_lifetime_spending: number;
-            max_lifetime_spending: number | null;
-            point_multiplier: number;
-            has_free_shipping: boolean;
-        }) => ApiCreateTier(data),
+        mutationFn: (data: { tier_name: string; tier_order: number; min_lifetime_spending: number; max_lifetime_spending: number | null; point_multiplier: number; has_free_shipping: boolean }) =>
+            ApiCreateTier(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyTiers'] });
         },

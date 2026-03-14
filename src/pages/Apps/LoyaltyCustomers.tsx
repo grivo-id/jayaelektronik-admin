@@ -126,7 +126,7 @@ const LoyaltyCustomers = () => {
 
         adjustPoints(
             {
-                user_id: adjustCustomerId,
+                customer_loyalty_id: adjustCustomerId,
                 points_amount: pointsAmount,
                 reason: adjustReason,
             },
