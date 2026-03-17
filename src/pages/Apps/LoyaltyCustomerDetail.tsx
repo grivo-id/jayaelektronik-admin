@@ -86,17 +86,12 @@ const LoyaltyCustomerDetail = () => {
 
         adjustPoints(
             {
-                customer_loyalty_id: customer?.customer_loyalty_id || '',
+                customer_loyalty_id: customer?.profile?.customer_loyalty_id || '',
                 points_amount: pointsAmount,
                 reason: adjustReason,
             },
             {
                 onSuccess: () => {
-                    // Invalidate customer detail query to refresh points
-                    queryClient.invalidateQueries({ queryKey: ['customer-detail', userId] });
-                    // Invalidate point history query
-                    queryClient.invalidateQueries({ queryKey: ['customer-point-history', userId] });
-
                     closeAdjustModal();
                 },
                 onError: (error: any) => {
@@ -113,6 +108,7 @@ const LoyaltyCustomerDetail = () => {
             ADJUST: { class: 'bg-info/10 text-info', label: 'Adjusted' },
             EXPIRE: { class: 'bg-danger/10 text-danger', label: 'Expired' },
             BONUS: { class: 'bg-purple-500/10 text-purple-500', label: 'Bonus' },
+            BIRTHDAY_BONUS: { class: 'bg-purple-500/10 text-purple-500', label: 'Birthday Bonus' },
         };
         return types[type] || { class: 'bg-gray-500/10 text-gray-500', label: type };
     };

@@ -42,9 +42,7 @@ const Loyalty = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div className="text-sm text-gray-500 mb-1">Program Status</div>
-                        <div className={`font-semibold ${config?.is_active ? 'text-success' : 'text-danger'}`}>
-                            {config?.is_active ? 'Active' : 'Inactive'}
-                        </div>
+                        <div className={`font-semibold ${config?.is_active ? 'text-success' : 'text-danger'}`}>{config?.is_active ? 'Active' : 'Inactive'}</div>
                     </div>
                     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div className="text-sm text-gray-500 mb-1">Conversion Rate</div>
@@ -56,7 +54,7 @@ const Loyalty = () => {
                     </div>
                     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div className="text-sm text-gray-500 mb-1">Birthday Value</div>
-                        <div className="font-semibold">Rp {formatNumber((config?.birthday_bonus_points || 100) * (config?.point_conversion_rate || 2000))}</div>
+                        <div className="font-semibold">Rp {formatNumber(config?.birthday_bonus_points || 100)}</div>
                     </div>
                 </div>
             </div>

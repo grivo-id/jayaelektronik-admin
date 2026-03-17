@@ -155,14 +155,10 @@ const OrderDetail = () => {
                             </div>
                             <div>
                                 <p className="text-gray-500 mb-2">Point Redemption</p>
-                                {order.redemption_detail ? (
+                                {order.points_redeemed ? (
                                     <div>
-                                        <p className="font-semibold">{order.redemption_detail.redemption_name}</p>
-                                        <p className="text-xs text-gray-500">{order.redemption_detail.points_required.toLocaleString('id-ID')} points</p>
-                                        <p className="text-xs text-gray-500">Discount: {formatToRupiah(order.redemption_detail.discount_amount)}</p>
-                                        {order.redemption_detail.max_redemption_per_order > 1 && (
-                                            <p className="text-xs text-gray-500">Max per order: {order.redemption_detail.max_redemption_per_order}x</p>
-                                        )}
+                                        <p className="font-semibold">{order.points_redeemed.toLocaleString('id-ID')} points</p>
+                                        <p className="text-xs text-gray-500">Discount: {formatToRupiah(order.points_used_discount || 0)}</p>
                                     </div>
                                 ) : (
                                     <p className="font-semibold">-</p>
@@ -235,21 +231,24 @@ const OrderDetail = () => {
                                                 Coupon Discount ({order.coupon_detail.coupon_code} - {order.coupon_detail.coupon_percentage}%)
                                             </td>
                                             <td className="font-semibold text-danger">
-                                                -{formatToRupiah(Math.min(
-                                                    order.products.reduce((acc, product) => acc + product.product_price_at_purchase * product.product_qty, 0) * order.coupon_detail.coupon_percentage / 100,
-                                                    order.coupon_detail.coupon_max_discount
-                                                ))}
+                                                -
+                                                {formatToRupiah(
+                                                    Math.min(
+                                                        (order.products.reduce((acc, product) => acc + product.product_price_at_purchase * product.product_qty, 0) *
+                                                            order.coupon_detail.coupon_percentage) /
+                                                            100,
+                                                        order.coupon_detail.coupon_max_discount,
+                                                    ),
+                                                )}
                                             </td>
                                         </tr>
                                     )}
-                                    {order.redemption_detail && (
+                                    {order.points_redeemed && (
                                         <tr className="bg-gray-50">
                                             <td colSpan={5} className="text-right font-semibold">
-                                                Point Redemption ({order.redemption_detail.redemption_name} - {order.redemption_detail.points_required.toLocaleString('id-ID')} pts)
+                                                Point Redemption ({order.points_redeemed.toLocaleString('id-ID')} pts)
                                             </td>
-                                            <td className="font-semibold text-danger">
-                                                -{formatToRupiah(order.redemption_detail.discount_amount)}
-                                            </td>
+                                            <td className="font-semibold text-danger">-{formatToRupiah(order.points_used_discount || 0)}</td>
                                         </tr>
                                     )}
                                     <tr className="bg-gray-50">

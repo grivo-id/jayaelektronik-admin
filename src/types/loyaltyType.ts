@@ -38,6 +38,7 @@ export interface CustomerLoyalty {
     updated_at: string;
     profile?: {
         user_id: string;
+        customer_loyalty_id?: string;
         user_email: string;
         user_fname?: string;
         user_lname?: string;
@@ -85,18 +86,6 @@ export interface LoyaltyBonus {
     bonus_fixed_points: number | null;
     start_date: string;
     end_date: string | null;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-}
-
-export interface PointRedemption {
-    redemption_id: string;
-    loyalty_config_id: string;
-    redemption_name: string;
-    points_required: number;
-    discount_amount: number;
-    max_redemption_per_order: number;
     is_active: boolean;
     created_at: string;
     updated_at: string;

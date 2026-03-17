@@ -1,6 +1,6 @@
 import { ApiResponse } from '../types/api';
 import { axiosInstance } from './base';
-import { LoyaltyConfig, LoyaltyTier, CustomerLoyalty, PointTransaction, LoyaltyBonus, PointRedemption, TierVoucher, LoyaltyStats } from '../types/loyaltyType';
+import { LoyaltyConfig, LoyaltyTier, CustomerLoyalty, PointTransaction, LoyaltyBonus, TierVoucher, LoyaltyStats } from '../types/loyaltyType';
 
 // ==================== LOYALTY CONFIG ====================
 
@@ -125,35 +125,6 @@ export const ApiUpdateBonus = async (bonusId: string, data: Partial<CreateBonusP
 
 export const ApiDeleteBonus = async (bonusId: string) => {
     const response = await axiosInstance.delete<ApiResponse<{ message: string }>>(`/admin/loyalty/bonuses/${bonusId}`);
-    return response.data;
-};
-
-// ==================== REDEMPTIONS ====================
-
-export interface CreateRedemptionPayload {
-    redemption_name: string;
-    points_required: number;
-    discount_amount: number;
-    max_redemption_per_order: number;
-}
-
-export const ApiGetAllRedemptions = async () => {
-    const response = await axiosInstance.get<ApiResponse<PointRedemption[]>>('/admin/loyalty/redemptions');
-    return response.data;
-};
-
-export const ApiCreateRedemption = async (data: CreateRedemptionPayload) => {
-    const response = await axiosInstance.post<ApiResponse<PointRedemption>>('/admin/loyalty/redemptions', data);
-    return response.data;
-};
-
-export const ApiUpdateRedemption = async (redemptionId: string, data: Partial<CreateRedemptionPayload> & { is_active?: boolean }) => {
-    const response = await axiosInstance.put<ApiResponse<PointRedemption>>(`/admin/loyalty/redemptions/${redemptionId}`, data);
-    return response.data;
-};
-
-export const ApiDeleteRedemption = async (redemptionId: string) => {
-    const response = await axiosInstance.delete<ApiResponse<{ message: string }>>(`/admin/loyalty/redemptions/${redemptionId}`);
     return response.data;
 };
 

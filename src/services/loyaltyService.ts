@@ -15,10 +15,6 @@ import {
     ApiCreateBonus,
     ApiUpdateBonus,
     ApiDeleteBonus,
-    ApiGetAllRedemptions,
-    ApiCreateRedemption,
-    ApiUpdateRedemption,
-    ApiDeleteRedemption,
     ApiGetAllVouchers,
     ApiCreateVoucher,
     ApiUpdateVoucher,
@@ -103,6 +99,7 @@ export const useAdjustCustomerPoints = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyCustomers'] });
             queryClient.invalidateQueries({ queryKey: ['loyaltyCustomer'] });
+            queryClient.invalidateQueries({ queryKey: ['loyaltyPointHistory'] });
             queryClient.invalidateQueries({ queryKey: ['loyaltyStats'] });
         },
     });
@@ -195,49 +192,6 @@ export const useDeleteBonus = () => {
         mutationFn: (bonusId: string) => ApiDeleteBonus(bonusId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyBonuses'] });
-        },
-    });
-};
-
-// ==================== REDEMPTIONS ====================
-
-export const useGetAllRedemptions = () => {
-    return useQuery({
-        queryKey: ['loyaltyRedemptions'],
-        queryFn: () => ApiGetAllRedemptions(),
-        select: (response) => response.data,
-    });
-};
-
-export const useCreateRedemption = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: any) => ApiCreateRedemption(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['loyaltyRedemptions'] });
-        },
-    });
-};
-
-export const useUpdateRedemption = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ redemptionId, data }: { redemptionId: string; data: any }) => ApiUpdateRedemption(redemptionId, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['loyaltyRedemptions'] });
-        },
-    });
-};
-
-export const useDeleteRedemption = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (redemptionId: string) => ApiDeleteRedemption(redemptionId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['loyaltyRedemptions'] });
         },
     });
 };

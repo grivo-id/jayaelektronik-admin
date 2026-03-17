@@ -14,8 +14,8 @@ const LoyaltyConfig = () => {
     const { data: config, isLoading } = useGetLoyaltyConfig();
     const { mutate: updateConfig } = useUpdateLoyaltyConfig();
 
-    const [pointConversionRate, setPointConversionRate] = useState<number>(2000);
-    const [birthdayBonusPoints, setBirthdayBonusPoints] = useState<number>(100);
+    const [pointConversionRate, setPointConversionRate] = useState<number>(1);
+    const [birthdayBonusPoints, setBirthdayBonusPoints] = useState<number>(1);
     const [isActive, setIsActive] = useState<boolean>(true);
 
     useEffect(() => {
@@ -54,7 +54,7 @@ const LoyaltyConfig = () => {
                         onError: (error: any) => {
                             Swal.fire('Error', error.response?.data?.message || 'Failed to update configuration', 'error');
                         },
-                    }
+                    },
                 );
             }
         });
@@ -90,9 +90,7 @@ const LoyaltyConfig = () => {
                         <div className="flex items-center justify-between">
                             <div>
                                 <div className="font-medium">Enable Loyalty Program</div>
-                                <div className="text-sm text-gray-500">
-                                    When disabled, customers will not earn or redeem points
-                                </div>
+                                <div className="text-sm text-gray-500">When disabled, customers will not earn or redeem points</div>
                             </div>
                             <label className="w-14 h-8 relative inline-block">
                                 <input
@@ -134,8 +132,7 @@ const LoyaltyConfig = () => {
                                             <div className="font-medium text-info">Example Calculation:</div>
                                             <div className="text-gray-600 dark:text-gray-400">
                                                 • Rp {formatNumber(10_000)} = {calculatePoints(10_000)} points
-                                                <br />
-                                                • Rp {formatNumber(50_000)} = {calculatePoints(50_000)} points
+                                                <br />• Rp {formatNumber(50_000)} = {calculatePoints(50_000)} points
                                                 <br />• Rp {formatNumber(100_000)} = {calculatePoints(100_000)} points
                                                 <br />• Rp {formatNumber(500_000)} = {calculatePoints(500_000)} points
                                             </div>
@@ -156,18 +153,10 @@ const LoyaltyConfig = () => {
                             <div>
                                 <label className="block text-sm font-medium mb-2">Bonus Points on Birthday</label>
                                 <div className="flex items-center gap-4">
-                                    <input
-                                        type="number"
-                                        className="form-input w-40"
-                                        value={birthdayBonusPoints}
-                                        onChange={(e) => setBirthdayBonusPoints(parseInt(e.target.value) || 0)}
-                                        min="0"
-                                    />
+                                    <input type="number" className="form-input w-40" value={birthdayBonusPoints} onChange={(e) => setBirthdayBonusPoints(parseInt(e.target.value) || 0)} min="0" />
                                     <span className="text-lg">points</span>
                                 </div>
-                                <div className="text-sm text-gray-500 mt-2">
-                                    Customers will automatically receive these bonus points on their birthday (if the program is active)
-                                </div>
+                                <div className="text-sm text-gray-500 mt-2">Customers will automatically receive these bonus points on their birthday (if the program is active)</div>
                             </div>
 
                             <div className="p-3 bg-success/10 rounded-lg">
@@ -176,7 +165,7 @@ const LoyaltyConfig = () => {
                                     <div>
                                         <div className="font-medium text-success">Birthday Value:</div>
                                         <div className="text-gray-600 dark:text-gray-400">
-                                            {birthdayBonusPoints} points ≈ Rp {formatNumber(birthdayBonusPoints * pointConversionRate)} value
+                                            {birthdayBonusPoints} points ≈ Rp {formatNumber(birthdayBonusPoints)} value
                                         </div>
                                     </div>
                                 </div>
@@ -193,9 +182,7 @@ const LoyaltyConfig = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                 <div className="text-sm text-gray-500">Program Status</div>
-                                <div className={`font-semibold ${isActive ? 'text-success' : 'text-danger'}`}>
-                                    {isActive ? 'Active' : 'Inactive'}
-                                </div>
+                                <div className={`font-semibold ${isActive ? 'text-success' : 'text-danger'}`}>{isActive ? 'Active' : 'Inactive'}</div>
                             </div>
                             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                 <div className="text-sm text-gray-500">Conversion Rate</div>
@@ -207,7 +194,7 @@ const LoyaltyConfig = () => {
                             </div>
                             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                 <div className="text-sm text-gray-500">Birthday Value</div>
-                                <div className="font-semibold">Rp {formatNumber(birthdayBonusPoints * pointConversionRate)}</div>
+                                <div className="font-semibold">Rp {formatNumber(birthdayBonusPoints)}</div>
                             </div>
                         </div>
                     </div>
