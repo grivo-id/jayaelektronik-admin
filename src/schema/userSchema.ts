@@ -29,6 +29,7 @@ export const getUpdateUserSchema = () =>
         }),
         user_fname: z.string().nonempty('First name is required'),
         user_lname: z.string().nonempty('Last name is required'),
+        user_birthday: z.string().date('Invalid date format'),
         user_is_active: z.boolean(),
         user_is_verified: z.boolean(),
     });
@@ -39,6 +40,7 @@ export const getUpdateUserProfileSchema = () =>
         user_lname: z.string().optional(),
         user_email: z.string().email().optional(),
         user_phone: z.string().optional(),
+        user_birthday: z.string().date('Invalid date format').optional(),
         user_address: z.string().optional(),
     });
 

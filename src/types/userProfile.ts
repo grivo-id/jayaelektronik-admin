@@ -13,4 +13,5 @@ export interface UserProfile {
     user_last_active: string;
     user_created_date: string;
     user_updated_date: string;
+    user_birthday?: string;
 }

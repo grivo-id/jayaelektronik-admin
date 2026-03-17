@@ -21,6 +21,17 @@ import IconEyeOff from '../../components/Icon/IconEyeOff';
 import { useSearchParams } from 'react-router-dom';
 import IconTrash from '../../components/Icon/IconTrash';
 
+const formatDateOnly = (date: string | number | Date): string => {
+    if (!date) return '';
+    const dt = new Date(date);
+    return dt.toLocaleString('en-GB', {
+        day: 'numeric',
+        month: 'short',
+        year: 'numeric',
+        timeZone: 'Asia/Tokyo',
+    });
+};
+
 const User = () => {
     const dispatch = useDispatch();
     const queryClient = useQueryClient();
@@ -127,7 +138,7 @@ const User = () => {
                         updateReset();
                         setSelectedUser(null);
                     },
-                }
+                },
             );
         }
     };
@@ -278,6 +289,7 @@ const User = () => {
                                     <th>Role</th>
                                     <th>Name</th>
                                     <th>Phone</th>
+                                    <th>Birthday</th>
                                     <th>Address</th>
                                     <th>Status</th>
                                     <th>Activation</th>
@@ -306,6 +318,7 @@ const User = () => {
                                                 <td className="whitespace-nowrap">{user.role_name}</td>
                                                 <td className="whitespace-nowrap">{concatName(user)}</td>
                                                 <td className="whitespace-nowrap">{user.user_phone}</td>
+                                                <td className="whitespace-nowrap">{formatDateOnly(user.user_birthday) || '-'}</td>
                                                 <td className="whitespace-nowrap">{user.user_address}</td>
 
                                                 <td className="whitespace-nowrap">
@@ -379,13 +392,11 @@ const User = () => {
                                         </label>
                                         <select id="role_id" className="form-select" {...updateRegister('role_id', { valueAsNumber: true })}>
                                             <option value={0}>Select Role</option>
-                                            {roleOptions
-                                                .filter((option) => option.label !== 'Member')
-                                                .map((option) => (
-                                                    <option key={option.value} value={option.value}>
-                                                        {option.label}
-                                                    </option>
-                                                ))}
+                                            {roleOptions.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
                                         </select>
                                         {createErrors.role_id && <span className="text-danger">{createErrors.role_id.message}</span>}
                                     </div>
@@ -416,6 +427,21 @@ const User = () => {
                                             {...updateRegister('user_lname')}
                                         />
                                         {updateErrors.user_lname && <span className="text-danger text-sm mt-1">{updateErrors.user_lname.message}</span>}
+                                    </div>
+
+                                    <div className="mb-5">
+                                        <label htmlFor="user_birthday" className="flex items-center">
+                                            Birthday
+                                            <span className="text-danger text-base">*</span>
+                                        </label>
+                                        <input
+                                            id="user_birthday"
+                                            type="date"
+                                            placeholder="Enter Name"
+                                            className={`form-input ${updateErrors.user_birthday ? 'error' : ''}`}
+                                            {...updateRegister('user_birthday')}
+                                        />
+                                        {updateErrors.user_birthday && <span className="text-danger text-sm mt-1">{updateErrors.user_birthday.message}</span>}
                                     </div>
 
                                     <div className="mb-5">
