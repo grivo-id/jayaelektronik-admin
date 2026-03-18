@@ -245,9 +245,6 @@ const Sidebar = () => {
                                             <li>
                                                 <NavLink to="/admin/loyalty/bonuses">Bonuses</NavLink>
                                             </li>
-                                            <li>
-                                                <NavLink to="/admin/loyalty/vouchers">Vouchers</NavLink>
-                                            </li>
                                         </ul>
                                     </AnimateHeight>
                                 </li>

@@ -1,6 +1,6 @@
 import { ApiResponse } from '../types/api';
 import { axiosInstance } from './base';
-import { LoyaltyConfig, LoyaltyTier, CustomerLoyalty, PointTransaction, LoyaltyBonus, TierVoucher, LoyaltyStats } from '../types/loyaltyType';
+import { LoyaltyConfig, LoyaltyTier, CustomerLoyalty, PointTransaction, LoyaltyBonus, LoyaltyStats } from '../types/loyaltyType';
 
 // ==================== LOYALTY CONFIG ====================
 
@@ -128,37 +128,3 @@ export const ApiDeleteBonus = async (bonusId: string) => {
     return response.data;
 };
 
-// ==================== VOUCHERS ====================
-
-export interface CreateVoucherPayload {
-    tier_id: string;
-    voucher_code: string;
-    voucher_name: string;
-    voucher_type: 'PERCENTAGE' | 'FIXED';
-    voucher_value: number;
-    max_discount?: number;
-    min_transaction?: number;
-    usage_limit?: number;
-    valid_from: string;
-    valid_until?: string;
-}
-
-export const ApiGetAllVouchers = async () => {
-    const response = await axiosInstance.get<ApiResponse<TierVoucher[]>>('/admin/loyalty/vouchers');
-    return response.data;
-};
-
-export const ApiCreateVoucher = async (data: CreateVoucherPayload) => {
-    const response = await axiosInstance.post<ApiResponse<TierVoucher>>('/admin/loyalty/vouchers', data);
-    return response.data;
-};
-
-export const ApiUpdateVoucher = async (voucherId: string, data: Partial<CreateVoucherPayload> & { is_active?: boolean }) => {
-    const response = await axiosInstance.put<ApiResponse<TierVoucher>>(`/admin/loyalty/vouchers/${voucherId}`, data);
-    return response.data;
-};
-
-export const ApiDeleteVoucher = async (voucherId: string) => {
-    const response = await axiosInstance.delete<ApiResponse<{ message: string }>>(`/admin/loyalty/vouchers/${voucherId}`);
-    return response.data;
-};

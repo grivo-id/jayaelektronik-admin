@@ -15,10 +15,6 @@ import {
     ApiCreateBonus,
     ApiUpdateBonus,
     ApiDeleteBonus,
-    ApiGetAllVouchers,
-    ApiCreateVoucher,
-    ApiUpdateVoucher,
-    ApiDeleteVoucher,
     GetCustomersPayload,
 } from '../api/loyaltyApi';
 
@@ -192,49 +188,6 @@ export const useDeleteBonus = () => {
         mutationFn: (bonusId: string) => ApiDeleteBonus(bonusId),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyBonuses'] });
-        },
-    });
-};
-
-// ==================== VOUCHERS ====================
-
-export const useGetAllVouchers = () => {
-    return useQuery({
-        queryKey: ['loyaltyVouchers'],
-        queryFn: () => ApiGetAllVouchers(),
-        select: (response) => response.data,
-    });
-};
-
-export const useCreateVoucher = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (data: any) => ApiCreateVoucher(data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['loyaltyVouchers'] });
-        },
-    });
-};
-
-export const useUpdateVoucher = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: ({ voucherId, data }: { voucherId: string; data: any }) => ApiUpdateVoucher(voucherId, data),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['loyaltyVouchers'] });
-        },
-    });
-};
-
-export const useDeleteVoucher = () => {
-    const queryClient = useQueryClient();
-
-    return useMutation({
-        mutationFn: (voucherId: string) => ApiDeleteVoucher(voucherId),
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ['loyaltyVouchers'] });
         },
     });
 };

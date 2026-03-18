@@ -91,25 +91,6 @@ export interface LoyaltyBonus {
     updated_at: string;
 }
 
-export interface TierVoucher {
-    voucher_id: string;
-    tier_id: string;
-    tier_name: string;
-    voucher_code: string;
-    voucher_name: string;
-    voucher_type: 'PERCENTAGE' | 'FIXED';
-    voucher_value: number;
-    max_discount: number | null;
-    min_transaction: number | null;
-    usage_limit: number;
-    usage_count: number;
-    valid_from: string;
-    valid_until: string | null;
-    is_active: boolean;
-    created_at: string;
-    updated_at: string;
-}
-
 export interface LoyaltyStats {
     total_members: number;
     active_members: number;
