@@ -131,8 +131,15 @@ export const useCreateTier = () => {
     const queryClient = useQueryClient();
 
     return useMutation({
-        mutationFn: (data: { tier_name: string; tier_order: number; min_lifetime_spending: number; max_lifetime_spending: number | null; point_multiplier: number; has_free_shipping: boolean }) =>
-            ApiCreateTier(data),
+        mutationFn: (data: {
+            tier_name: string;
+            tier_order: number;
+            min_lifetime_spending: number;
+            max_lifetime_spending: number | null;
+            point_multiplier: number;
+            discount_enabled: boolean;
+            discount_percentage: number;
+        }) => ApiCreateTier(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyTiers'] });
         },

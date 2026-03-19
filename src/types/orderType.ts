@@ -11,6 +11,10 @@ export interface Order {
     points_earned?: number;
     points_redeemed?: number;
     points_used_discount?: number;
+    tier_id?: string;
+    tier_name?: string;
+    tier_discount_percentage?: number;
+    tier_discount_amount?: number;
     order_updated_at: string;
     order_created_date: string;
     products: Array<{

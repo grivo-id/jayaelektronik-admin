@@ -76,7 +76,8 @@ export const ApiCreateTier = async (data: {
     min_lifetime_spending: number;
     max_lifetime_spending: number | null;
     point_multiplier: number;
-    has_free_shipping: boolean;
+    discount_enabled: boolean;
+    discount_percentage: number;
 }) => {
     const response = await axiosInstance.post<ApiResponse<LoyaltyTier>>('/admin/loyalty/tiers', data);
     return response.data;
@@ -89,7 +90,8 @@ export const ApiUpdateTier = async (
         min_lifetime_spending?: number;
         max_lifetime_spending?: number | null;
         point_multiplier?: number;
-        has_free_shipping?: boolean;
+        discount_enabled?: boolean;
+        discount_percentage?: number;
     },
 ) => {
     const response = await axiosInstance.put<ApiResponse<LoyaltyTier>>(`/admin/loyalty/tiers/${tierId}`, data);
@@ -127,4 +129,3 @@ export const ApiDeleteBonus = async (bonusId: string) => {
     const response = await axiosInstance.delete<ApiResponse<{ message: string }>>(`/admin/loyalty/bonuses/${bonusId}`);
     return response.data;
 };
-

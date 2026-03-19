@@ -8,8 +8,8 @@ import IconAward from '../../components/Icon/IconAward';
 import IconEdit from '../../components/Icon/IconEdit';
 import IconPlus from '../../components/Icon/IconPlus';
 import IconX from '../../components/Icon/IconX';
-import IconTruck from '../../components/Icon/IconTruck';
 import IconTrendingUp from '../../components/Icon/IconTrendingUp';
+import IconTag from '../../components/Icon/IconTag';
 
 const LoyaltyTiers = () => {
     const dispatch = useDispatch();
@@ -25,14 +25,16 @@ const LoyaltyTiers = () => {
         min_lifetime_spending: number;
         max_lifetime_spending: number | null;
         point_multiplier: number;
-        has_free_shipping: boolean;
+        discount_enabled: boolean;
+        discount_percentage: number;
     }>({
         tier_name: '',
         tier_order: 1,
         min_lifetime_spending: 0,
         max_lifetime_spending: null,
         point_multiplier: 1,
-        has_free_shipping: false,
+        discount_enabled: false,
+        discount_percentage: 0,
     });
 
     useEffect(() => {
@@ -46,7 +48,8 @@ const LoyaltyTiers = () => {
             min_lifetime_spending: 0,
             max_lifetime_spending: null,
             point_multiplier: 1,
-            has_free_shipping: false,
+            discount_enabled: false,
+            discount_percentage: 0,
         });
         setEditingTier(null);
     };
@@ -65,7 +68,8 @@ const LoyaltyTiers = () => {
             min_lifetime_spending: tier.min_lifetime_spending,
             max_lifetime_spending: tier.max_lifetime_spending,
             point_multiplier: tier.point_multiplier,
-            has_free_shipping: tier.has_free_shipping,
+            discount_enabled: tier.discount_enabled || false,
+            discount_percentage: tier.discount_percentage || 0,
         });
         setShowCreateModal(true);
     };
@@ -93,7 +97,7 @@ const LoyaltyTiers = () => {
                     onError: (error: any) => {
                         Swal.fire('Error', error.response?.data?.message || 'Failed to update tier', 'error');
                     },
-                }
+                },
             );
         } else {
             createTier(editForm, {
@@ -170,20 +174,23 @@ const LoyaltyTiers = () => {
                                         <span className="text-sm text-gray-500">Point Multiplier</span>
                                         <span className={`badge bg-info/10 text-info`}>{tier.point_multiplier}x</span>
                                     </div>
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-gray-500">Discount Benefit</span>
+                                        {tier.discount_enabled && tier.discount_percentage > 0 ? (
+                                            <span className={`badge bg-success/10 text-success`}>{tier.discount_percentage}% off</span>
+                                        ) : (
+                                            <span className="badge bg-gray-200 text-gray-500">Disabled</span>
+                                        )}
+                                    </div>
                                 </div>
 
                                 <div className="flex items-center gap-2">
-                                    {tier.has_free_shipping ? (
+                                    {tier.discount_enabled && tier.discount_percentage > 0 ? (
                                         <div className="flex items-center gap-2 text-success text-sm">
-                                            <IconTruck className="w-4 h-4" />
-                                            <span>Free Shipping</span>
+                                            <IconTag className="w-4 h-4" />
+                                            <span>{tier.discount_percentage}% off orders</span>
                                         </div>
-                                    ) : (
-                                        <div className="flex items-center gap-2 text-gray-400 text-sm">
-                                            <IconTruck className="w-4 h-4" />
-                                            <span>No Free Shipping</span>
-                                        </div>
-                                    )}
+                                    ) : null}
                                 </div>
 
                                 {tier.customer_count !== undefined && (
@@ -207,9 +214,8 @@ const LoyaltyTiers = () => {
                     <div>
                         <h4 className="font-semibold mb-1">How Tier Upgrades Work</h4>
                         <p className="text-sm text-gray-500">
-                            Customers automatically upgrade to the next tier when their lifetime spending reaches the minimum threshold.
-                            Tier upgrades are checked after every completed order. Higher tiers earn points faster with multipliers and may
-                            include additional benefits like free shipping.
+                            Customers automatically upgrade to the next tier when their lifetime spending reaches the minimum threshold. Tier upgrades are checked after every completed order. Higher
+                            tiers earn points faster with multipliers.
                         </p>
                     </div>
                 </div>
@@ -290,14 +296,32 @@ const LoyaltyTiers = () => {
                                 <p className="text-xs text-gray-500 mt-1">e.g., 1.5 = 1.5x points for this tier</p>
                             </div>
 
-                            <div className="flex items-center gap-2">
-                                <input
-                                    type="checkbox"
-                                    className="form-checkbox"
-                                    checked={editForm.has_free_shipping}
-                                    onChange={(e) => setEditForm({ ...editForm, has_free_shipping: e.target.checked })}
-                                />
-                                <span className="text-sm">Free Shipping Benefit</span>
+                            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+                                <h4 className="text-sm font-semibold mb-3">Tier Discount Benefit</h4>
+                                <div className="flex items-center gap-2 mb-3">
+                                    <input
+                                        type="checkbox"
+                                        className="form-checkbox"
+                                        checked={editForm.discount_enabled}
+                                        onChange={(e) => setEditForm({ ...editForm, discount_enabled: e.target.checked })}
+                                    />
+                                    <span className="text-sm">Enable Discount Benefit</span>
+                                </div>
+                                {editForm.discount_enabled && (
+                                    <div>
+                                        <label className="block text-sm font-medium mb-2">Discount Percentage (%)</label>
+                                        <input
+                                            type="number"
+                                            className="form-input w-full"
+                                            value={editForm.discount_percentage}
+                                            onChange={(e) => setEditForm({ ...editForm, discount_percentage: parseFloat(e.target.value) || 0 })}
+                                            step="0.1"
+                                            min="0"
+                                            max="100"
+                                        />
+                                        <p className="text-xs text-gray-500 mt-1">Automatic discount on every order (excludes products with promo)</p>
+                                    </div>
+                                )}
                             </div>
 
                             <div className="flex gap-3 pt-4">

@@ -17,6 +17,8 @@ export interface LoyaltyTier {
     max_lifetime_spending: number | null;
     point_multiplier: number;
     has_free_shipping: boolean;
+    discount_enabled: boolean;
+    discount_percentage: number;
     customer_count?: number;
     created_at: string;
     updated_at: string;

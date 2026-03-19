@@ -165,6 +165,18 @@ const OrderDetail = () => {
                                 )}
                             </div>
                             <div>
+                                <p className="text-gray-500 mb-2">Tier Benefit</p>
+                                {order.tier_name ? (
+                                    <div>
+                                        <p className="font-semibold">{order.tier_name}</p>
+                                        <p className="text-xs text-gray-500">{order.tier_discount_percentage}% discount</p>
+                                        <p className="text-xs text-gray-500">Discount: {formatToRupiah(order.tier_discount_amount || 0)}</p>
+                                    </div>
+                                ) : (
+                                    <p className="font-semibold">-</p>
+                                )}
+                            </div>
+                            <div>
                                 <p className="text-gray-500 mb-2">Total Order</p>
                                 <p className="font-semibold">{formatToRupiah(order.order_grand_total)}</p>
                             </div>
@@ -249,6 +261,14 @@ const OrderDetail = () => {
                                                 Point Redemption ({order.points_redeemed.toLocaleString('id-ID')} pts)
                                             </td>
                                             <td className="font-semibold text-danger">-{formatToRupiah(order.points_used_discount || 0)}</td>
+                                        </tr>
+                                    )}
+                                    {order.tier_name && (
+                                        <tr className="bg-gray-50">
+                                            <td colSpan={5} className="text-right font-semibold">
+                                                Tier Benefit Discount ({order.tier_name} - {order.tier_discount_percentage}%)
+                                            </td>
+                                            <td className="font-semibold text-danger">-{formatToRupiah(order.tier_discount_amount || 0)}</td>
                                         </tr>
                                     )}
                                     <tr className="bg-gray-50">
