@@ -1,7 +1,7 @@
 import { lazy } from 'react';
 
 // const Index = lazy(() => import('../pages/Index'));
-const Analytics = lazy(() => import('../pages/Analytics'));
+const Analytics = lazy(() => import('../pages/Apps/Analytics'));
 const Finance = lazy(() => import('../pages/Finance'));
 const Contacts = lazy(() => import('../pages/Apps/Contacts'));
 const List = lazy(() => import('../pages/Apps/Invoice/List'));
