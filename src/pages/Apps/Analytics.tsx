@@ -28,6 +28,7 @@ import IconBox from '../../components/Icon/IconBox';
 import IconBarChart from '../../components/Icon/IconBarChart';
 import IconUsers from '../../components/Icon/IconUsers';
 import DateRangeFilter from '../../components/DateRangeFilter';
+import ChartLoader from '../../components/ChartLoader';
 import Skeleton from 'react-loading-skeleton';
 
 const Analytics = () => {
@@ -98,57 +99,57 @@ const Analytics = () => {
         limit: 5,
     });
 
-    const { data: categoryPerformance } = useCategoryPerformance({
+    const { data: categoryPerformance, isLoading: categoryLoading } = useCategoryPerformance({
         start_date: startDate,
         end_date: endDate,
     });
 
-    const { data: tierData } = useCustomerTierDistribution();
+    const { data: tierData, isLoading: tierLoading } = useCustomerTierDistribution();
 
-    const { data: pointsActivity } = useLoyaltyPointsActivity({
+    const { data: pointsActivity, isLoading: pointsLoading } = useLoyaltyPointsActivity({
         start_date: startDate,
         end_date: endDate,
     });
 
-    const { data: couponUsage } = useCouponUsageAnalytics({
+    const { data: couponUsage, isLoading: couponLoading } = useCouponUsageAnalytics({
         start_date: startDate,
         end_date: endDate,
     });
 
     // New analytics API calls
-    const { data: topCustomers } = useTopCustomersByRevenue({
+    const { data: topCustomers, isLoading: topCustomersLoading } = useTopCustomersByRevenue({
         start_date: startDate,
         end_date: endDate,
         limit: 5,
     });
 
-    const { data: averageItemsData } = useAverageItemsPerOrder({
+    const { data: averageItemsData, isLoading: averageItemsLoading } = useAverageItemsPerOrder({
         start_date: startDate,
         end_date: endDate,
     });
 
-    const { data: repeatPurchaseData } = useRepeatPurchaseRate({
+    const { data: repeatPurchaseData, isLoading: repeatPurchaseLoading } = useRepeatPurchaseRate({
         start_date: startDate,
         end_date: endDate,
     });
 
-    const { data: brandPerformance } = useBrandPerformance({
+    const { data: brandPerformance, isLoading: brandLoading } = useBrandPerformance({
         start_date: startDate,
         end_date: endDate,
     });
 
-    const { data: orderValueDistribution } = useOrderValueDistribution({
+    const { data: orderValueDistribution, isLoading: orderValueLoading } = useOrderValueDistribution({
         start_date: startDate,
         end_date: endDate,
     });
 
-    const { data: acquisitionTrends } = useCustomerAcquisitionTrends({
+    const { data: acquisitionTrends, isLoading: acquisitionLoading } = useCustomerAcquisitionTrends({
         start_date: startDate,
         end_date: endDate,
         group_by: 'monthly',
     });
 
-    const { data: bestSellingByCategory } = useBestSellingByCategory({
+    const { data: bestSellingByCategory, isLoading: bestSellingLoading } = useBestSellingByCategory({
         start_date: startDate,
         end_date: endDate,
         top_n: 3,
@@ -379,8 +380,9 @@ const Analytics = () => {
                 {/* Category Performance */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Category Performance</h3>
-                    <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <ChartLoader loading={categoryLoading} height={256}>
+                        <div className="h-64">
+                            <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={categoryPerformance || []}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="category" angle={-45} textAnchor="end" height={60} />
@@ -389,7 +391,8 @@ const Analytics = () => {
                                 <Bar dataKey="revenue" fill="#3b82f6" />
                             </BarChart>
                         </ResponsiveContainer>
-                    </div>
+                        </div>
+                    </ChartLoader>
                 </div>
             </div>
 
@@ -398,7 +401,8 @@ const Analytics = () => {
                 {/* Customer Tier Distribution */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Customer Tiers</h3>
-                    <div className="space-y-4">
+                    <ChartLoader loading={tierLoading} height={200}>
+                        <div className="space-y-4">
                         {tierData?.tiers?.map((tier) => (
                             <div key={tier.tier_id}>
                                 <div className="flex justify-between mb-2">
@@ -411,14 +415,16 @@ const Analytics = () => {
                                 <p className="text-xs text-gray-500 mt-1">{tier.percentage.toFixed(1)}% of customers</p>
                             </div>
                         ))}
-                    </div>
+                        </div>
+                    </ChartLoader>
                 </div>
 
                 {/* Loyalty Points Activity */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Loyalty Points</h3>
-                    <div className="space-y-4">
-                        {pointsActivity?.map((activity) => (
+                    <ChartLoader loading={pointsLoading} height={200}>
+                        <div className="space-y-4">
+                            {pointsActivity?.map((activity) => (
                             <div key={activity.transaction_type} className="flex items-center justify-between">
                                 <span className="capitalize">{activity.transaction_type}</span>
                                 <div className="text-right">
@@ -450,6 +456,7 @@ const Analytics = () => {
                             </span>
                         </div>
                     </div>
+                    </ChartLoader>
                 </div>
 
                 {/* Coupon Usage */}
@@ -472,39 +479,6 @@ const Analytics = () => {
                 </div>
             </div>
 
-            {/* Low Stock Alert */}
-            {/* {lowStockProducts && lowStockProducts.length > 0 && (
-                <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-                        <svg className="w-5 h-5 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.932-3L13.978 11.11A9.009 9.009 0 0 0 12 14a9 9 0 0 009 9 9 0 0 009-9 9 0 0 00-9-9 9 0 0 00-9 9m0-9"
-                            />
-                        </svg>
-                        Low Stock Alert
-                    </h3>
-                    <div className="space-y-3">
-                        {lowStockProducts.slice(0, 5).map((product) => (
-                            <div key={product.product_id} className="flex items-center gap-4 p-3 border rounded-lg">
-                                <img src={product.product_image1} alt={product.product_name} className="w-12 h-12 object-cover rounded" />
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-medium truncate">{product.product_name}</p>
-                                    <p className="text-xs text-gray-500">Sold {product.sold_last_30_days} in last 30 days</p>
-                                </div>
-                                <div className="text-right">
-                                    <p className={`font-semibold ${product.status === 'critical' ? 'text-danger' : product.status === 'low' ? 'text-orange-500' : 'text-warning'}`}>
-                                        Stock: {product.product_stock}
-                                    </p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-            )} */}
-
             {/* ==================== NEW ANALYTICS WIDGETS ==================== */}
 
             {/* Row: Top Customers & Repeat Purchase Rate */}
@@ -512,8 +486,9 @@ const Analytics = () => {
                 {/* Top Customers */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Top Customers by Revenue</h3>
-                    <div className="space-y-3">
-                        {topCustomers?.slice(0, 5).map((customer: any, index: number) => (
+                    <ChartLoader loading={topCustomersLoading} height={300}>
+                        <div className="space-y-3">
+                            {topCustomers?.slice(0, 5).map((customer: any, index: number) => (
                             <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                                 <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-sm">{index + 1}</div>
                                 <div className="flex-1 min-w-0">
@@ -526,13 +501,15 @@ const Analytics = () => {
                                 </div>
                             </div>
                         ))}
-                    </div>
+                        </div>
+                    </ChartLoader>
                 </div>
 
                 {/* Repeat Purchase Rate */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Customer Retention</h3>
-                    {repeatPurchaseData && (
+                    <ChartLoader loading={repeatPurchaseLoading} height={250}>
+                        {repeatPurchaseData ? (
                         <div className="space-y-4">
                             <div className="flex justify-between items-center mb-2">
                                 <span className="text-gray-600 dark:text-gray-400">New Customers</span>
@@ -554,7 +531,8 @@ const Analytics = () => {
                             </div>
                             <p className="text-sm text-center mt-2">Total: {repeatPurchaseData.total_customers} customers</p>
                         </div>
-                    )}
+                        ) : null}
+                    </ChartLoader>
                 </div>
             </div>
 
@@ -563,7 +541,8 @@ const Analytics = () => {
                 {/* Average Items per Order */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Average Items per Order</h3>
-                    {averageItemsData && (
+                    <ChartLoader loading={averageItemsLoading} height={300}>
+                        {averageItemsData ? (
                         <div>
                             <p className="text-4xl font-bold text-center mb-4">
                                 {averageItemsData.overall_average.toFixed(1)} <span className="text-lg text-gray-500">items</span>
@@ -580,13 +559,15 @@ const Analytics = () => {
                                 </ResponsiveContainer>
                             </div>
                         </div>
-                    )}
+                        ) : null}
+                    </ChartLoader>
                 </div>
 
                 {/* Order Value Distribution */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Order Value Distribution</h3>
-                    {orderValueDistribution && (
+                    <ChartLoader loading={orderValueLoading} height={300}>
+                        {orderValueDistribution ? (
                         <div>
                             <div className="h-48">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -620,7 +601,8 @@ const Analytics = () => {
                                 ))}
                             </div>
                         </div>
-                    )}
+                        ) : null}
+                    </ChartLoader>
                 </div>
             </div>
 
@@ -629,8 +611,9 @@ const Analytics = () => {
                 {/* Brand Performance */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Brand Performance</h3>
-                    <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <ChartLoader loading={brandLoading} height={256}>
+                        <div className="h-64">
+                            <ResponsiveContainer width="100%" height="100%">
                             <BarChart data={brandPerformance} layout="vertical">
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis type="number" tickFormatter={formatChartAxis} />
@@ -639,14 +622,16 @@ const Analytics = () => {
                                 <Bar dataKey="revenue" fill="#10b981" />
                             </BarChart>
                         </ResponsiveContainer>
-                    </div>
+                        </div>
+                    </ChartLoader>
                 </div>
 
                 {/* Customer Acquisition Trends */}
                 <div className="panel p-6">
                     <h3 className="text-lg font-semibold mb-4">Customer Acquisition</h3>
-                    <div className="h-64">
-                        <ResponsiveContainer width="100%" height="100%">
+                    <ChartLoader loading={acquisitionLoading} height={256}>
+                        <div className="h-64">
+                            <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={acquisitionTrends}>
                                 <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })} />
@@ -655,7 +640,8 @@ const Analytics = () => {
                                 <Line type="monotone" dataKey="new_customers" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
                             </LineChart>
                         </ResponsiveContainer>
-                    </div>
+                        </div>
+                    </ChartLoader>
                 </div>
             </div>
 
