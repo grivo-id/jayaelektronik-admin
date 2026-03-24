@@ -17,14 +17,41 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
     const [showCalendar, setShowCalendar] = useState(false);
     const calendarRef = useRef<HTMLDivElement>(null);
 
+    // Helper functions - defined before state to avoid initialization issues
+    // Helper to parse date string (YYYY-MM-DD) to local Date object
+    const parseLocalDate = (dateStr: string): Date => {
+        const [year, month, day] = dateStr.split('-').map(Number);
+        // Create Date using local timezone (midnight local time)
+        return new Date(year, month - 1, day, 0, 0, 0);
+    };
+
+    // Helper to convert local Date to YYYY-MM-DD string (using local timezone)
+    const toLocalDateString = (date: Date): string => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+
+    // Format Date for display using local timezone
+    const formatDisplayDate = (date: Date): string => {
+        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    };
+
+    // Format date string to display using local timezone
+    const formatDate = (dateStr: string): string => {
+        const date = parseLocalDate(dateStr);
+        return formatDisplayDate(date);
+    };
+
     // Local state for pending changes when in custom mode
     const [pendingRange, setPendingRange] = useState<{
         startDate: Date | undefined;
         endDate: Date | undefined;
         key: string;
     }>({
-        startDate: startDate ? new Date(startDate) : undefined,
-        endDate: endDate ? new Date(endDate) : undefined,
+        startDate: startDate ? parseLocalDate(startDate) : undefined,
+        endDate: endDate ? parseLocalDate(endDate) : undefined,
         key: 'selection',
     });
     const [hasPendingChanges, setHasPendingChanges] = useState(false);
@@ -32,8 +59,8 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
     // Sync when props change
     useEffect(() => {
         setPendingRange({
-            startDate: startDate ? new Date(startDate) : undefined,
-            endDate: endDate ? new Date(endDate) : undefined,
+            startDate: startDate ? parseLocalDate(startDate) : undefined,
+            endDate: endDate ? parseLocalDate(endDate) : undefined,
             key: 'selection',
         });
         setHasPendingChanges(false);
@@ -41,19 +68,30 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
 
     const getDateRange = (option: DateRangeValue): { start: string; end: string } => {
         const now = new Date();
-        const end = now.toISOString().split('T')[0];
+        // Reset to local midnight
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const end = toLocalDateString(today);
         let start: string;
 
         switch (option) {
-            case '30d':
-                start = new Date(now.setDate(now.getDate() - 30)).toISOString().split('T')[0];
+            case '30d': {
+                const d = new Date(today);
+                d.setDate(d.getDate() - 30);
+                start = toLocalDateString(d);
                 break;
-            case '90d':
-                start = new Date(now.setDate(now.getDate() - 90)).toISOString().split('T')[0];
+            }
+            case '90d': {
+                const d = new Date(today);
+                d.setDate(d.getDate() - 90);
+                start = toLocalDateString(d);
                 break;
-            case '1y':
-                start = new Date(now.setFullYear(now.getFullYear() - 1)).toISOString().split('T')[0];
+            }
+            case '1y': {
+                const d = new Date(today);
+                d.setFullYear(d.getFullYear() - 1);
+                start = toLocalDateString(d);
                 break;
+            }
             default:
                 start = end;
         }
@@ -68,12 +106,8 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
         { value: 'custom', label: 'Custom' },
     ];
 
-    const formatDate = (dateStr: string): string => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-    };
-
-    const currentRange = getDateRange(value);
+    // Use actual dates for custom mode, otherwise calculate from preset
+    const currentRange = value === 'custom' && startDate && endDate ? { start: startDate, end: endDate } : getDateRange(value);
 
     const handlePresetClick = (presetValue: DateRangeValue) => {
         if (presetValue === 'custom') {
@@ -95,8 +129,8 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
 
     const handleApply = () => {
         if (pendingRange.startDate && pendingRange.endDate) {
-            const start = pendingRange.startDate.toISOString().split('T')[0];
-            const end = pendingRange.endDate.toISOString().split('T')[0];
+            const start = toLocalDateString(pendingRange.startDate);
+            const end = toLocalDateString(pendingRange.endDate);
             onChange('custom', start, end);
             setHasPendingChanges(false);
             setShowCalendar(false);
@@ -105,8 +139,8 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
 
     const handleReset = () => {
         setPendingRange({
-            startDate: startDate ? new Date(startDate) : undefined,
-            endDate: endDate ? new Date(endDate) : undefined,
+            startDate: startDate ? parseLocalDate(startDate) : undefined,
+            endDate: endDate ? parseLocalDate(endDate) : undefined,
             key: 'selection',
         });
         setHasPendingChanges(false);
@@ -144,9 +178,7 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
                         key={preset.value}
                         type="button"
                         className={`px-4 py-2 text-sm font-medium rounded-md transition-all duration-200 ${
-                            value === preset.value
-                                ? 'bg-white dark:bg-gray-700 text-primary shadow-sm'
-                                : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                            value === preset.value ? 'bg-white dark:bg-gray-700 text-primary shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
                         }`}
                         onClick={() => handlePresetClick(preset.value)}
                     >
@@ -169,11 +201,7 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
                     {/* Header */}
                     <div className="flex items-center justify-between mb-4">
                         <div className="text-sm font-semibold text-gray-900 dark:text-white">Select Date Range</div>
-                        <button
-                            type="button"
-                            className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                            onClick={handleClose}
-                        >
+                        <button type="button" className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300" onClick={handleClose}>
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -189,10 +217,9 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
                             rangeColors={['#3b82f6']}
                             minDate={new Date(2020, 0, 1)}
                             maxDate={new Date()}
-                            direction="horizontal"
+                            direction="vertical"
                             months={1}
                             showMonthAndYearPickers={true}
-                            showDateDisplay={false}
                         />
                     </div>
 
@@ -201,7 +228,7 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
                         <div className="mb-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
                             <div className="text-xs text-gray-500 dark:text-gray-400 mb-1">Selected Range</div>
                             <div className="text-sm font-medium text-gray-900 dark:text-white">
-                                {formatDate(pendingRange.startDate.toISOString().split('T')[0])} - {formatDate(pendingRange.endDate.toISOString().split('T')[0])}
+                                {formatDisplayDate(pendingRange.startDate)} - {formatDisplayDate(pendingRange.endDate)}
                             </div>
                         </div>
                     )}

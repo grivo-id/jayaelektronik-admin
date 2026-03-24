@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import {
     useSalesAnalytics,
@@ -33,48 +34,102 @@ import Skeleton from 'react-loading-skeleton';
 
 const Analytics = () => {
     const dispatch = useDispatch();
-    const [dateRange, setDateRange] = useState<any>('30d');
-    const [customStart, setCustomStart] = useState<string>('');
-    const [customEnd, setCustomEnd] = useState<string>('');
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Initialize state from URL params
+    const urlRange = searchParams.get('range') as any;
+    const urlStart = searchParams.get('start');
+    const urlEnd = searchParams.get('end');
+
+    const [dateRange, setDateRange] = useState<any>(urlRange || '30d');
+    const [customStart, setCustomStart] = useState<string>(urlStart || '');
+    const [customEnd, setCustomEnd] = useState<string>(urlEnd || '');
 
     // Calculate date range based on selection
     const { startDate, endDate } = useMemo(() => {
         const now = new Date();
         let start: Date;
-        let end: Date = new Date(now.setHours(23, 59, 59, 999));
+        let end: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
         switch (dateRange) {
             case '30d':
                 start = new Date(now);
                 start.setDate(now.getDate() - 30);
+                start.setHours(0, 0, 0, 0);
                 break;
             case '90d':
                 start = new Date(now);
                 start.setDate(now.getDate() - 90);
+                start.setHours(0, 0, 0, 0);
                 break;
             case '1y':
                 start = new Date(now);
                 start.setFullYear(now.getFullYear() - 1);
+                start.setHours(0, 0, 0, 0);
                 break;
             case 'custom':
-                start = customStart ? new Date(customStart) : new Date();
-                start.setHours(0, 0, 0, 0);
-                end = customEnd ? new Date(customEnd) : end;
+                // Parse date string manually to create local Date (not UTC)
+                if (customStart) {
+                    const [sy, sm, sd] = customStart.split('-').map(Number);
+                    start = new Date(sy, sm - 1, sd, 0, 0, 0);
+                } else {
+                    start = new Date();
+                    start.setHours(0, 0, 0, 0);
+                }
+                if (customEnd) {
+                    const [ey, em, ed] = customEnd.split('-').map(Number);
+                    end = new Date(ey, em - 1, ed, 23, 59, 59, 999);
+                }
                 break;
             default:
                 start = new Date();
                 start.setDate(now.getDate() - 30);
+                start.setHours(0, 0, 0, 0);
         }
 
+        // Format Date to YYYY-MM-DD string using LOCAL date (not UTC)
+        const formatLocalDate = (date: Date): string => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
         return {
-            startDate: start.toISOString().split('T')[0],
-            endDate: end.toISOString().split('T')[0],
+            startDate: formatLocalDate(start),
+            endDate: formatLocalDate(end),
         };
     }, [dateRange, customStart, customEnd]);
 
     useEffect(() => {
         dispatch(setPageTitle('Analytics Dashboard'));
     }, [dispatch]);
+
+    // Sync state from URL params on mount (when URL has custom dates but range is not set correctly)
+    useEffect(() => {
+        if (urlStart && urlEnd && urlRange !== 'custom') {
+            setDateRange('custom');
+            setCustomStart(urlStart);
+            setCustomEnd(urlEnd);
+        }
+    }, []);
+
+    // Update URL params when date range changes
+    useEffect(() => {
+        const params = new URLSearchParams(searchParams);
+
+        if (dateRange === 'custom' && customStart && customEnd) {
+            params.set('range', 'custom');
+            params.set('start', customStart);
+            params.set('end', customEnd);
+        } else if (dateRange && dateRange !== 'custom') {
+            params.set('range', dateRange);
+            params.delete('start');
+            params.delete('end');
+        }
+
+        setSearchParams(params);
+    }, [dateRange, customStart, customEnd, searchParams, setSearchParams]);
 
     // API calls
     const { data: salesData, isLoading: salesLoading } = useSalesAnalytics({
@@ -210,8 +265,13 @@ const Analytics = () => {
                     endDate={endDate}
                     onChange={(newValue, start, end) => {
                         setDateRange(newValue);
-                        if (start) setCustomStart(start);
-                        if (end) setCustomEnd(end);
+                        if (newValue === 'custom') {
+                            setCustomStart(start || '');
+                            setCustomEnd(end || '');
+                        } else {
+                            setCustomStart('');
+                            setCustomEnd('');
+                        }
                     }}
                 />
             </div>
