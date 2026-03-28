@@ -1,5 +1,6 @@
 import { useState, useMemo, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { IRootState } from '../../store';
 import { useSearchParams } from 'react-router-dom';
 import { setPageTitle } from '../../store/themeConfigSlice';
 import {
@@ -24,6 +25,7 @@ import formatChartAxis from '../../utils/formatChartAxis';
 import { LineChart, Line, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import IconTrendingUp from '../../components/Icon/IconTrendingUp';
 import IconTrendingDown from '../../components/Icon/IconTrendingDown';
+import IconInfoCircle from '../../components/Icon/IconInfoCircle';
 import IconDollarSignCircle from '../../components/Icon/IconDollarSignCircle';
 import IconBox from '../../components/Icon/IconBox';
 import IconBarChart from '../../components/Icon/IconBarChart';
@@ -31,10 +33,12 @@ import IconUsers from '../../components/Icon/IconUsers';
 import DateRangeFilter from '../../components/DateRangeFilter';
 import ChartLoader from '../../components/ChartLoader';
 import Skeleton from 'react-loading-skeleton';
+import AnalyticsTooltip from '../../components/AnalyticsTooltip';
 
 const Analytics = () => {
     const dispatch = useDispatch();
     const [searchParams, setSearchParams] = useSearchParams();
+    const isDark = useSelector((state: IRootState) => state.themeConfig.theme === 'dark' || state.themeConfig.isDarkMode);
 
     // Initialize state from URL params
     const urlRange = searchParams.get('range') as any;
@@ -213,6 +217,19 @@ const Analytics = () => {
     // Colors for charts
     const COLORS = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
+    // Tooltip style configuration for charts - works in both light and dark mode
+    const tooltipStyle = useMemo(() => ({
+        backgroundColor: isDark ? '#1f2937' : '#ffffff',
+        border: isDark ? 'none' : '1px solid #e5e7eb',
+        borderRadius: '8px',
+        boxShadow: isDark ? 'none' : '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
+        color: isDark ? '#ffffff' : '#1f2937',
+    }), [isDark]);
+
+    const tooltipLabelStyle = useMemo(() => ({
+        color: isDark ? '#9ca3af' : '#6b7280',
+    }), [isDark]);
+
     // Format percentage
     const formatPercent = (value: number) => {
         return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
@@ -280,9 +297,20 @@ const Analytics = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {/* Revenue Card */}
                 <div className="panel border-l-4 border-l-blue-500 p-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-gray-500 text-sm">Total Revenue</p>
+                        <div className="group relative inline-block">
+                            <IconInfoCircle className="w-3.5 h-3.5 text-gray-400 hover:text-primary cursor-help transition-colors" />
+                            <div className="absolute right-0 bottom-full mb-2 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 w-56">
+                                <div className="bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg">
+                                    <p>Total revenue from all orders in the selected period, including growth compared to previous period.</p>
+                                    <div className="absolute top-full right-3 -translate-y-1/2 rotate-45 w-2 h-2 bg-gray-800"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm mb-1">Total Revenue</p>
                             <p className="text-2xl font-bold">{formatToRupiah(salesData?.summary?.total_revenue || 0)}</p>
                             {revenueComparison?.growth.revenue !== undefined && (
                                 <div className={`flex items-center mt-2 text-sm ${revenueComparison.growth.revenue >= 0 ? 'text-success' : 'text-danger'}`}>
@@ -299,9 +327,20 @@ const Analytics = () => {
 
                 {/* Orders Card */}
                 <div className="panel border-l-4 border-l-green-500 p-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-gray-500 text-sm">Total Orders</p>
+                        <div className="group relative inline-block">
+                            <IconInfoCircle className="w-3.5 h-3.5 text-gray-400 hover:text-primary cursor-help transition-colors" />
+                            <div className="absolute right-0 bottom-full mb-2 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 w-56">
+                                <div className="bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg">
+                                    <p>Total number of orders placed in the selected period with growth trend.</p>
+                                    <div className="absolute top-full right-3 -translate-y-1/2 rotate-45 w-2 h-2 bg-gray-800"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm mb-1">Total Orders</p>
                             <p className="text-2xl font-bold">{salesData?.summary?.total_orders?.toLocaleString() || 0}</p>
                             {revenueComparison?.growth.orders !== undefined && (
                                 <div className={`flex items-center mt-2 text-sm ${revenueComparison.growth.orders >= 0 ? 'text-success' : 'text-danger'}`}>
@@ -318,9 +357,20 @@ const Analytics = () => {
 
                 {/* AOV Card */}
                 <div className="panel border-l-4 border-l-purple-500 p-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-gray-500 text-sm">Avg. Order Value</p>
+                        <div className="group relative inline-block">
+                            <IconInfoCircle className="w-3.5 h-3.5 text-gray-400 hover:text-primary cursor-help transition-colors" />
+                            <div className="absolute right-0 bottom-full mb-2 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 w-56">
+                                <div className="bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg">
+                                    <p>Average revenue per order. Higher AOV indicates customers are spending more per transaction.</p>
+                                    <div className="absolute top-full right-3 -translate-y-1/2 rotate-45 w-2 h-2 bg-gray-800"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm mb-1">Avg. Order Value</p>
                             <p className="text-2xl font-bold">{formatToRupiah(salesData?.summary?.average_order_value || 0)}</p>
                             {revenueComparison?.growth.aov !== undefined && (
                                 <div className={`flex items-center mt-2 text-sm ${revenueComparison.growth.aov >= 0 ? 'text-success' : 'text-danger'}`}>
@@ -337,9 +387,20 @@ const Analytics = () => {
 
                 {/* Customers Card */}
                 <div className="panel border-l-4 border-l-orange-500 p-6">
+                    <div className="flex items-center justify-between mb-2">
+                        <p className="text-gray-500 text-sm">Unique Customers</p>
+                        <div className="group relative inline-block">
+                            <IconInfoCircle className="w-3.5 h-3.5 text-gray-400 hover:text-primary cursor-help transition-colors" />
+                            <div className="absolute right-0 bottom-full mb-2 z-50 invisible opacity-0 group-hover:visible group-hover:opacity-100 transition-opacity duration-200 w-56">
+                                <div className="bg-gray-800 text-white text-xs rounded-lg p-2 shadow-lg">
+                                    <p>Count of unique customers who made purchases in the selected period.</p>
+                                    <div className="absolute top-full right-3 -translate-y-1/2 rotate-45 w-2 h-2 bg-gray-800"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-gray-500 text-sm mb-1">Unique Customers</p>
                             <p className="text-2xl font-bold">{salesData?.summary?.unique_customers?.toLocaleString() || 0}</p>
                         </div>
                         <div className="w-14 h-14 bg-orange-100 dark:bg-orange-500/20 rounded-2xl flex items-center justify-center">
@@ -353,7 +414,10 @@ const Analytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Revenue Trend Chart */}
                 <div className="panel p-6 lg:col-span-2">
-                    <h3 className="text-lg font-semibold mb-4">Revenue Trend</h3>
+                    <AnalyticsTooltip
+                        title="Revenue Trend"
+                        description="Daily revenue over the selected time period. Shows the total sales generated each day, helping identify patterns, peak sales days, and seasonal trends."
+                    />
                     <div className="h-80">
                         <ResponsiveContainer width="100%" height="100%">
                             <LineChart data={salesData?.time_series || []}>
@@ -367,8 +431,12 @@ const Analytics = () => {
                                 />
                                 <YAxis tickFormatter={formatChartAxis} />
                                 <Tooltip
-                                    contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }}
-                                    labelFormatter={(label) => formatToRupiah(label)}
+                                    contentStyle={tooltipStyle}
+                                    labelStyle={tooltipLabelStyle}
+                                    labelFormatter={(label) => {
+                                        const date = new Date(label);
+                                        return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                                    }}
                                     formatter={(value: any) => formatToRupiah(value)}
                                 />
                                 <Line type="monotone" dataKey="revenue" stroke="#3b82f6" strokeWidth={2} dot={{ r: 3 }} />
@@ -379,7 +447,10 @@ const Analytics = () => {
 
                 {/* Order Status Donut Chart */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Order Status</h3>
+                    <AnalyticsTooltip
+                        title="Order Status"
+                        description="Breakdown of orders by completion status. Shows the ratio of completed vs pending orders, giving insight into order fulfillment efficiency."
+                    />
                     <div className="h-64 flex items-center justify-center">
                         <ResponsiveContainer width="100%" height="100%">
                             <PieChart>
@@ -418,7 +489,7 @@ const Analytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Top Selling Products */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Top Selling Products</h3>
+                    <AnalyticsTooltip title="Top Selling Products" description="Best-performing products by quantity sold in the selected period. Helps identify popular items and inventory trends." />
                     <div className="space-y-4">
                         {topProducts?.map((product, index) => (
                             <div key={product.product_id} className="flex items-center gap-4">
@@ -439,18 +510,18 @@ const Analytics = () => {
 
                 {/* Category Performance */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Category Performance</h3>
+                    <AnalyticsTooltip title="Category Performance" description="Revenue breakdown by product category. Identifies which categories are driving sales and which may need attention." />
                     <ChartLoader loading={categoryLoading} height={256}>
                         <div className="h-64">
                             <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={categoryPerformance || []}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="category" angle={-45} textAnchor="end" height={60} />
-                                <YAxis tickFormatter={formatChartAxis} />
-                                <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }} formatter={(value: any) => formatToRupiah(value)} />
-                                <Bar dataKey="revenue" fill="#3b82f6" />
-                            </BarChart>
-                        </ResponsiveContainer>
+                                <BarChart data={categoryPerformance || []}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="category" angle={-45} textAnchor="end" height={60} />
+                                    <YAxis tickFormatter={formatChartAxis} />
+                                    <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipLabelStyle} formatter={(value: any) => formatToRupiah(value)} />
+                                    <Bar dataKey="revenue" fill="#3b82f6" />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
                     </ChartLoader>
                 </div>
@@ -460,68 +531,71 @@ const Analytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 {/* Customer Tier Distribution */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Customer Tiers</h3>
+                    <AnalyticsTooltip title="Customer Tiers" description="Distribution of customers across loyalty tiers. Shows how many customers are in each tier (Bronze, Silver, Gold, etc.)." />
                     <ChartLoader loading={tierLoading} height={200}>
                         <div className="space-y-4">
-                        {tierData?.tiers?.map((tier) => (
-                            <div key={tier.tier_id}>
-                                <div className="flex justify-between mb-2">
-                                    <span className="font-medium">{tier.tier_name}</span>
-                                    <span className="text-sm text-gray-500">{tier.customer_count} customers</span>
+                            {tierData?.tiers?.map((tier) => (
+                                <div key={tier.tier_id}>
+                                    <div className="flex justify-between mb-2">
+                                        <span className="font-medium">{tier.tier_name}</span>
+                                        <span className="text-sm text-gray-500">{tier.customer_count} customers</span>
+                                    </div>
+                                    <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
+                                        <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{ width: `${tier.percentage}%` }} />
+                                    </div>
+                                    <p className="text-xs text-gray-500 mt-1">{tier.percentage.toFixed(1)}% of customers</p>
                                 </div>
-                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
-                                    <div className="bg-gradient-to-r from-blue-500 to-purple-500 h-2 rounded-full" style={{ width: `${tier.percentage}%` }} />
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">{tier.percentage.toFixed(1)}% of customers</p>
-                            </div>
-                        ))}
+                            ))}
                         </div>
                     </ChartLoader>
                 </div>
 
                 {/* Loyalty Points Activity */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Loyalty Points</h3>
+                    <AnalyticsTooltip
+                        title="Loyalty Points"
+                        description="Track points earned by customers vs points redeemed. Shows the effectiveness of your loyalty program and customer engagement."
+                    />
                     <ChartLoader loading={pointsLoading} height={200}>
                         <div className="space-y-4">
                             {pointsActivity?.map((activity) => (
-                            <div key={activity.transaction_type} className="flex items-center justify-between">
-                                <span className="capitalize">{activity.transaction_type}</span>
-                                <div className="text-right">
-                                    {activity.transaction_type === 'EARN' ? (
-                                        <span className="text-success font-semibold">+{activity.positive_points?.toLocaleString()}</span>
-                                    ) : (
-                                        <span className="text-danger font-semibold">-{activity.negative_points?.toLocaleString()}</span>
-                                    )}
-                                    <p className="text-xs text-gray-500">{activity.transaction_count} transactions</p>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
-                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
-                        <div className="text-sm text-gray-500">
-                            Redemption Rate:{' '}
-                            <span className="font-semibold">
-                                {pointsActivity && pointsActivity.length > 1 ? (
-                                    <>
-                                        {pointsActivity[1]?.negative_points && pointsActivity[0]?.positive_points ? (
-                                            <span className="text-orange-500">{((pointsActivity[1].negative_points / pointsActivity[0].positive_points) * 100).toFixed(1)}%</span>
+                                <div key={activity.transaction_type} className="flex items-center justify-between">
+                                    <span className="capitalize">{activity.transaction_type}</span>
+                                    <div className="text-right">
+                                        {activity.transaction_type === 'EARN' ? (
+                                            <span className="text-success font-semibold">+{activity.positive_points?.toLocaleString()}</span>
                                         ) : (
-                                            '0%'
+                                            <span className="text-danger font-semibold">-{activity.negative_points?.toLocaleString()}</span>
                                         )}
-                                    </>
-                                ) : (
-                                    'N/A'
-                                )}
-                            </span>
+                                        <p className="text-xs text-gray-500">{activity.transaction_count} transactions</p>
+                                    </div>
+                                </div>
+                            ))}
                         </div>
-                    </div>
+                        <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                            <div className="text-sm text-gray-500">
+                                Redemption Rate:{' '}
+                                <span className="font-semibold">
+                                    {pointsActivity && pointsActivity.length > 1 ? (
+                                        <>
+                                            {pointsActivity[1]?.negative_points && pointsActivity[0]?.positive_points ? (
+                                                <span className="text-orange-500">{((pointsActivity[1].negative_points / pointsActivity[0].positive_points) * 100).toFixed(1)}%</span>
+                                            ) : (
+                                                '0%'
+                                            )}
+                                        </>
+                                    ) : (
+                                        'N/A'
+                                    )}
+                                </span>
+                            </div>
+                        </div>
                     </ChartLoader>
                 </div>
 
                 {/* Coupon Usage */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Top Coupons</h3>
+                    <AnalyticsTooltip title="Top Coupons" description="Most frequently used coupon codes and their impact on revenue. Helps evaluate promotional campaign effectiveness." />
                     <div className="space-y-3">
                         {couponUsage?.slice(0, 5).map((coupon) => (
                             <div key={coupon.coupon_code} className="p-3 bg-gray-50 dark:bg-gray-700/50 rounded">
@@ -545,52 +619,58 @@ const Analytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Top Customers */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Top Customers by Revenue</h3>
+                    <AnalyticsTooltip
+                        title="Top Customers by Revenue"
+                        description="Your highest-spending customers ranked by total revenue. Helps identify VIP customers for targeted retention strategies."
+                    />
                     <ChartLoader loading={topCustomersLoading} height={300}>
                         <div className="space-y-3">
                             {topCustomers?.slice(0, 5).map((customer: any, index: number) => (
-                            <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
-                                <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-sm">{index + 1}</div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="font-medium truncate">{customer.order_fullname || customer.order_email}</p>
-                                    <p className="text-xs text-gray-500">{customer.orders_count} orders</p>
+                                <div key={index} className="flex items-center gap-4 p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg">
+                                    <div className="w-8 h-8 bg-primary/10 text-primary rounded-full flex items-center justify-center font-bold text-sm">{index + 1}</div>
+                                    <div className="flex-1 min-w-0">
+                                        <p className="font-medium truncate">{customer.order_fullname || customer.order_email}</p>
+                                        <p className="text-xs text-gray-500">{customer.orders_count} orders</p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="font-semibold text-primary">{formatToRupiah(customer.total_revenue)}</p>
+                                        <p className="text-xs text-gray-500">Avg: {formatToRupiah(customer.average_order_value)}</p>
+                                    </div>
                                 </div>
-                                <div className="text-right">
-                                    <p className="font-semibold text-primary">{formatToRupiah(customer.total_revenue)}</p>
-                                    <p className="text-xs text-gray-500">Avg: {formatToRupiah(customer.average_order_value)}</p>
-                                </div>
-                            </div>
-                        ))}
+                            ))}
                         </div>
                     </ChartLoader>
                 </div>
 
                 {/* Repeat Purchase Rate */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Customer Retention</h3>
+                    <AnalyticsTooltip
+                        title="Customer Retention"
+                        description="Ratio of new vs returning customers. Higher returning customer percentage indicates strong customer loyalty and satisfaction."
+                    />
                     <ChartLoader loading={repeatPurchaseLoading} height={250}>
                         {repeatPurchaseData ? (
-                        <div className="space-y-4">
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600 dark:text-gray-400">New Customers</span>
-                                <span className="font-bold text-blue-500">
-                                    {repeatPurchaseData.new_customers} ({repeatPurchaseData.new_customer_percentage.toFixed(1)}%)
-                                </span>
+                            <div className="space-y-4">
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-gray-600 dark:text-gray-400">New Customers</span>
+                                    <span className="font-bold text-blue-500">
+                                        {repeatPurchaseData.new_customers} ({repeatPurchaseData.new_customer_percentage.toFixed(1)}%)
+                                    </span>
+                                </div>
+                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                    <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${repeatPurchaseData.new_customer_percentage}%` }} />
+                                </div>
+                                <div className="flex justify-between items-center mb-2">
+                                    <span className="text-gray-600 dark:text-gray-400">Returning Customers</span>
+                                    <span className="font-bold text-green-500">
+                                        {repeatPurchaseData.returning_customers} ({repeatPurchaseData.returning_customer_percentage.toFixed(1)}%)
+                                    </span>
+                                </div>
+                                <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
+                                    <div className="bg-green-500 h-3 rounded-full" style={{ width: `${repeatPurchaseData.returning_customer_percentage}%` }} />
+                                </div>
+                                <p className="text-sm text-center mt-2">Total: {repeatPurchaseData.total_customers} customers</p>
                             </div>
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                                <div className="bg-blue-500 h-3 rounded-full" style={{ width: `${repeatPurchaseData.new_customer_percentage}%` }} />
-                            </div>
-                            <div className="flex justify-between items-center mb-2">
-                                <span className="text-gray-600 dark:text-gray-400">Returning Customers</span>
-                                <span className="font-bold text-green-500">
-                                    {repeatPurchaseData.returning_customers} ({repeatPurchaseData.returning_customer_percentage.toFixed(1)}%)
-                                </span>
-                            </div>
-                            <div className="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-3">
-                                <div className="bg-green-500 h-3 rounded-full" style={{ width: `${repeatPurchaseData.returning_customer_percentage}%` }} />
-                            </div>
-                            <p className="text-sm text-center mt-2">Total: {repeatPurchaseData.total_customers} customers</p>
-                        </div>
                         ) : null}
                     </ChartLoader>
                 </div>
@@ -600,67 +680,83 @@ const Analytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Average Items per Order */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Average Items per Order</h3>
+                    <AnalyticsTooltip title="Average Items per Order" description="Average number of items customers purchase per order. Tracks shopping basket size trends over time." />
                     <ChartLoader loading={averageItemsLoading} height={300}>
                         {averageItemsData ? (
-                        <div>
-                            <p className="text-4xl font-bold text-center mb-4">
-                                {averageItemsData.overall_average.toFixed(1)} <span className="text-lg text-gray-500">items</span>
-                            </p>
-                            <div className="h-48">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <LineChart data={averageItemsData.time_series}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} />
-                                        <YAxis />
-                                        <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }} />
-                                        <Line type="monotone" dataKey="average_items_per_order" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} />
-                                    </LineChart>
-                                </ResponsiveContainer>
+                            <div>
+                                <p className="text-4xl font-bold text-center mb-4">
+                                    {averageItemsData.overall_average.toFixed(1)} <span className="text-lg text-gray-500">items</span>
+                                </p>
+                                <div className="h-48">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <LineChart data={averageItemsData.time_series}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} />
+                                            <YAxis />
+                                            <Tooltip
+                                                contentStyle={tooltipStyle}
+                                                labelStyle={tooltipLabelStyle}
+                                                labelFormatter={(label) => {
+                                                    const date = new Date(label);
+                                                    return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                                                }}
+                                                formatter={(value: any, name: any) => {
+                                                    if (name === 'average_items_per_order') {
+                                                        return Number(value).toFixed(1) + ' items';
+                                                    }
+                                                    return value;
+                                                }}
+                                            />
+                                            <Line type="monotone" dataKey="average_items_per_order" stroke="#8b5cf6" strokeWidth={2} dot={{ r: 3 }} />
+                                        </LineChart>
+                                    </ResponsiveContainer>
+                                </div>
                             </div>
-                        </div>
                         ) : null}
                     </ChartLoader>
                 </div>
 
                 {/* Order Value Distribution */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Order Value Distribution</h3>
+                    <AnalyticsTooltip
+                        title="Order Value Distribution"
+                        description="Breakdown of orders by value ranges (under 500k, 500k-1M, 1M-5M, 5M+). Helps understand customer spending patterns."
+                    />
                     <ChartLoader loading={orderValueLoading} height={300}>
                         {orderValueDistribution ? (
-                        <div>
-                            <div className="h-48">
-                                <ResponsiveContainer width="100%" height="100%">
-                                    <BarChart data={orderValueDistribution.distribution}>
-                                        <CartesianGrid strokeDasharray="3 3" />
-                                        <XAxis
-                                            dataKey="price_range"
-                                            tickFormatter={(val) => {
-                                                const labels = { under_500k: '< 500 Rb', '500k_1m': '500 Rb - 1 JT', '1m_5m': '1 - 5 JT', '5m_plus': '> 5 JT' };
-                                                return labels[val as keyof typeof labels] || val;
-                                            }}
-                                        />
-                                        <YAxis
-                                            tickFormatter={(value) => {
-                                                if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)} M`;
-                                                if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)} JT`;
-                                                return `${(value / 1000).toFixed(0)} Rb`;
-                                            }}
-                                        />
-                                        <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }} formatter={(value: any) => formatToRupiah(value)} />
-                                        <Bar dataKey="revenue" fill="#3b82f6" />
-                                    </BarChart>
-                                </ResponsiveContainer>
+                            <div>
+                                <div className="h-48">
+                                    <ResponsiveContainer width="100%" height="100%">
+                                        <BarChart data={orderValueDistribution.distribution}>
+                                            <CartesianGrid strokeDasharray="3 3" />
+                                            <XAxis
+                                                dataKey="price_range"
+                                                tickFormatter={(val) => {
+                                                    const labels = { under_500k: '< 500 Rb', '500k_1m': '500 Rb - 1 JT', '1m_5m': '1 - 5 JT', '5m_plus': '> 5 JT' };
+                                                    return labels[val as keyof typeof labels] || val;
+                                                }}
+                                            />
+                                            <YAxis
+                                                tickFormatter={(value) => {
+                                                    if (value >= 1_000_000_000) return `${(value / 1_000_000_000).toFixed(1)} M`;
+                                                    if (value >= 1_000_000) return `${(value / 1_000_000).toFixed(1)} JT`;
+                                                    return `${(value / 1000).toFixed(0)} Rb`;
+                                                }}
+                                            />
+                                            <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipLabelStyle} formatter={(value: any) => formatToRupiah(value)} />
+                                            <Bar dataKey="revenue" fill="#3b82f6" />
+                                        </BarChart>
+                                    </ResponsiveContainer>
+                                </div>
+                                <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
+                                    {orderValueDistribution.distribution.map((item: any) => (
+                                        <div key={item.price_range} className="flex justify-between">
+                                            <span className="capitalize text-gray-500">{formatPriceRange(item.price_range)}</span>
+                                            <span className="font-semibold">{item.orders_count} orders</span>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                            <div className="mt-4 grid grid-cols-2 gap-2 text-sm">
-                                {orderValueDistribution.distribution.map((item: any) => (
-                                    <div key={item.price_range} className="flex justify-between">
-                                        <span className="capitalize text-gray-500">{formatPriceRange(item.price_range)}</span>
-                                        <span className="font-semibold">{item.orders_count} orders</span>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
                         ) : null}
                     </ChartLoader>
                 </div>
@@ -670,36 +766,49 @@ const Analytics = () => {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Brand Performance */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Brand Performance</h3>
+                    <AnalyticsTooltip title="Brand Performance" description="Revenue comparison across different brands. Identifies top-performing brands and those that may need marketing support." />
                     <ChartLoader loading={brandLoading} height={256}>
                         <div className="h-64">
                             <ResponsiveContainer width="100%" height="100%">
-                            <BarChart data={brandPerformance} layout="vertical">
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis type="number" tickFormatter={formatChartAxis} />
-                                <YAxis dataKey="brand_name" type="category" width={100} />
-                                <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }} formatter={(value: any) => formatToRupiah(value)} />
-                                <Bar dataKey="revenue" fill="#10b981" />
-                            </BarChart>
-                        </ResponsiveContainer>
+                                <BarChart data={brandPerformance} layout="vertical">
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis type="number" tickFormatter={formatChartAxis} />
+                                    <YAxis dataKey="brand_name" type="category" width={100} />
+                                    <Tooltip contentStyle={tooltipStyle} labelStyle={tooltipLabelStyle} formatter={(value: any) => formatToRupiah(value)} />
+                                    <Bar dataKey="revenue" fill="#10b981" />
+                                </BarChart>
+                            </ResponsiveContainer>
                         </div>
                     </ChartLoader>
                 </div>
 
                 {/* Customer Acquisition Trends */}
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Customer Acquisition</h3>
+                    <AnalyticsTooltip title="Customer Acquisition" description="Number of new customers joining over time. Shows the effectiveness of marketing campaigns and business growth." />
                     <ChartLoader loading={acquisitionLoading} height={256}>
                         <div className="h-64">
                             <ResponsiveContainer width="100%" height="100%">
-                            <LineChart data={acquisitionTrends}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })} />
-                                <YAxis />
-                                <Tooltip contentStyle={{ backgroundColor: '#1f2937', border: 'none', borderRadius: '8px' }} />
-                                <Line type="monotone" dataKey="new_customers" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
-                            </LineChart>
-                        </ResponsiveContainer>
+                                <LineChart data={acquisitionTrends}>
+                                    <CartesianGrid strokeDasharray="3 3" />
+                                    <XAxis dataKey="date" tickFormatter={(value) => new Date(value).toLocaleDateString('en-US', { month: 'short', year: '2-digit' })} />
+                                    <YAxis />
+                                    <Tooltip
+                                        contentStyle={tooltipStyle}
+                                        labelStyle={tooltipLabelStyle}
+                                        labelFormatter={(label) => {
+                                            const date = new Date(label);
+                                            return date.toLocaleDateString('en-US', { month: 'short', year: '2-digit' });
+                                        }}
+                                        formatter={(value: any, name: any) => {
+                                            if (name === 'new_customers') {
+                                                return Number(value).toLocaleString() + ' customers';
+                                            }
+                                            return value;
+                                        }}
+                                    />
+                                    <Line type="monotone" dataKey="new_customers" stroke="#f59e0b" strokeWidth={2} dot={{ r: 3 }} />
+                                </LineChart>
+                            </ResponsiveContainer>
                         </div>
                     </ChartLoader>
                 </div>
@@ -708,7 +817,10 @@ const Analytics = () => {
             {/* Best Selling by Category */}
             {bestSellingByCategory && bestSellingByCategory.length > 0 && (
                 <div className="panel p-6">
-                    <h3 className="text-lg font-semibold mb-4">Best Selling Products by Category</h3>
+                    <AnalyticsTooltip
+                        title="Best Selling Products by Category"
+                        description="Top performing products within each product category. Helps identify category-specific bestsellers for targeted promotions."
+                    />
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {bestSellingByCategory.map((category: any) => (
                             <div key={category.category} className="border rounded-lg p-4">
