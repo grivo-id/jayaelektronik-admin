@@ -4,7 +4,7 @@ import 'react-date-range/dist/styles.css';
 import 'react-date-range/dist/theme/default.css';
 import '@/assets/css/date-range.css';
 
-export type DateRangeValue = '30d' | '90d' | '1y' | 'custom';
+export type DateRangeValue = 'today' | 'week' | '30d' | '90d' | '1y' | 'custom';
 
 interface DateRangeFilterProps {
     value: DateRangeValue;
@@ -74,6 +74,16 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
         let start: string;
 
         switch (option) {
+            case 'today': {
+                start = end; // Today = same as end (today)
+                break;
+            }
+            case 'week': {
+                const d = new Date(today);
+                d.setDate(d.getDate() - 7);
+                start = toLocalDateString(d);
+                break;
+            }
             case '30d': {
                 const d = new Date(today);
                 d.setDate(d.getDate() - 30);
@@ -100,6 +110,8 @@ const DateRangeFilter = ({ value, startDate, endDate, onChange }: DateRangeFilte
     };
 
     const presets: { value: DateRangeValue; label: string }[] = [
+        { value: 'today', label: 'Today' },
+        { value: 'week', label: 'This Week' },
         { value: '30d', label: 'Last 30 Days' },
         { value: '90d', label: 'Last 90 Days' },
         { value: '1y', label: 'This Year' },

@@ -56,6 +56,15 @@ const Analytics = () => {
         let end: Date = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
 
         switch (dateRange) {
+            case 'today':
+                start = new Date(now);
+                start.setHours(0, 0, 0, 0);
+                break;
+            case 'week':
+                start = new Date(now);
+                start.setDate(now.getDate() - 7);
+                start.setHours(0, 0, 0, 0);
+                break;
             case '30d':
                 start = new Date(now);
                 start.setDate(now.getDate() - 30);
