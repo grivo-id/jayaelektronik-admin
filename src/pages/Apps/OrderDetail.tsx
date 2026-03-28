@@ -255,7 +255,7 @@ const OrderDetail = () => {
                                             </td>
                                         </tr>
                                     )}
-                                    {order.points_redeemed && (
+                                    {order.points_redeemed > 0 && (
                                         <tr className="bg-gray-50">
                                             <td colSpan={5} className="text-right font-semibold">
                                                 Point Redemption ({order.points_redeemed.toLocaleString('id-ID')} pts)

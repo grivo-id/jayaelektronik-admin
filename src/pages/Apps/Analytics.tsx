@@ -45,7 +45,7 @@ const Analytics = () => {
     const urlStart = searchParams.get('start');
     const urlEnd = searchParams.get('end');
 
-    const [dateRange, setDateRange] = useState<any>(urlRange || '30d');
+    const [dateRange, setDateRange] = useState<any>(urlRange || 'today');
     const [customStart, setCustomStart] = useState<string>(urlStart || '');
     const [customEnd, setCustomEnd] = useState<string>(urlEnd || '');
 
@@ -96,7 +96,6 @@ const Analytics = () => {
                 break;
             default:
                 start = new Date();
-                start.setDate(now.getDate() - 30);
                 start.setHours(0, 0, 0, 0);
         }
 
