@@ -324,7 +324,7 @@ const LoyaltyCustomers = () => {
                             <div className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
                                 <div className="table-responsive max-h-64">
                                     <table className="table-striped">
-                                        <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0">
+                                        <thead className="bg-gray-50 dark:bg-gray-800 sticky top-0 z-10">
                                             <tr>
                                                 <th className="w-12">Select</th>
                                                 <th>Name</th>
@@ -361,15 +361,15 @@ const LoyaltyCustomers = () => {
                                                                 )}
                                                             </div>
                                                         </td>
-                                                        <td>
+                                                        <td className="align-middle">
                                                             <div className="font-semibold">
                                                                 {user.user_fname} {user.user_lname}
                                                             </div>
                                                         </td>
-                                                        <td className="text-gray-500">{user.user_email}</td>
-                                                        <td className="text-gray-500">{user.user_phone || '-'}</td>
-                                                        <td>
-                                                            <span className="badge bg-info/10 text-info">{user.user_role || 'Member'}</span>
+                                                        <td className="text-gray-500 align-middle">{user.user_email}</td>
+                                                        <td className="text-gray-500 align-middle">{user.user_phone || '-'}</td>
+                                                        <td className="align-middle">
+                                                            <span className="inline-flex items-center rounded-md bg-info/10 px-2 py-1 text-xs font-medium text-info">{user.user_role || 'Member'}</span>
                                                         </td>
                                                     </tr>
                                                 ))
