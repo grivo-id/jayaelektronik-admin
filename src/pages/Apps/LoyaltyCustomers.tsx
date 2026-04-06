@@ -6,6 +6,7 @@ import { MainHeader, Pagination, SkeletonLoadingTable } from '../../components';
 import { useSearchParams } from 'react-router-dom';
 import formatToRupiah from '../../utils/formatToRupiah';
 import IconSearch from '../../components/Icon/IconSearch';
+import IconPlus from '../../components/Icon/IconPlus';
 import IconX from '../../components/Icon/IconX';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';

@@ -107,7 +107,7 @@ const LoyaltyCustomerDetail = () => {
     };
 
     const openUpdateTierModal = () => {
-        setSelectedTierId(customer?.profile?.tier_id || '');
+        setSelectedTierId(customer?.tier_id || '');
         setShowUpdateTierModal(true);
     };
 
@@ -117,7 +117,7 @@ const LoyaltyCustomerDetail = () => {
     };
 
     const handleSubmitUpdateTier = () => {
-        if (!selectedTierId || selectedTierId === customer?.profile?.tier_id) {
+        if (!selectedTierId || selectedTierId === customer?.tier_id) {
             return;
         }
 
@@ -557,7 +557,7 @@ const LoyaltyCustomerDetail = () => {
                             <div className="flex gap-2 pt-2">
                                 <button
                                     onClick={handleSubmitUpdateTier}
-                                    disabled={isUpdatingTier || !selectedTierId || selectedTierId === customer?.profile?.tier_id}
+                                    disabled={isUpdatingTier || !selectedTierId || selectedTierId === customer?.tier_id}
                                     className={`flex-1 btn-info ${isUpdatingTier ? 'opacity-50 cursor-not-allowed' : ''}`}
                                 >
                                     {isUpdatingTier ? 'Updating...' : 'Update Tier'}
