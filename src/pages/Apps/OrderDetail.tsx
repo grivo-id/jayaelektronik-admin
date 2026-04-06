@@ -216,15 +216,25 @@ const OrderDetail = () => {
                                             <td>
                                                 <div className="flex flex-col">
                                                     {product.order_discount_percentage ? (
-                                                        <>
-                                                            <div className="flex items-center gap-2">
-                                                                <span className="text-primary font-semibold">{formatToRupiah(product.product_price_at_purchase)}</span>
-                                                                <Badge color="warning">-{product.order_discount_percentage}%</Badge>
-                                                            </div>
-                                                            <span className="text-xs line-through text-gray-500">{formatToRupiah(product.product_price)}</span>
-                                                        </>
+                                                        (() => {
+                                                            const originalPrice = product.product_price || product.product_price_at_purchase;
+                                                            const discountPercentage = Number(product.order_discount_percentage) || 0;
+                                                            const discountedPrice = discountPercentage > 0
+                                                                ? Math.round(originalPrice * (1 - discountPercentage / 100))
+                                                                : product.product_price_at_purchase;
+
+                                                            return (
+                                                                <>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-primary font-semibold">{formatToRupiah(discountedPrice)}</span>
+                                                                        <Badge color="warning">-{product.order_discount_percentage}%</Badge>
+                                                                    </div>
+                                                                    <span className="text-xs line-through text-gray-500">{formatToRupiah(originalPrice)}</span>
+                                                                </>
+                                                            );
+                                                        })()
                                                     ) : (
-                                                        <span className="font-semibold">{formatToRupiah(product.product_price)}</span>
+                                                        <span className="font-semibold">{formatToRupiah(product.product_price_at_purchase)}</span>
                                                     )}
                                                 </div>
                                             </td>
