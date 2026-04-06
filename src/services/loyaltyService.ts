@@ -4,7 +4,9 @@ import {
     ApiUpdateLoyaltyConfig,
     ApiGetLoyaltyStats,
     ApiGetAllCustomers,
+    ApiGetUsersNotInLoyalty,
     ApiCreateCustomerLoyalty,
+    ApiUpdateCustomerTier,
     ApiGetCustomerDetail,
     ApiAdjustCustomerPoints,
     ApiGetCustomerPointHistory,
@@ -68,6 +70,22 @@ export const useGetAllCustomers = (params: Record<string, any>, body?: GetCustom
     });
 };
 
+export const useGetUsersNotInLoyalty = (params: { page?: number; limit?: number; search?: string }, enabled: boolean = true) => {
+    return useQuery({
+        queryKey: ['usersNotInLoyalty', params],
+        queryFn: () => ApiGetUsersNotInLoyalty(params),
+        select: (response) => {
+            const { data, pagination } = response;
+            return {
+                data,
+                pagination,
+            };
+        },
+        enabled,
+        placeholderData: keepPreviousData,
+    });
+};
+
 export const useGetCustomerDetail = (userId: string) => {
     return useQuery({
         queryKey: ['loyaltyCustomer', userId],
@@ -84,6 +102,18 @@ export const useCreateCustomerLoyalty = () => {
         mutationFn: (data: { user_id: string; tier_id: string }) => ApiCreateCustomerLoyalty(data),
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['loyaltyCustomers'] });
+        },
+    });
+};
+
+export const useUpdateCustomerTier = () => {
+    const queryClient = useQueryClient();
+
+    return useMutation({
+        mutationFn: (data: { customer_loyalty_id: string; tier_id: string }) => ApiUpdateCustomerTier(data),
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['loyaltyCustomers'] });
+            queryClient.invalidateQueries({ queryKey: ['loyaltyCustomer'] });
         },
     });
 };

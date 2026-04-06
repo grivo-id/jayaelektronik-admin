@@ -1,18 +1,14 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useGetAllCustomers, useGetAllTiers, useAdjustCustomerPoints, useCreateCustomerLoyalty } from '../../services/loyaltyService';
+import { useGetAllCustomers, useGetAllTiers, useCreateCustomerLoyalty, useGetUsersNotInLoyalty } from '../../services/loyaltyService';
 import { MainHeader, Pagination, SkeletonLoadingTable } from '../../components';
 import { useSearchParams } from 'react-router-dom';
 import formatToRupiah from '../../utils/formatToRupiah';
 import IconSearch from '../../components/Icon/IconSearch';
-import IconPlus from '../../components/Icon/IconPlus';
-import IconEye from '../../components/Icon/IconEye';
 import IconX from '../../components/Icon/IconX';
-import IconMinus from '../../components/Icon/IconMinus';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiGetAllUser } from '../../api/userApi';
 
 const LoyaltyCustomers = () => {
     const dispatch = useDispatch();
@@ -27,17 +23,6 @@ const LoyaltyCustomers = () => {
     const [selectedUserId, setSelectedUserId] = useState('');
     const [selectedTierForCreate, setSelectedTierForCreate] = useState('');
 
-    // Adjust Points Modal State
-    const [showAdjustModal, setShowAdjustModal] = useState(false);
-    const [adjustCustomerId, setAdjustCustomerId] = useState('');
-    const [adjustCustomerEmail, setAdjustCustomerEmail] = useState('');
-    const [adjustCurrentBalance, setAdjustCurrentBalance] = useState(0);
-    const [adjustType, setAdjustType] = useState<'add' | 'deduct'>('add');
-    const [adjustAmount, setAdjustAmount] = useState('');
-    const [adjustReason, setAdjustReason] = useState('');
-    const [amountError, setAmountError] = useState('');
-    const [reasonError, setReasonError] = useState('');
-
     const { data: tiersData } = useGetAllTiers();
     const { data: { data: customersData, pagination } = { data: [], pagination: {} }, isFetching } = useGetAllCustomers(
         {
@@ -50,16 +35,14 @@ const LoyaltyCustomers = () => {
         },
     );
 
-    const { mutate: adjustPoints, isPending: isAdjusting } = useAdjustCustomerPoints();
     const { mutate: createCustomerLoyalty } = useCreateCustomerLoyalty();
 
-    // Fetch users for create modal
-    const { data: usersData = [] } = useQuery({
-        queryKey: ['users', userSearch],
-        queryFn: () => ApiGetAllUser({ search: userSearch, limit: 100 }),
-        select: (response) => response.data || [],
-        enabled: showCreateModal,
-    });
+    // Fetch users not in loyalty for create modal
+    const { data: usersResponse = { data: [], pagination: {} }, isFetching: isFetchingUsers } = useGetUsersNotInLoyalty(
+        { search: userSearch, limit: 50, page: 1 },
+        showCreateModal,
+    );
+    const usersData = usersResponse.data || [];
 
     useEffect(() => {
         dispatch(setPageTitle('Loyalty Customers'));
@@ -92,57 +75,6 @@ const LoyaltyCustomers = () => {
         });
     };
 
-    const openAdjustModal = (customer: any, type: 'add' | 'deduct') => {
-        setAdjustCustomerId(customer.customer_loyalty_id);
-        setAdjustCustomerEmail(customer.user_email);
-        setAdjustCurrentBalance(customer.total_points_available);
-        setAdjustType(type);
-        setAdjustAmount('');
-        setAdjustReason('');
-        setAmountError('');
-        setReasonError('');
-        setShowAdjustModal(true);
-    };
-
-    const closeAdjustModal = () => {
-        setShowAdjustModal(false);
-        setAdjustAmount('');
-        setAdjustReason('');
-        setAmountError('');
-        setReasonError('');
-    };
-
-    const handleSubmitAdjust = () => {
-        if (!adjustAmount || parseInt(adjustAmount) <= 0) {
-            setAmountError('Please enter a valid amount');
-            return;
-        }
-        if (!adjustReason.trim()) {
-            setReasonError('Please enter a reason');
-            return;
-        }
-
-        const pointsAmount = adjustType === 'add' ? parseInt(adjustAmount) : -parseInt(adjustAmount);
-
-        adjustPoints(
-            {
-                customer_loyalty_id: adjustCustomerId,
-                points_amount: pointsAmount,
-                reason: adjustReason,
-            },
-            {
-                onSuccess: () => {
-                    // Invalidate customers list query to refresh the table
-                    queryClient.invalidateQueries({ queryKey: ['loyalty-customers'] });
-                    closeAdjustModal();
-                },
-                onError: (error: any) => {
-                    console.error('Error adjusting points:', error);
-                },
-            },
-        );
-    };
-
     const handleCreate = () => {
         setUserSearch('');
         setSelectedUserId('');
@@ -163,6 +95,7 @@ const LoyaltyCustomers = () => {
             {
                 onSuccess: () => {
                     queryClient.invalidateQueries({ queryKey: ['loyalty-customers'] });
+                    queryClient.invalidateQueries({ queryKey: ['usersNotInLoyalty'] });
                     setShowCreateModal(false);
                 },
             },
@@ -226,15 +159,14 @@ const LoyaltyCustomers = () => {
                                 <th>Points Balance</th>
                                 <th>Lifetime Spending</th>
                                 <th>Last Transaction</th>
-                                <th>Actions</th>
                             </tr>
                         </thead>
                         {isFetching ? (
-                            <SkeletonLoadingTable rows={11} columns={6} />
+                            <SkeletonLoadingTable rows={11} columns={5} />
                         ) : customersData.length === 0 ? (
                             <tbody>
                                 <tr>
-                                    <td colSpan={6} className="text-center py-4">
+                                    <td colSpan={5} className="text-center py-4">
                                         <div className="flex flex-col items-center justify-center gap-4">
                                             <p className="text-lg font-semibold text-gray-500">No customers found</p>
                                         </div>
@@ -246,9 +178,9 @@ const LoyaltyCustomers = () => {
                                 {customersData.map((customer) => (
                                     <tr key={customer.customer_loyalty_id}>
                                         <td>
-                                            <div className="font-semibold">
+                                            <Link to={`/admin/loyalty/customers/${customer.user_id}`} className="font-semibold text-primary hover:text-primary/80 hover:underline">
                                                 {customer.user_fname} {customer.user_lname}
-                                            </div>
+                                            </Link>
                                             <div className="text-gray-500 text-sm">{customer.user_email}</div>
                                             <div className="text-gray-500 text-sm">{customer.user_phone}</div>
                                         </td>
@@ -268,19 +200,6 @@ const LoyaltyCustomers = () => {
                                             ) : (
                                                 <span className="text-gray-500">Never</span>
                                             )}
-                                        </td>
-                                        <td>
-                                            <div className="flex items-center gap-2">
-                                                <Link to={`/admin/loyalty/customers/${customer.user_id}`} className="btn btn-outline-primary btn-sm p-2" title="View Details">
-                                                    <IconEye className="w-4 h-4" />
-                                                </Link>
-                                                <button type="button" className="btn btn-success btn-sm p-2" onClick={() => openAdjustModal(customer, 'add')} title="Add Points">
-                                                    <IconPlus className="w-4 h-4" />
-                                                </button>
-                                                <button type="button" className="btn btn-warning btn-sm p-2" onClick={() => openAdjustModal(customer, 'deduct')} title="Deduct Points">
-                                                    <IconMinus className="w-4 h-4" />
-                                                </button>
-                                            </div>
                                         </td>
                                     </tr>
                                 ))}
@@ -334,10 +253,20 @@ const LoyaltyCustomers = () => {
                                             </tr>
                                         </thead>
                                         <tbody>
-                                            {usersData.length === 0 ? (
+                                            {isFetchingUsers ? (
                                                 <tr>
                                                     <td colSpan={5} className="text-center py-8">
-                                                        <p className="text-gray-500">{userSearch ? 'No users found. Try a different search term.' : 'Type to search for users...'}</p>
+                                                        <div className="flex justify-center">
+                                                            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+                                                        </div>
+                                                    </td>
+                                                </tr>
+                                            ) : usersData.length === 0 ? (
+                                                <tr>
+                                                    <td colSpan={5} className="text-center py-8">
+                                                        <p className="text-gray-500">
+                                                            {userSearch ? 'No users found. Try a different search term.' : 'All users are already enrolled in the loyalty program.'}
+                                                        </p>
                                                     </td>
                                                 </tr>
                                             ) : (
@@ -369,7 +298,7 @@ const LoyaltyCustomers = () => {
                                                         <td className="text-gray-500 align-middle">{user.user_email}</td>
                                                         <td className="text-gray-500 align-middle">{user.user_phone || '-'}</td>
                                                         <td className="align-middle">
-                                                            <span className="inline-flex items-center rounded-md bg-info/10 px-2 py-1 text-xs font-medium text-info">{user.user_role || 'Member'}</span>
+                                                            <span className="inline-flex items-center rounded-md bg-info/10 px-2 py-1 text-xs font-medium text-info">{user.role_name || 'Member'}</span>
                                                         </td>
                                                     </tr>
                                                 ))
@@ -410,87 +339,6 @@ const LoyaltyCustomers = () => {
                                 <IconPlus className="w-4 h-4 mr-2" />
                                 Add Customer
                             </button>
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Adjust Points Modal */}
-            {showAdjustModal && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
-                    <div className="absolute inset-0 bg-black/50" onClick={closeAdjustModal}></div>
-                    <div className="panel relative w-full max-w-md p-6 animate-fade-in">
-                        <button
-                            onClick={closeAdjustModal}
-                            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300"
-                        >
-                            <IconX className="w-5 h-5" />
-                        </button>
-
-                        <h3 className="text-xl font-semibold mb-4">{adjustType === 'add' ? 'Add' : 'Deduct'} Points</h3>
-
-                        <div className="space-y-4">
-                            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
-                                <div className="text-sm text-gray-500 dark:text-gray-400">Customer</div>
-                                <div className="font-medium">{adjustCustomerEmail}</div>
-                                <div className="mt-2 flex justify-between">
-                                    <span className="text-sm text-gray-500">Current Balance:</span>
-                                    <span className="font-bold text-info">{formatNumber(adjustCurrentBalance)} pts</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Amount *
-                                </label>
-                                <input
-                                    type="number"
-                                    min="1"
-                                    value={adjustAmount}
-                                    onChange={(e) => {
-                                        setAdjustAmount(e.target.value);
-                                        setAmountError('');
-                                    }}
-                                    className="form-input"
-                                    placeholder="Enter amount"
-                                />
-                                {amountError && <p className="text-danger text-sm mt-1">{amountError}</p>}
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
-                                    Reason *
-                                </label>
-                                <textarea
-                                    value={adjustReason}
-                                    onChange={(e) => {
-                                        setAdjustReason(e.target.value);
-                                        setReasonError('');
-                                    }}
-                                    className="form-textarea"
-                                    rows={3}
-                                    placeholder="Enter reason for adjustment"
-                                ></textarea>
-                                {reasonError && <p className="text-danger text-sm mt-1">{reasonError}</p>}
-                            </div>
-
-                            <div className="flex gap-2 pt-2">
-                                <button
-                                    onClick={handleSubmitAdjust}
-                                    disabled={isAdjusting}
-                                    className={`flex-1 ${adjustType === 'add' ? 'btn-success' : 'btn-warning'} ${isAdjusting ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    {isAdjusting ? 'Processing...' : adjustType === 'add' ? 'Add Points' : 'Deduct Points'}
-                                </button>
-                                <button
-                                    type="button"
-                                    onClick={closeAdjustModal}
-                                    className="flex-1 btn btn-outline-secondary"
-                                    disabled={isAdjusting}
-                                >
-                                    Cancel
-                                </button>
-                            </div>
                         </div>
                     </div>
                 </div>

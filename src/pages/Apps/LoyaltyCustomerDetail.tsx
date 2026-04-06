@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useGetCustomerDetail, useGetCustomerPointHistory, useGetAllTiers, useAdjustCustomerPoints } from '../../services/loyaltyService';
+import { useGetCustomerDetail, useGetCustomerPointHistory, useGetAllTiers, useAdjustCustomerPoints, useUpdateCustomerTier } from '../../services/loyaltyService';
 import { Link, useParams } from 'react-router-dom';
 import { useQueryClient } from '@tanstack/react-query';
 import formatToRupiah from '../../utils/formatToRupiah';
@@ -33,6 +33,10 @@ const LoyaltyCustomerDetail = () => {
     const [amountError, setAmountError] = useState('');
     const [reasonError, setReasonError] = useState('');
 
+    // Update Tier Modal state
+    const [showUpdateTierModal, setShowUpdateTierModal] = useState(false);
+    const [selectedTierId, setSelectedTierId] = useState('');
+
     const { data: customer, isLoading: customerLoading } = useGetCustomerDetail(userId || '');
     const { data: tiersData } = useGetAllTiers();
     const { data: { data: historyData, pagination: pointPagination } = { data: [], pagination: {} }, isFetching: historyLoading } = useGetCustomerPointHistory(userId || '', {
@@ -50,6 +54,7 @@ const LoyaltyCustomerDetail = () => {
     const orderPagination = ordersResponse?.pagination;
 
     const { mutate: adjustPoints, isPending: isAdjusting } = useAdjustCustomerPoints();
+    const { mutate: updateCustomerTier, isPending: isUpdatingTier } = useUpdateCustomerTier();
 
     useEffect(() => {
         dispatch(setPageTitle('Customer Loyalty Detail'));
@@ -96,6 +101,38 @@ const LoyaltyCustomerDetail = () => {
                 },
                 onError: (error: any) => {
                     console.error('Error adjusting points:', error);
+                },
+            },
+        );
+    };
+
+    const openUpdateTierModal = () => {
+        setSelectedTierId(customer?.profile?.tier_id || '');
+        setShowUpdateTierModal(true);
+    };
+
+    const closeUpdateTierModal = () => {
+        setShowUpdateTierModal(false);
+        setSelectedTierId('');
+    };
+
+    const handleSubmitUpdateTier = () => {
+        if (!selectedTierId || selectedTierId === customer?.profile?.tier_id) {
+            return;
+        }
+
+        updateCustomerTier(
+            {
+                customer_loyalty_id: customer?.profile?.customer_loyalty_id || '',
+                tier_id: selectedTierId,
+            },
+            {
+                onSuccess: () => {
+                    queryClient.invalidateQueries({ queryKey: ['loyaltyCustomer'] });
+                    closeUpdateTierModal();
+                },
+                onError: (error: any) => {
+                    console.error('Error updating tier:', error);
                 },
             },
         );
@@ -209,6 +246,11 @@ const LoyaltyCustomerDetail = () => {
                             </div>
                         </div>
                     )}
+                    <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                        <button type="button" className="btn btn-outline-primary w-full" onClick={openUpdateTierModal}>
+                            Update Tier
+                        </button>
+                    </div>
                 </div>
 
                 <div className="panel">
@@ -459,6 +501,68 @@ const LoyaltyCustomerDetail = () => {
                                     {isAdjusting ? 'Processing...' : adjustType === 'add' ? 'Add Points' : 'Deduct Points'}
                                 </button>
                                 <button type="button" onClick={closeAdjustModal} className="btn btn-outline-secondary flex-1" disabled={isAdjusting}>
+                                    Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Update Tier Modal */}
+            {showUpdateTierModal && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/50" onClick={closeUpdateTierModal}></div>
+                    <div className="panel relative w-full max-w-md p-6 animate-fade-in">
+                        <button onClick={closeUpdateTierModal} className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
+                            <IconX className="w-5 h-5" />
+                        </button>
+
+                        <h3 className="text-xl font-semibold mb-4">Update Customer Tier</h3>
+
+                        <div className="space-y-4">
+                            <div className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg">
+                                <div className="text-sm text-gray-500 dark:text-gray-400">Customer</div>
+                                <div className="font-medium">{customer?.profile?.user_fname} {customer?.profile?.user_lname}</div>
+                                <div className="text-sm text-gray-500">{customer?.profile?.user_email}</div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    Current Tier
+                                </label>
+                                <div className="p-3 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                                    {customer?.profile?.tier_name || 'No Tier'}
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                    New Tier *
+                                </label>
+                                <select
+                                    className="form-select w-full"
+                                    value={selectedTierId}
+                                    onChange={(e) => setSelectedTierId(e.target.value)}
+                                >
+                                    <option value="">Select a tier...</option>
+                                    {tiersData?.map((tier) => (
+                                        <option key={tier.tier_id} value={tier.tier_id}>
+                                            {tier.tier_name} - Min: {formatToRupiah(tier.min_lifetime_spending)}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            <div className="flex gap-2 pt-2">
+                                <button
+                                    onClick={handleSubmitUpdateTier}
+                                    disabled={isUpdatingTier || !selectedTierId || selectedTierId === customer?.profile?.tier_id}
+                                    className={`flex-1 btn-info ${isUpdatingTier ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                >
+                                    {isUpdatingTier ? 'Updating...' : 'Update Tier'}
+                                </button>
+                                <button type="button" onClick={closeUpdateTierModal} className="btn btn-outline-secondary flex-1" disabled={isUpdatingTier}>
                                     Cancel
                                 </button>
                             </div>

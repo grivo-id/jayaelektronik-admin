@@ -219,9 +219,8 @@ const OrderDetail = () => {
                                                         (() => {
                                                             const originalPrice = product.product_price || product.product_price_at_purchase;
                                                             const discountPercentage = Number(product.order_discount_percentage) || 0;
-                                                            const discountedPrice = discountPercentage > 0
-                                                                ? Math.round(originalPrice * (1 - discountPercentage / 100))
-                                                                : product.product_price_at_purchase;
+                                                            const discountedPrice =
+                                                                discountPercentage > 0 ? Math.round(originalPrice * (1 - discountPercentage / 100)) : product.product_price_at_purchase;
 
                                                             return (
                                                                 <>

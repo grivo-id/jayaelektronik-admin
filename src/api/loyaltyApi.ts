@@ -43,6 +43,22 @@ export const ApiGetAllCustomers = async (params: Record<string, any>, body?: Get
     return response.data;
 };
 
+export interface UserNotInLoyalty {
+    user_id: string;
+    user_email: string;
+    user_fname: string;
+    user_lname: string;
+    user_phone: string | null;
+    role_code: string;
+    role_name: string;
+}
+
+export const ApiGetUsersNotInLoyalty = async (params: { page?: number; limit?: number; search?: string }) => {
+    const filteredParams = Object.fromEntries(Object.entries(params).filter(([_, value]) => value !== null && value !== undefined && value !== ''));
+    const response = await axiosInstance.get<ApiResponse<UserNotInLoyalty[]>>('/admin/loyalty/users/not-in-loyalty', { params: filteredParams });
+    return response.data;
+};
+
 export const ApiGetCustomerDetail = async (userId: string) => {
     const response = await axiosInstance.get<ApiResponse<CustomerLoyalty>>(`/admin/loyalty/customers/${userId}`);
     return response.data;
@@ -55,6 +71,11 @@ export const ApiAdjustCustomerPoints = async (data: { user_id?: string; customer
 
 export const ApiCreateCustomerLoyalty = async (data: { user_id: string; tier_id: string }) => {
     const response = await axiosInstance.post<ApiResponse<CustomerLoyalty>>('/admin/loyalty/customers', data);
+    return response.data;
+};
+
+export const ApiUpdateCustomerTier = async (data: { customer_loyalty_id: string; tier_id: string }) => {
+    const response = await axiosInstance.put<ApiResponse<CustomerLoyalty>>('/admin/loyalty/customers/tier', data);
     return response.data;
 };
 
