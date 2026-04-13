@@ -232,6 +232,25 @@ const OrderDetail = () => {
                                                                 </>
                                                             );
                                                         })()
+                                                    ) : product.has_tier_discount ? (
+                                                        (() => {
+                                                            const originalPrice = product.original_price || product.product_price;
+                                                            const discountedPrice = product.product_price_at_purchase;
+                                                            const tierDiscountPercentage = order.tier_discount_percentage || 0;
+
+                                                            return (
+                                                                <>
+                                                                    <div className="flex items-center gap-2">
+                                                                        <span className="text-primary font-semibold">{formatToRupiah(discountedPrice)}</span>
+                                                                        <Badge color="info">-{tierDiscountPercentage}%</Badge>
+                                                                    </div>
+                                                                    <span className="text-xs line-through text-gray-500">{formatToRupiah(originalPrice)}</span>
+                                                                    <span className="text-xs text-emerald-600 font-medium">
+                                                                        {order.tier_name} Benefit
+                                                                    </span>
+                                                                </>
+                                                            );
+                                                        })()
                                                     ) : (
                                                         <span className="font-semibold">{formatToRupiah(product.product_price_at_purchase)}</span>
                                                     )}
@@ -244,7 +263,7 @@ const OrderDetail = () => {
                                         <td colSpan={5} className="text-right font-semibold">
                                             Subtotal
                                         </td>
-                                        <td className="font-semibold">{formatToRupiah(order.products.reduce((acc, product) => acc + product.product_price_at_purchase * product.product_qty, 0))}</td>
+                                        <td className="font-semibold">{formatToRupiah(order.products.reduce((acc, product) => acc + (product.original_price || product.product_price) * product.product_qty, 0))}</td>
                                     </tr>
                                     {order.coupon_detail && (
                                         <tr className="bg-gray-50">
@@ -255,7 +274,7 @@ const OrderDetail = () => {
                                                 -
                                                 {formatToRupiah(
                                                     Math.min(
-                                                        (order.products.reduce((acc, product) => acc + product.product_price_at_purchase * product.product_qty, 0) *
+                                                        (order.products.reduce((acc, product) => acc + (product.original_price || product.product_price) * product.product_qty, 0) *
                                                             order.coupon_detail.coupon_percentage) /
                                                             100,
                                                         order.coupon_detail.coupon_max_discount,

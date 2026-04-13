@@ -29,6 +29,8 @@ export interface Order {
         product_subcategory_name: string;
         order_discount_percentage: number | null;
         product_price_at_purchase: number;
+        has_tier_discount?: boolean;
+        original_price?: number;
     }>;
     coupon_detail?: {
         coupon_code: string;
