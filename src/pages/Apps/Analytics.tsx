@@ -144,13 +144,13 @@ const Analytics = () => {
     }, [dateRange, customStart, customEnd, searchParams, setSearchParams]);
 
     // API calls
-    const { data: salesData, isLoading: salesLoading } = useSalesAnalytics({
+    const { data: salesData, isLoading: salesLoading, isError: salesError } = useSalesAnalytics({
         start_date: startDate,
         end_date: endDate,
         group_by: 'daily',
     });
 
-    const { data: orderStatusData, isLoading: statusLoading } = useOrderStatusBreakdown({
+    const { data: orderStatusData, isLoading: statusLoading, isError: statusError } = useOrderStatusBreakdown({
         start_date: startDate,
         end_date: endDate,
     });
@@ -178,7 +178,7 @@ const Analytics = () => {
         end_date: endDate,
     });
 
-    const { data: couponUsage, isLoading: couponLoading } = useCouponUsageAnalytics({
+    const { data: couponUsage } = useCouponUsageAnalytics({
         start_date: startDate,
         end_date: endDate,
     });
@@ -243,29 +243,6 @@ const Analytics = () => {
         return `${value >= 0 ? '+' : ''}${value.toFixed(1)}%`;
     };
 
-    // Render loading state
-    if (salesLoading || statusLoading) {
-        return (
-            <div className="space-y-6">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-                    {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="panel p-6">
-                            <Skeleton height={80} />
-                        </div>
-                    ))}
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                    <div className="panel p-6">
-                        <Skeleton height={300} />
-                    </div>
-                    <div className="panel p-6">
-                        <Skeleton height={300} />
-                    </div>
-                </div>
-            </div>
-        );
-    }
-
     const formatPriceRange = (range: string) => {
         const map: Record<string, string> = {
             '1m_5m': '1jt - 5jt',
@@ -319,8 +296,14 @@ const Analytics = () => {
                     </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-2xl font-bold">{formatToRupiah(salesData?.summary?.total_revenue || 0)}</p>
-                            {revenueComparison?.growth.revenue !== undefined && (
+                            {salesLoading ? (
+                                <Skeleton width={120} height={32} />
+                            ) : salesError ? (
+                                <p className="text-2xl font-bold text-gray-400">N/A</p>
+                            ) : (
+                                <p className="text-2xl font-bold">{formatToRupiah(salesData?.summary?.total_revenue || 0)}</p>
+                            )}
+                            {!salesLoading && !salesError && revenueComparison?.growth.revenue !== undefined && (
                                 <div className={`flex items-center mt-2 text-sm ${revenueComparison.growth.revenue >= 0 ? 'text-success' : 'text-danger'}`}>
                                     {revenueComparison.growth.revenue >= 0 ? <IconTrendingUp className="w-4 h-4 mr-1" /> : <IconTrendingDown className="w-4 h-4 mr-1" />}
                                     {formatPercent(revenueComparison.growth.revenue)}
@@ -349,8 +332,14 @@ const Analytics = () => {
                     </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-2xl font-bold">{salesData?.summary?.total_orders?.toLocaleString() || 0}</p>
-                            {revenueComparison?.growth.orders !== undefined && (
+                            {salesLoading ? (
+                                <Skeleton width={120} height={32} />
+                            ) : salesError ? (
+                                <p className="text-2xl font-bold text-gray-400">N/A</p>
+                            ) : (
+                                <p className="text-2xl font-bold">{salesData?.summary?.total_orders?.toLocaleString() || 0}</p>
+                            )}
+                            {!salesLoading && !salesError && revenueComparison?.growth.orders !== undefined && (
                                 <div className={`flex items-center mt-2 text-sm ${revenueComparison.growth.orders >= 0 ? 'text-success' : 'text-danger'}`}>
                                     {revenueComparison.growth.orders >= 0 ? <IconTrendingUp className="w-4 h-4 mr-1" /> : <IconTrendingDown className="w-4 h-4 mr-1" />}
                                     {formatPercent(revenueComparison.growth.orders)}
@@ -379,8 +368,14 @@ const Analytics = () => {
                     </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-2xl font-bold">{formatToRupiah(salesData?.summary?.average_order_value || 0)}</p>
-                            {revenueComparison?.growth.aov !== undefined && (
+                            {salesLoading ? (
+                                <Skeleton width={120} height={32} />
+                            ) : salesError ? (
+                                <p className="text-2xl font-bold text-gray-400">N/A</p>
+                            ) : (
+                                <p className="text-2xl font-bold">{formatToRupiah(salesData?.summary?.average_order_value || 0)}</p>
+                            )}
+                            {!salesLoading && !salesError && revenueComparison?.growth.aov !== undefined && (
                                 <div className={`flex items-center mt-2 text-sm ${revenueComparison.growth.aov >= 0 ? 'text-success' : 'text-danger'}`}>
                                     {revenueComparison.growth.aov >= 0 ? <IconTrendingUp className="w-4 h-4 mr-1" /> : <IconTrendingDown className="w-4 h-4 mr-1" />}
                                     {formatPercent(revenueComparison.growth.aov)}
@@ -409,7 +404,13 @@ const Analytics = () => {
                     </div>
                     <div className="flex items-center justify-between">
                         <div>
-                            <p className="text-2xl font-bold">{salesData?.summary?.unique_customers?.toLocaleString() || 0}</p>
+                            {salesLoading ? (
+                                <Skeleton width={120} height={32} />
+                            ) : salesError ? (
+                                <p className="text-2xl font-bold text-gray-400">N/A</p>
+                            ) : (
+                                <p className="text-2xl font-bold">{salesData?.summary?.unique_customers?.toLocaleString() || 0}</p>
+                            )}
                         </div>
                         <div className="w-14 h-14 bg-orange-100 dark:bg-orange-500/20 rounded-2xl flex items-center justify-center">
                             <IconUsers className="w-7 h-7 text-orange-500" duotone={true} />
@@ -459,37 +460,49 @@ const Analytics = () => {
                         title="Order Status"
                         description="Breakdown of orders by completion status. Shows the ratio of completed vs pending orders, giving insight into order fulfillment efficiency."
                     />
-                    <div className="h-64 flex items-center justify-center">
-                        <ResponsiveContainer width="100%" height="100%">
-                            <PieChart>
-                                <Pie
-                                    data={
-                                        orderStatusData?.by_status?.map((item) => ({
-                                            name: item.status === 'completed' ? 'Completed' : 'Pending',
-                                            value: item.orders_count,
-                                            percentage: item.percentage,
-                                        })) || []
-                                    }
-                                    cx="50%"
-                                    cy="50%"
-                                    labelLine={false}
-                                    label={({ name, percentage }: any) => `${name}: ${percentage.toFixed(1)}%`}
-                                >
-                                    <Cell fill="#10b981" />
-                                    <Cell fill="#f59e0b" />
-                                </Pie>
-                                <Tooltip />
-                            </PieChart>
-                        </ResponsiveContainer>
-                    </div>
-                    <div className="mt-4 space-y-2">
-                        {orderStatusData?.by_status?.map((item) => (
-                            <div key={item.status} className="flex justify-between items-center text-sm">
-                                <span className="capitalize">{item.status}</span>
-                                <span className="font-semibold">{item.orders_count} orders</span>
+                    {statusLoading ? (
+                        <div className="h-64 flex items-center justify-center">
+                            <Skeleton height={200} width={200} />
+                        </div>
+                    ) : statusError || !orderStatusData?.by_status ? (
+                        <div className="h-64 flex items-center justify-center text-gray-400">
+                            <p>No data available</p>
+                        </div>
+                    ) : (
+                        <>
+                            <div className="h-64 flex items-center justify-center">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <PieChart>
+                                        <Pie
+                                            data={
+                                                orderStatusData?.by_status?.map((item) => ({
+                                                    name: item.status === 'completed' ? 'Completed' : 'Pending',
+                                                    value: item.orders_count,
+                                                    percentage: item.percentage,
+                                                })) || []
+                                            }
+                                            cx="50%"
+                                            cy="50%"
+                                            labelLine={false}
+                                            label={({ name, percentage }: any) => `${name}: ${percentage.toFixed(1)}%`}
+                                        >
+                                            <Cell fill="#10b981" />
+                                            <Cell fill="#f59e0b" />
+                                        </Pie>
+                                        <Tooltip />
+                                    </PieChart>
+                                </ResponsiveContainer>
                             </div>
-                        ))}
-                    </div>
+                            <div className="mt-4 space-y-2">
+                                {orderStatusData?.by_status?.map((item) => (
+                                    <div key={item.status} className="flex justify-between items-center text-sm">
+                                        <span className="capitalize">{item.status}</span>
+                                        <span className="font-semibold">{item.orders_count} orders</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
+                    )}
                 </div>
             </div>
 

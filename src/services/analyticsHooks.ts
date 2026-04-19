@@ -52,6 +52,9 @@ export const useSalesAnalytics = (params: SalesAnalyticsParams = {}) => {
         queryKey: ['analytics-sales', params],
         queryFn: () => ApiGetSalesAnalytics(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000, // 5 minutes
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -61,6 +64,9 @@ export const useOrderStatusBreakdown = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-order-status', params],
         queryFn: () => ApiGetOrderStatusBreakdown(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -71,6 +77,9 @@ export const useRevenueComparison = (params: DateRangeParams) => {
         queryFn: () => ApiGetRevenueComparison(params),
         enabled: !!params.start_date && !!params.end_date,
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -80,6 +89,9 @@ export const useTopSellingProducts = (params: TopProductsParams = {}) => {
         queryKey: ['analytics-top-products', params],
         queryFn: () => ApiGetTopSellingProducts(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -89,6 +101,9 @@ export const useCategoryPerformance = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-category-performance', params],
         queryFn: () => ApiGetCategoryPerformance(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -98,6 +113,9 @@ export const useCustomerTierDistribution = () => {
         queryKey: ['analytics-tier-distribution'],
         queryFn: () => ApiGetCustomerTierDistribution(),
         refetchOnWindowFocus: false,
+        gcTime: 10 * 60 * 1000, // 10 minutes - changes less frequently
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -107,6 +125,9 @@ export const useLoyaltyPointsActivity = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-points-activity', params],
         queryFn: () => ApiGetLoyaltyPointsActivity(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -116,6 +137,9 @@ export const useCouponUsageAnalytics = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-coupon-usage', params],
         queryFn: () => ApiGetCouponUsageAnalytics(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -125,6 +149,9 @@ export const useLowStockProducts = (params: LowStockParams = {}) => {
         queryKey: ['analytics-low-stock', params],
         queryFn: () => ApiGetLowStockProducts(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -134,6 +161,9 @@ export const useGeographicDistribution = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-geographic', params],
         queryFn: () => ApiGetGeographicDistribution(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -145,6 +175,9 @@ export const useTopCustomersByRevenue = (params: TopCustomersParams = {}) => {
         queryKey: ['analytics-top-customers', params],
         queryFn: () => ApiGetTopCustomersByRevenue(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -154,6 +187,9 @@ export const useAverageItemsPerOrder = (params: AverageItemsParams = {}) => {
         queryKey: ['analytics-average-items', params],
         queryFn: () => ApiGetAverageItemsPerOrder(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -163,6 +199,9 @@ export const useRepeatPurchaseRate = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-repeat-purchase', params],
         queryFn: () => ApiGetRepeatPurchaseRate(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -172,6 +211,9 @@ export const useBrandPerformance = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-brand-performance', params],
         queryFn: () => ApiGetBrandPerformance(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -181,6 +223,9 @@ export const useOrderValueDistribution = (params: DateRangeParams = {}) => {
         queryKey: ['analytics-order-value-distribution', params],
         queryFn: () => ApiGetOrderValueDistribution(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -190,6 +235,9 @@ export const useCustomerAcquisitionTrends = (params: AcquisitionParams = {}) => 
         queryKey: ['analytics-acquisition-trends', params],
         queryFn: () => ApiGetCustomerAcquisitionTrends(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
 
@@ -199,5 +247,8 @@ export const useBestSellingByCategory = (params: BestSellingByCategoryParams = {
         queryKey: ['analytics-best-selling-category', params],
         queryFn: () => ApiGetBestSellingByCategory(params),
         refetchOnWindowFocus: false,
+        gcTime: 5 * 60 * 1000,
+        retry: 1,
+        retryDelay: 1000,
     });
 };
