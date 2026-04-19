@@ -54,7 +54,7 @@ const Loyalty = () => {
                     </div>
                     <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                         <div className="text-sm text-gray-500 mb-1">Birthday Value</div>
-                        <div className="font-semibold">Rp {formatNumber(config?.birthday_bonus_points || 100)}</div>
+                        <div className="font-semibold">Rp {formatNumber((config?.birthday_bonus_points || 100) * (config?.point_conversion_rate || 2000))}</div>
                     </div>
                 </div>
             </div>

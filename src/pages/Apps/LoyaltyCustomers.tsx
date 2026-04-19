@@ -1,13 +1,15 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useGetAllCustomers, useGetAllTiers, useCreateCustomerLoyalty, useGetUsersNotInLoyalty } from '../../services/loyaltyService';
+import { useGetAllCustomers, useGetAllTiers, useCreateCustomerLoyalty, useGetUsersNotInLoyalty, useGetLoyaltyStats } from '../../services/loyaltyService';
 import { MainHeader, Pagination, SkeletonLoadingTable } from '../../components';
 import { useSearchParams } from 'react-router-dom';
 import formatToRupiah from '../../utils/formatToRupiah';
 import IconSearch from '../../components/Icon/IconSearch';
 import IconPlus from '../../components/Icon/IconPlus';
 import IconX from '../../components/Icon/IconX';
+import IconUsers from '../../components/Icon/IconUsers';
+import IconAward from '../../components/Icon/IconAward';
 import { Link } from 'react-router-dom';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 
@@ -17,6 +19,7 @@ const LoyaltyCustomers = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const [search, setSearch] = useState(searchParams.get('search') || '');
     const [selectedTier, setSelectedTier] = useState<string>(searchParams.get('tier_id') || '');
+    const [limit, setLimit] = useState(Number(searchParams.get('limit')) || 10);
 
     // Create Customer Modal State
     const [showCreateModal, setShowCreateModal] = useState(false);
@@ -25,9 +28,10 @@ const LoyaltyCustomers = () => {
     const [selectedTierForCreate, setSelectedTierForCreate] = useState('');
 
     const { data: tiersData } = useGetAllTiers();
+    const { data: statsData } = useGetLoyaltyStats();
     const { data: { data: customersData, pagination } = { data: [], pagination: {} }, isFetching } = useGetAllCustomers(
         {
-            limit: 10,
+            limit: limit,
             page: Number(searchParams.get('page')) || 1,
         },
         {
@@ -74,6 +78,24 @@ const LoyaltyCustomers = () => {
             tier_id: tierId,
             page: '1',
         });
+    };
+
+    const handleLimitChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+        const newLimit = Number(e.target.value);
+        setLimit(newLimit);
+        setSearchParams({
+            ...Object.fromEntries(searchParams),
+            limit: newLimit.toString(),
+            page: '1',
+        });
+    };
+
+    const getTierIcon = (tierName: string) => {
+        if (tierName.toLowerCase().includes('blue')) return '🔵';
+        if (tierName.toLowerCase().includes('silver')) return '🥈';
+        if (tierName.toLowerCase().includes('gold')) return '🥇';
+        if (tierName.toLowerCase().includes('platinum')) return '💎';
+        return '🏆';
     };
 
     const handleCreate = () => {
@@ -134,9 +156,47 @@ const LoyaltyCustomers = () => {
                 }}
             />
 
+            {/* Tier Distribution Cards */}
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                {tiersData?.map((tier) => {
+                    const tierStats = statsData?.tier_distribution?.find((t: any) => t.tier_name === tier.tier_name);
+                    const customerCount = tierStats?.customer_count || 0;
+                    return (
+                        <div
+                            key={tier.tier_id}
+                            className={`panel p-4 cursor-pointer transition-all hover:scale-105 ${
+                                selectedTier === tier.tier_id ? 'ring-2 ring-primary' : ''
+                            }`}
+                            onClick={() => {
+                                const newTierId = selectedTier === tier.tier_id ? '' : tier.tier_id;
+                                setSelectedTier(newTierId);
+                                setSearchParams({
+                                    ...Object.fromEntries(searchParams),
+                                    tier_id: newTierId,
+                                    page: '1',
+                                });
+                            }}
+                        >
+                            <div className="flex items-center justify-between mb-3">
+                                <span className={`badge ${getTierColor(tier.tier_name)}`}>{tier.tier_name}</span>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <span className="text-2xl font-bold">{formatNumber(customerCount)}</span>
+                            </div>
+                            <div className="text-sm text-gray-500 mt-1">Customers</div>
+                            {tier.min_lifetime_spending > 0 && (
+                                <div className="text-xs text-gray-400 mt-2">
+                                    Min: {formatToRupiah(tier.min_lifetime_spending)}
+                                </div>
+                            )}
+                        </div>
+                    );
+                })}
+            </div>
+
             {/* Filter by Tier */}
             <div className="mt-5 panel p-4">
-                <div className="flex items-center gap-4">
+                <div className="flex flex-wrap items-center gap-4">
                     <label className="text-sm font-medium whitespace-nowrap">Filter by Tier:</label>
                     <select className="form-select w-48" value={selectedTier} onChange={handleTierChange}>
                         <option value="">All Tiers</option>
@@ -146,6 +206,16 @@ const LoyaltyCustomers = () => {
                             </option>
                         ))}
                     </select>
+                    <div className="flex items-center gap-2 ml-auto">
+                        <label className="text-sm font-medium whitespace-nowrap">Show per page:</label>
+                        <select className="form-select w-20" value={limit} onChange={handleLimitChange}>
+                            <option value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="50">50</option>
+                            <option value="100">100</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -211,7 +281,7 @@ const LoyaltyCustomers = () => {
             </div>
 
             {/* Pagination */}
-            <Pagination activePage={Number(searchParams.get('page')) || 1} itemsCountPerPage={10} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
+            <Pagination activePage={Number(searchParams.get('page')) || 1} itemsCountPerPage={limit} totalItemsCount={pagination?.totalData || 0} pageRangeDisplayed={5} onChange={handlePageChange} />
 
             {/* Create Customer Modal */}
             {showCreateModal && (

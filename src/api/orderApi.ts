@@ -3,8 +3,8 @@ import { axiosInstance } from './base';
 import { Order } from '../types/orderType';
 
 export interface GetAllOrderPayload {
-    startDate: string;
-    endDate: string;
+    startDate?: string;
+    endDate?: string;
     order_is_completed?: string;
     order_search?: string;
 }
@@ -77,5 +77,16 @@ export const ApiGetOrdersByEmail = async ({ email, page, limit }: { email: strin
             sort: 'created_at:desc',
         },
     });
+    return response.data;
+};
+
+export const ApiGetOrderStats = async (params?: { startDate?: string; endDate?: string; order_is_completed?: string }) => {
+    const filteredParams = params ? Object.fromEntries(Object.entries(params).filter(([_, value]) => value !== null && value !== undefined && value !== '')) : undefined;
+    const response = await axiosInstance.get<ApiResponse<{
+        total_orders: number;
+        completed_orders: number;
+        pending_orders: number;
+        total_revenue: number;
+    }>>('/orders/stats', { params: filteredParams });
     return response.data;
 };

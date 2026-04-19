@@ -165,7 +165,7 @@ const LoyaltyConfig = () => {
                                     <div>
                                         <div className="font-medium text-success">Birthday Value:</div>
                                         <div className="text-gray-600 dark:text-gray-400">
-                                            {birthdayBonusPoints} points ≈ Rp {formatNumber(birthdayBonusPoints)} value
+                                            {birthdayBonusPoints} points ≈ Rp {formatNumber(birthdayBonusPoints * pointConversionRate)} value
                                         </div>
                                     </div>
                                 </div>
@@ -194,7 +194,7 @@ const LoyaltyConfig = () => {
                             </div>
                             <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
                                 <div className="text-sm text-gray-500">Birthday Value</div>
-                                <div className="font-semibold">Rp {formatNumber(birthdayBonusPoints)}</div>
+                                <div className="font-semibold">Rp {formatNumber(birthdayBonusPoints * pointConversionRate)}</div>
                             </div>
                         </div>
                     </div>

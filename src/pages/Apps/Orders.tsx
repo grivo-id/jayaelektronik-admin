@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { setPageTitle } from '../../store/themeConfigSlice';
-import { useDownloadOrder, useGetAllOrderQuery, useToggleComplete, useDeleteOrder } from '../../services/orderService';
+import { useDownloadOrder, useGetAllOrderQuery, useToggleComplete, useDeleteOrder, useGetOrderStats } from '../../services/orderService';
 import { MainHeader, Pagination, SkeletonLoadingTable, Tooltip } from '../../components';
 import { useQueryClient } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
@@ -55,17 +55,23 @@ const Orders = () => {
     });
 
     const [filterParams, setFilterParams] = useState<{
-        startDate: string;
-        endDate: string;
+        startDate: string | undefined;
+        endDate: string | undefined;
         order_is_completed?: string;
         order_search?: string;
     }>({
-        startDate: searchParams.get('startDate') || '',
-        endDate: searchParams.get('endDate') || '',
+        startDate: searchParams.get('startDate') || undefined,
+        endDate: searchParams.get('endDate') || undefined,
         order_is_completed: searchParams.get('order_is_completed') || undefined,
     });
 
     const { data: { data: ordersData, pagination } = { data: [], pagination: {} }, isFetching, isPlaceholderData } = useGetAllOrderQuery(queryParams, filterParams);
+
+    const { data: statsData } = useGetOrderStats({
+        startDate: filterParams.startDate || undefined,
+        endDate: filterParams.endDate || undefined,
+        order_is_completed: filterParams.order_is_completed || undefined,
+    });
 
     const { mutate: toggleComplete } = useToggleComplete();
     const { mutate: downloadOrder, isPending } = useDownloadOrder();
@@ -168,8 +174,8 @@ const Orders = () => {
     };
 
     const handleApplyFilter = () => {
-        const formatDateParam = (date: Date | null) => {
-            if (!date) return '';
+        const formatDateParam = (date: Date | null): string | undefined => {
+            if (!date) return undefined;
             const year = date.getFullYear();
             const month = String(date.getMonth() + 1).padStart(2, '0');
             const day = String(date.getDate()).padStart(2, '0');
@@ -186,9 +192,14 @@ const Orders = () => {
         const searchParamsObj: Record<string, string> = {
             ...Object.fromEntries(searchParams),
             page: '1',
-            startDate: newFilterParams.startDate,
-            endDate: newFilterParams.endDate,
         };
+
+        if (newFilterParams.startDate) {
+            searchParamsObj.startDate = newFilterParams.startDate;
+        }
+        if (newFilterParams.endDate) {
+            searchParamsObj.endDate = newFilterParams.endDate;
+        }
 
         if (selectedStatus) {
             searchParamsObj.order_is_completed = selectedStatus.value;
@@ -205,8 +216,8 @@ const Orders = () => {
         setEndDate(null);
         setSelectedStatus(null);
         setFilterParams({
-            startDate: '',
-            endDate: '',
+            startDate: undefined,
+            endDate: undefined,
             order_is_completed: undefined,
         });
         const searchParamsObj = Object.fromEntries(searchParams);
@@ -321,6 +332,78 @@ const Orders = () => {
                 icon={<IconDownload className="ltr:mr-2 rtl:ml-2" />}
                 onClearSearch={handleClearSearch}
             />
+
+            {/* Order Stats Cards */}
+            <div className="mt-5 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div className="panel p-4">
+                    <div className="text-sm text-gray-500 mb-1">Total Orders</div>
+                    <div className="text-2xl font-bold text-primary">{statsData?.total_orders?.toLocaleString() || 0}</div>
+                </div>
+                <div
+                    className={`panel p-4 cursor-pointer transition-all hover:scale-105 ${
+                        selectedStatus?.value === 'true' ? 'ring-2 ring-success bg-success/5' : ''
+                    }`}
+                    onClick={() => {
+                        const newStatus = selectedStatus?.value === 'true' ? null : { value: 'true', label: 'Completed' };
+                        setSelectedStatus(newStatus);
+                        const formatDateParam = (date: Date | null): string | undefined => {
+                            if (!date) return undefined;
+                            const year = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day = String(date.getDate()).padStart(2, '0');
+                            return `${year}-${month}-${day}`;
+                        };
+                        const newFilterParams = {
+                            startDate: formatDateParam(startDate),
+                            endDate: formatDateParam(endDate),
+                            order_is_completed: newStatus?.value,
+                        };
+                        setFilterParams(newFilterParams);
+                        setSearchParams({
+                            ...Object.fromEntries(searchParams),
+                            page: '1',
+                            order_is_completed: newStatus?.value || '',
+                        });
+                    }}
+                >
+                    <div className="text-sm text-gray-500 mb-1">Completed</div>
+                    <div className="text-2xl font-bold text-success">{statsData?.completed_orders?.toLocaleString() || 0}</div>
+                </div>
+                <div
+                    className={`panel p-4 cursor-pointer transition-all hover:scale-105 ${
+                        selectedStatus?.value === 'false' ? 'ring-2 ring-warning bg-warning/5' : ''
+                    }`}
+                    onClick={() => {
+                        const newStatus = selectedStatus?.value === 'false' ? null : { value: 'false', label: 'Pending' };
+                        setSelectedStatus(newStatus);
+                        const formatDateParam = (date: Date | null): string | undefined => {
+                            if (!date) return undefined;
+                            const year = date.getFullYear();
+                            const month = String(date.getMonth() + 1).padStart(2, '0');
+                            const day = String(date.getDate()).padStart(2, '0');
+                            return `${year}-${month}-${day}`;
+                        };
+                        const newFilterParams = {
+                            startDate: formatDateParam(startDate),
+                            endDate: formatDateParam(endDate),
+                            order_is_completed: newStatus?.value,
+                        };
+                        setFilterParams(newFilterParams);
+                        setSearchParams({
+                            ...Object.fromEntries(searchParams),
+                            page: '1',
+                            order_is_completed: newStatus?.value || '',
+                        });
+                    }}
+                >
+                    <div className="text-sm text-gray-500 mb-1">Pending</div>
+                    <div className="text-2xl font-bold text-warning">{statsData?.pending_orders?.toLocaleString() || 0}</div>
+                </div>
+                <div className="panel p-4">
+                    <div className="text-sm text-gray-500 mb-1">Total Revenue</div>
+                    <div className="text-2xl font-bold text-info">{formatToRupiah(statsData?.total_revenue || 0)}</div>
+                </div>
+            </div>
 
             <FilterSheet
                 isOpen={isFilterOpen}

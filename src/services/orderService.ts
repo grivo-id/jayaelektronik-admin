@@ -1,5 +1,5 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { ApiDownloadOrder, ApiGetAllOrder, ApiGetOrderById, ApiUpdateOrderCompletion, ApiUpdateOrderUserVerified, ApiDeleteOrder, GetAllOrderPayload } from '../api/orderApi';
+import { ApiDownloadOrder, ApiGetAllOrder, ApiGetOrderById, ApiGetOrderStats, ApiUpdateOrderCompletion, ApiUpdateOrderUserVerified, ApiDeleteOrder, GetAllOrderPayload } from '../api/orderApi';
 
 export const useGetAllOrderQuery = (params: Record<string, any>, body?: GetAllOrderPayload) => {
     return useQuery({
@@ -60,5 +60,14 @@ export const useDeleteOrder = () => {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['orders'] });
         },
+    });
+};
+
+export const useGetOrderStats = (params?: { startDate?: string; endDate?: string; order_is_completed?: string }) => {
+    return useQuery({
+        queryKey: ['orderStats', params],
+        queryFn: () => ApiGetOrderStats(params),
+        select: (response) => response.data,
+        refetchOnWindowFocus: false,
     });
 };
