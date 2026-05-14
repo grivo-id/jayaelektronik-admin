@@ -24,6 +24,7 @@ import IconMenuCoupon from '../Icon/Menu/IconMenuCoupon';
 import IconMenuToast from '../Icon/Menu/IconMenuToast';
 import IconMenuLoyalty from '../Icon/Menu/IconMenuLoyalty';
 import IconMenuAnalytics from '../Icon/Menu/IconMenuAnalytics';
+import IconMenuLogs from '../Icon/Menu/IconMenuLogs';
 // import IconMenuComponents from '../Icon/Menu/IconMenuComponents';
 // import IconMenuElements from '../Icon/Menu/IconMenuElements';
 // import IconMenuCharts from '../Icon/Menu/IconMenuCharts';
@@ -256,6 +257,14 @@ const Sidebar = () => {
                                             </li>
                                         </ul>
                                     </AnimateHeight>
+                                </li>
+                                <li className="nav-item">
+                                    <NavLink to="/admin/logs" className="group">
+                                        <div className="flex items-center">
+                                            <IconMenuLogs className="group-hover:!text-primary shrink-0" />
+                                            <span className="ltr:pl-3 rtl:pr-3 text-black dark:text-[#506690] dark:group-hover:text-white-dark">Activity Logs</span>
+                                        </div>
+                                    </NavLink>
                                 </li>
                             </PermissionWrapper>
 

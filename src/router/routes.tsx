@@ -113,6 +113,7 @@ const LoyaltyCustomerDetail = lazy(() => import('../pages/Apps/LoyaltyCustomerDe
 const LoyaltyConfig = lazy(() => import('../pages/Apps/LoyaltyConfig'));
 const LoyaltyTiers = lazy(() => import('../pages/Apps/LoyaltyTiers'));
 const LoyaltyBonuses = lazy(() => import('../pages/Apps/LoyaltyBonuses'));
+const Logs = lazy(() => import('../pages/Apps/Logs'));
 const routes = [
     // dashboard
     // {
@@ -272,6 +273,10 @@ const routes = [
     {
         path: '/admin/loyalty/bonuses',
         element: <LoyaltyBonuses />,
+    },
+    {
+        path: '/admin/logs',
+        element: <Logs />,
     },
     {
         path: '/setting/account-profile',
