@@ -6,6 +6,7 @@ export interface Blog {
     blog_category_id: string;
     blog_banner_image: string;
     blog_title: string;
+    blog_slug?: string;
     blog_desc: string;
     blog_created_date: string;
     user_name: string;
